@@ -2,7 +2,7 @@
 title Data persistance
 
 class Player(Dataclass){ 
-    pk : uuid
+    pk : int
     chess_id : str
     last_name : str
     first_name : str
@@ -10,19 +10,19 @@ class Player(Dataclass){
 }
 
 class Score(Dataclass){
-    player_pk : uuid
+    player_pk : int
     score : float
 }
 
 class Match(Dataclass){
-    pk : uuid
-    player_a : uuid
-    player_b : uuid
+    pk : int
+    player_a : int
+    player_b : int
     scores : tuple(Score, Score)
 }
 
 class Turn(Dataclass) {
-    pk : uuid
+    pk : int
     name : str
     start_datetime : datetime
     end_datetime : datetime
@@ -30,7 +30,7 @@ class Turn(Dataclass) {
 }
 
 class Tournament(Dataclass){
-    pk : uuid
+    pk : int
     name : str
     place : str
     start_date : date
