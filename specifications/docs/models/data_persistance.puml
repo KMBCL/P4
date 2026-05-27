@@ -1,0 +1,50 @@
+@startuml data_persistance
+title Data persistance
+
+class Player(Dataclass){ 
+    pk : uuid
+    chess_id : str
+    last_name : str
+    first_name : str
+    birthdate : date    
+}
+
+class Score(Dataclass){
+    player_pk : uuid
+    score : float
+}
+
+class Match(Dataclass){
+    pk : uuid
+    player_a : uuid
+    player_b : uuid
+    scores : tuple(Score, Score)
+}
+
+class Turn(Dataclass) {
+    pk : uuid
+    name : str
+    start_datetime : datetime
+    end_datetime : datetime
+    matches : list[Match]
+}
+
+class Tournament(Dataclass){
+    pk : uuid
+    name : str
+    place : str
+    start_date : date
+    end_date : str    
+    description : str      
+    turn_count : int
+    turns : list[Turn]
+    players : list[Players]
+}
+
+class DataHandler(Generic[Dataclass]){
+    write_data_to_file()->Result
+    read_data_from_file()->str
+    convert_to_dataclass()->Dataclass
+    serialize_dataclass->str
+}
+@enduml

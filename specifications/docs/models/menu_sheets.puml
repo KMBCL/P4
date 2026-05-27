@@ -1,0 +1,62 @@
+@startuml menu_navigation
+title Carte de navigation des menus
+
+left to right direction
+hide footbox
+
+rectangle "Main Menu" #DBEAFE {
+    [Handle players] as menu_players
+    [Handle tournaments] as menu_tournaments
+    [Run tournament] as menu_run_tournament
+    [Reporting] as menu_reporting
+}
+
+rectangle "Players Menu" #7f57c9 {
+    [Add player] as add_player
+    [Player details] as player_details
+}
+
+rectangle "Tournaments Menu" #7f57c9 {
+    [Add tournament] as add_tournament
+    [Tournament details] as player_tournament
+    [Add player to tournament] as add_player_to_tournament
+}
+
+rectangle "Run tournament Menu" #7f57c9 {
+    [Run tournament turn] as run_tournament
+    [Add turn results] as add_turn_results
+}
+
+rectangle "Reporting Menu" #FEF3C7 {
+    [Players report] as report_players
+    [Tournaments report] as report_tournaments
+}
+
+rectangle "Tournament Reporting Pages" #FDE68A {
+    [Tournament details] as tournament_details
+    [Tournament players] as tournament_players
+    [Tournament turns] as tournament_turns
+    [Turn matches] as turn_matches
+}
+
+menu_players --> add_player
+menu_players --> player_details
+
+menu_tournaments --> add_tournament
+menu_tournaments --> player_tournament
+
+player_tournament --> add_player_to_tournament
+add_player_to_tournament --> add_player
+
+menu_run_tournament --> run_tournament
+menu_run_tournament --> add_turn_results
+
+menu_reporting --> report_players
+menu_reporting --> report_tournaments
+
+report_tournaments --> tournament_details
+tournament_details --> tournament_players
+tournament_details --> tournament_turns
+tournament_turns --> turn_matches
+
+@enduml

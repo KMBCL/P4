@@ -1,0 +1,18 @@
+@startuml tournament_runner
+title Tournament Runner 
+
+class TournamentRunner{
+    order_players_by_score() -> list[Player]    
+    pick_random_player_by_score_range() -> Player
+    check_player_pair_already_done() -> bool
+    make_player_pairs() -> list[tuple(Player,Player)]
+    pick_random_player() -> Player
+
+    build_first_turn() -> Turn
+    save_current_turn() -> None 
+    build_turn() -> Turn
+    save_tournament_scores () -> None
+    get_tournament_scores() -> list[PlayerTournamentScore]
+}
+
+@enduml
