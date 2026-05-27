@@ -1,4 +1,4 @@
-from config.menu_constants import EXIT_SHORCUT
+from config.menu_constants import EXIT_SHORTCUT
 
 from models.menu_item import MenuItem
 
@@ -21,7 +21,7 @@ REPORTING = MenuItem(title="Reporting", shortcut="R")
 PLAYERS_REPORT = MenuItem(title="Players report", shortcut="PR")
 TOURNAMENT_REPORT = MenuItem(title="Tournaments report", shortcut="TR")
 
-EXIT_ITEM = MenuItem(title="EXIT", shortcut=EXIT_SHORCUT)
+EXIT_ITEM = MenuItem(title="EXIT", shortcut=EXIT_SHORTCUT)
 
 ROOT_MENU = MenuItem(title="Root menu", shortcut="MM")
 
