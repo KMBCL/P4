@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 
+from config.menu_constants import BACK_SHORTCUT
 
 from controllers.action import Action
 
@@ -21,7 +22,7 @@ class MenuItem:
         if self.parent_item is None:
             return None
 
-        return {"BACK": self.parent_item}
+        return {BACK_SHORTCUT: self.parent_item}
 
     def build_items(self) -> dict[str, MenuItem]:
         nodes: dict[str, MenuItem] = {}

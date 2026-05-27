@@ -5,7 +5,7 @@ from views.menu_display import MenuDisplay
 from controllers.menu_runner import MenuRunner
 
 
-def __main__():
+def main():
     menu_display = MenuDisplay()
     menu_renderer = MenuRunner(
         root_item=build_root_menu(),
@@ -14,4 +14,5 @@ def __main__():
     menu_renderer.run_menu()
 
 
-__main__()
+if __name__ == "__main__":
+    main()
