@@ -1,39 +1,49 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
-from views.view import View
-from config.view_constants import EXIT_SHORTCUT
+from views.create_player import View
+from repository.data import DataRepository
 
 if TYPE_CHECKING:
-    from controllers.view_renderer import ViewRenderer
+    from controllers.renderer import Renderer
+    from controllers.choice import Choices
+    from repository.data import DataSet
 
 
-class ViewControler:
+class ViewController:
+
     actual_view: View
 
     def __init__(
         self,
-        root_view: View,
-        view_renderer: ViewRenderer,
+        renderer: Renderer,
     ):
-        self.actual_view = root_view
-        self.view_renderer = view_renderer
+        self.actual_view = View()
+        self.renderer = renderer
+        self.fake_repository = DataRepository()
 
-    def run_view(self) -> None:
+    def run(self) -> None:
         exit = False
 
         while not exit:
 
-            self.view_renderer.render_view(self.actual_view)
-            user_choice = self.view_renderer.render_navigation_asking()
-            selected_view = self.actual_view.get_related_view(user_choice)
+            choices: Choices = self.actual_view.build_choices()
+            data_set: DataSet = self.actual_view.get_data()
 
-            if selected_view is None:
-                self.view_renderer.render_invalid_choice()
+            self.renderer.render_data(data_set)
+            self.renderer.render_choices(choices.choices)
+            user_choice_shortcut = self.renderer.render_choice_input()
+            user_choice = choices.get_choice_by_shortcut(user_choice_shortcut)
+
+            if user_choice is None or not choices.validate_user_choice(user_choice):
+                self.renderer.render_invalid_choice()
                 continue
 
-            if selected_view.shortcut == EXIT_SHORTCUT:
-                exit = True
-                continue
+            if user_choice.action:
+                user_choice.action.run(
+                    fake_repository=self.fake_repository,
+                    renderer=self.renderer,
+                )
 
-            self.actual_view = selected_view
+            print(user_choice.view)

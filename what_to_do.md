@@ -2,7 +2,7 @@
 
 ## Phase 1
 
-Utiliser MCV: model, view controllers
+Utiliser MCV: model, view ViewControllers
 
 Mettre en oeuvre les SRP
 
