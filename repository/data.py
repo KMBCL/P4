@@ -1,4 +1,9 @@
 from dataclasses import dataclass
+from pathlib import Path
+import json
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_BASE_ROOT = f"{BASE_DIR}/database"
 
 
 @dataclass

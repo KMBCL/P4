@@ -11,6 +11,5 @@ class Action:
 
     def run(
         self,
-        fake_repository: DataRepository,
         renderer: Renderer,
     ) -> None: ...
