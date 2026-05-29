@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from views.create_player import PlayerView
+from views.create_player import player_view_builder
 from repository.data import DataRepository
 
 if TYPE_CHECKING:
@@ -13,13 +13,11 @@ if TYPE_CHECKING:
 
 class ViewController:
 
-    actual_view: PlayerView
-
     def __init__(
         self,
         renderer: Renderer,
     ):
-        self.actual_view = PlayerView()
+        self.actual_view = player_view_builder()
         self.renderer = renderer
 
     def run(self) -> None:

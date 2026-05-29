@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from controllers.action import Action
@@ -12,13 +12,17 @@ if TYPE_CHECKING:
 class Choice:
     title: str
     shortcut: str
-    action: Action | None = None
+    action: Action[Any] | None = None
     view: str = "Set choice view as actual"
+
+
+def default_choices() -> list[Choice]:
+    return []
 
 
 @dataclass
 class Choices:
-    choices: list[Choice] = field(default_factory=list["Choice"])
+    choices: list[Choice] = field(default_factory=default_choices)
 
     def get_choice_by_shortcut(self, shortcut: str) -> Choice | None:
         for choice in self.choices:

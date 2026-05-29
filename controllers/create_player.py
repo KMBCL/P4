@@ -5,13 +5,14 @@ from typing import TYPE_CHECKING
 
 from controllers.action import Action
 from models.player import Player, PlayerInputData
+from repository.player_repository import PlayerRepository
 
 if TYPE_CHECKING:
-    from repository.player_repository import PlayerRepository
+
     from controllers.renderer import Renderer
 
 
-class CreatePlayerAction(Action):
+class CreatePlayerAction(Action[PlayerRepository]):
 
     def input_new_player(self, renderer: Renderer) -> PlayerInputData:
         chess_id: str = renderer.render_step("Enter chess id : ")
@@ -31,18 +32,17 @@ class CreatePlayerAction(Action):
         return new_player
 
     def make_new_pk(self, repository: PlayerRepository):
-        new_pk = len(repository.get_players()) + 1
+        new_pk = repository.get_data().new_pk()
         return new_pk
 
     def run(
         self,
-        repository: PlayerRepository,
         renderer: Renderer,
     ) -> None:
         player_input = self.input_new_player(renderer)
-        new_pk = self.make_new_pk(repository=repository)
+        new_pk = self.make_new_pk(repository=self.repository)
         player = self.build_new_player(
             player_input=player_input,
             new_pk=new_pk,
         )
-        repository.write_data(json_data=player.to_json())
+        self.repository.write_data(json_data=player.to_json())
