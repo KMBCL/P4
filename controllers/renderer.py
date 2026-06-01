@@ -2,33 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-
-from config.view_constants import EXIT_SHORTCUT, BACK_SHORTCUT
+from controllers.style import StylePicker
 
 if TYPE_CHECKING:
     from rich.console import Console
 
     from controllers.choice import Choice
     from repository.data import DataItem, DataSet
-
-
-class StylePicker:
-    exit_style = "bold red"
-    back_style = "bold yellow"
-    navigation_style = "bold cyan"
-    action_style = "bold green"
-    invalid_style = "red"
-    input_awaiting_style = "green"
-
-    @classmethod
-    def pickup_style(cls, key: str) -> str:
-        if key == EXIT_SHORTCUT:
-            return cls.exit_style
-
-        if key == BACK_SHORTCUT:
-            return cls.back_style
-
-        return cls.navigation_style
 
 
 class Renderer:
@@ -40,7 +20,7 @@ class Renderer:
         return f"[{style}]{string}[/]"
 
     def format_choice_display(self, choice: Choice) -> str:
-        shortcut_style: str = StylePicker.pickup_style(key=choice.shortcut)
+        shortcut_style: str = StylePicker.pickup_style(choice=choice)
         return f"{self.style_string(string=choice.shortcut,style=shortcut_style)} - {choice.title}"
 
     def render_choices(self, choices: list[Choice]):
