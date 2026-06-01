@@ -1,24 +1,26 @@
 from __future__ import annotations
 
-from config.view_constants import BACK_SHORTCUT
-from controllers.create_player import CreatePlayerAction
 from controllers.choice import Choice, Choices
-from repository.player_repository import PlayerRepository
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from controllers.renderer import Renderer
-    from repository.data import DataRepository
+    from repository.data import DataRepository, DataSet
 
 
-class PlayerView:
+class View:
 
-    def __init__(self, repository: DataRepository, choices: Choices) -> None:
+    def __init__(
+        self, choices: Choices, repository: DataRepository | None = None
+    ) -> None:
         self.repository = repository
         self.choices = choices
 
-    def get_data(self):
+    def get_data(self) -> DataSet | None:
+        if self.repository is None:
+            return None
+
         data_set = self.repository.get_data()
         return data_set
 
@@ -39,27 +41,3 @@ class PlayerView:
             )
 
         return user_choice
-
-
-def player_view_builder() -> PlayerView:
-    repository = PlayerRepository()
-
-    create_player = Choice(
-        title="Create player",
-        shortcut="CP",
-        action=CreatePlayerAction(repository=repository),
-    )
-    go_back = Choice(
-        title="Go back",
-        shortcut=BACK_SHORTCUT,
-    )
-
-    choices = Choices(
-        [
-            create_player,
-            go_back,
-        ]
-    )
-
-    view = PlayerView(repository=repository, choices=choices)
-    return view

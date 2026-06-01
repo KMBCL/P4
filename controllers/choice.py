@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from controllers.action import Action
+    from views.view_path import ViewPath
 
 
 @dataclass
@@ -13,7 +14,7 @@ class Choice:
     title: str
     shortcut: str
     action: Action[Any] | None = None
-    view: str = "Set choice view as actual"
+    view_path: ViewPath | None = None
 
 
 def default_choices() -> list[Choice]:
