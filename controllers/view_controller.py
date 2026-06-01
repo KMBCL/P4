@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from views.registry import VIEW_REGISTRY
+
 from repository.data import DataRepository
 
 if TYPE_CHECKING:
     from views.view import View
+    from views.registry import ViewRegistry
+
     from controllers.renderer import Renderer
     from controllers.choice import Choices, Choice
     from repository.data import DataSet
@@ -14,9 +16,12 @@ if TYPE_CHECKING:
 
 class ViewController:
 
-    def __init__(self, renderer: Renderer, main_view: View):
+    def __init__(
+        self, renderer: Renderer, main_view: View, view_registry: ViewRegistry
+    ):
         self.actual_view = main_view
         self.renderer = renderer
+        self.view_registry = view_registry
 
     def render_choices(self) -> None:
         choices: Choices = self.actual_view.get_choices()
@@ -43,9 +48,7 @@ class ViewController:
         if user_choice.view_path is None:
             return None
 
-        view = VIEW_REGISTRY.get_view(view_path=user_choice.view_path)
-        if view is None:
-            raise ValueError(f"no view found for {user_choice.view_path} view path")
+        view = self.view_registry.get_required_view(view_path=user_choice.view_path)
         self.actual_view = view
 
     def run(self) -> None:
