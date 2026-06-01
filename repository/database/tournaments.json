@@ -1,0 +1,11 @@
+[
+    {
+        "pk": 1,
+        "name": "Unreal Tournament",
+        "place": "The Abyss",
+        "start_date": "01.06.2026",
+        "end_date": "30.06.2026",
+        "description": "An unholy death tournament for glory",
+        "turn_count": 32
+    }
+]

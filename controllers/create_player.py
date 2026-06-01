@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from controllers.action import Action
 from models.player import Player, PlayerInputData
-from repository.player_repository import PlayerRepository
+from repository.player import PlayerRepository
 
 if TYPE_CHECKING:
 
@@ -27,7 +27,6 @@ class CreatePlayerAction(Action[PlayerRepository]):
         return player_input
 
     def build_new_player(self, player_input: PlayerInputData, new_pk: int):
-
         new_player = Player.from_player_input(new_pk=new_pk, player_input=player_input)
         return new_player
 

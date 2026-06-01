@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from typing import Any, TypeAlias, Generic, TypeVar
 from pathlib import Path
+import json
 
 from typing import Any
 
@@ -28,8 +30,17 @@ class DataRepository:
     data_path: Path
 
     def __init__(self) -> None:
-        pass
+        self.data_path = Path()
 
     def get_data(self) -> DataSet: ...
 
-    def write_data(self, json_data: dict[str, Any]): ...
+    def read_json_file(self) -> list[dict[str, Any]]:
+        with self.data_path.open("r", encoding="utf-8") as file:
+            return json.load(file)
+
+    def write_data(self, json_data: dict[str, Any]):
+        models = self.read_json_file()
+        models.append(json_data)
+
+        with self.data_path.open("w", encoding="utf-8") as file:
+            json.dump(models, file, indent=4, ensure_ascii=False)

@@ -10,7 +10,15 @@ def build_main_view() -> View:
     create_player_choice = Choice(
         title="Create player", shortcut="CP", view_path=ViewPath.CREATE_PLAYER
     )
-    choices = Choices([create_player_choice])
+    create_tournament_choice = Choice(
+        title="Create tournament", shortcut="CT", view_path=ViewPath.CREATE_TOURNAMENT
+    )
+    choices = Choices(
+        [
+            create_player_choice,
+            create_tournament_choice,
+        ]
+    )
 
     view = View(choices=choices)
 

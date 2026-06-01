@@ -10,14 +10,9 @@ Players: TypeAlias = list[Player]
 
 
 class PlayerRepository(DataRepository):
-    data_path: Path
 
     def __init__(self) -> None:
         self.data_path = Path(f"{DATA_BASE_ROOT}/players.json")
-
-    def read_json_file(self) -> list[dict[str, Any]]:
-        with self.data_path.open("r", encoding="utf-8") as file:
-            return json.load(file)
 
     def convert_to_player(self, raw_data: list[dict[str, Any]]) -> Players:
         players: Players = []
@@ -42,10 +37,3 @@ class PlayerRepository(DataRepository):
             data_set.append(player.to_data_item())
 
         return DataSet(data_set)
-
-    def write_data(self, json_data: dict[str, Any]):
-        players = self.read_json_file()
-        players.append(json_data)
-
-        with self.data_path.open("w", encoding="utf-8") as file:
-            json.dump(players, file, indent=4, ensure_ascii=False)

@@ -14,10 +14,6 @@ class PlayerInputData:
     last_name: str
     first_name: str
 
-    def serialize_data(self) -> str:
-        serialized_data = f"chess_id={self.chess_id}, last_name={self.last_name}, first_name={self.first_name}"
-        return serialized_data
-
 
 @dataclass
 class Player:
