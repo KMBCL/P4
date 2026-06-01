@@ -37,3 +37,16 @@ class TournamentRepository(DataRepository):
             data_set.append(model.to_data_item())
 
         return DataSet(data_set)
+
+    def get_model(self, key: str, value: str) -> Tournament | None:
+        models: Tournaments = self.get_models()
+
+        for model in models:
+            attr = getattr(model, key)
+            if attr is None:
+                continue
+
+            if str(attr) == value:
+                return model
+
+        return None

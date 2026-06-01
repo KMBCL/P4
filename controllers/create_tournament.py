@@ -9,7 +9,7 @@ from repository.tournament import TournamentRepository
 
 if TYPE_CHECKING:
 
-    from controllers.renderer import Renderer
+    from views.renderer import Renderer
 
 
 class CreatePTournamentAction(Action[TournamentRepository]):
