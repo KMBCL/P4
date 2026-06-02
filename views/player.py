@@ -21,8 +21,3 @@ class PlayerView(CoreView[Player]):
 
     def prompt_birthdate(self) -> str:
         return self.console.input("Birthdate - 'YYYY-MM-DD' : ")
-
-    def render_available_actions(self):
-        self.console.print("Select : ")
-        self.console.print(f"{PlayerShortcut.PLAYERS} - Show all players")
-        self.console.print(f"{PlayerShortcut.CREATE_PLAYER} - Create player")

@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from dataclasses import fields, Field
 from typing import TYPE_CHECKING, Any, Generic, Callable
+from enum import Enum
 
 from models.core_model import TModel
 
 if TYPE_CHECKING:
     from rich.console import Console
+
+    from controllers.shortcuts.core_shortcuts import ShortcutDefinition
 
 
 class CoreView(Generic[TModel]):
@@ -14,7 +17,13 @@ class CoreView(Generic[TModel]):
     def __init__(self, console: Console) -> None:
         self.console: Console = console
 
-    def render_available_actions(self) -> None: ...
+    def render_available_actions(self, action_shortcuts: type[Enum]) -> None:
+        self.console.print("Select : ")
+        for member in action_shortcuts:
+            shortcut_definition: ShortcutDefinition = member.value
+            self.console.print(
+                f"{shortcut_definition.shortcut} - {shortcut_definition.full_label}"
+            )
 
     def prompt_action(self) -> str:
         return self.console.input("Select choice : ").upper()

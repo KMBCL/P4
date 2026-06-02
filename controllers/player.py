@@ -42,10 +42,10 @@ class PlayerController:
         running = True
         while running:
             action = self.prompt_controller.prompt_action()
-            if action == PlayerShortcut.CREATE_PLAYER:
+            if action == PlayerShortcut.CREATE_PLAYER.value.shortcut:
                 self.create_new_player()
                 continue
 
-            if action == PlayerShortcut.PLAYERS:
+            if action == PlayerShortcut.PLAYERS.value.shortcut:
                 self.show_players()
                 continue

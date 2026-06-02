@@ -6,6 +6,7 @@ from rich.console import Console
 
 from views.player import PlayerView
 from controllers.player import PlayerController
+from controllers.tournament import TournamentController
 
 
 def main():

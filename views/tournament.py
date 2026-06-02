@@ -26,12 +26,5 @@ class TournamentView(CoreView[Tournament]):
     def prompt_round_count(self) -> str:
         return self.console.input("Round count - default=4 : ")
 
-    def render_available_actions(self):
-        self.console.print("Select : ")
-        self.console.print(f"{TournamentShortcut.TOURNAMENTS} - Show all tournaments")
-        self.console.print(
-            f"{TournamentShortcut.CREATE_TOURNAMENT} - Create tournament"
-        )
-
     def prompt_action(self) -> str:
         return self.console.input("Select choice : ").upper()

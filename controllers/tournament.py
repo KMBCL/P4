@@ -1,5 +1,6 @@
 from views.tournament import TournamentView
 
+from controllers.shortcuts.core_shortcuts import CoreShortcut
 from controllers.shortcuts.tournament import TournamentShortcut
 
 from controllers.handlers.tournament import (
@@ -46,10 +47,13 @@ class TournamentController:
         running = True
         while running:
             action = self.prompt_controller.prompt_action()
-            if action == TournamentShortcut.CREATE_TOURNAMENT:
+            if action == TournamentShortcut.CREATE_TOURNAMENT.value.shortcut:
                 self.create_new_tournament()
                 continue
 
-            if action == TournamentShortcut.TOURNAMENTS:
+            if action == TournamentShortcut.TOURNAMENTS.value.shortcut:
                 self.show_tournaments()
+                continue
+
+            if action == CoreShortcut.BACK.value.shortcut:
                 continue

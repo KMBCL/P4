@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Callable, Generic
-from enum import StrEnum
+from enum import Enum
 
 from controllers.validators.action import ActionValidator
 
@@ -15,9 +15,9 @@ class ActionPromptHandler(Generic[TModel]):
         self.view = view
         self.validator = ActionValidator()
 
-    def prompt_action(self, action_shortcuts: type[StrEnum]) -> str:
+    def prompt_action(self, action_shortcuts: type[Enum]) -> str:
         while True:
-            self.view.render_available_actions()
+            self.view.render_available_actions(action_shortcuts)
             user_input = self.view.prompt_action()
 
             user_input_result = self.validator.validate_action_input(
