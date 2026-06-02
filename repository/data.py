@@ -22,9 +22,6 @@ class DataSet:
     def add_data(self, data_item: DataItem) -> None:
         self.data_items.append(data_item)
 
-    def new_pk(self) -> int:
-        return len(self.data_items) + 1
-
 
 class DataRepository:
     data_path: Path

@@ -28,12 +28,8 @@ class PlayerRepository(DataRepository):
         players = self.convert_to_player(raw_data)
         return players
 
-    def get_data(self) -> DataSet:
-        data_set: list[DataItem] = []
+    def make_new_pk(self) -> int:
+        raw_data = self.read_json_file()
+        new_pk = len(raw_data) + 1
 
-        players = self.get_players()
-
-        for player in players:
-            data_set.append(player.to_data_item())
-
-        return DataSet(data_set)
+        return new_pk

@@ -17,3 +17,10 @@ class Result:
 
     def __bool__(self) -> bool:
         return self.is_valid
+
+    @property
+    def required_reason(self) -> str:
+        if self.reason is None:
+            raise ValueError("Reason is not defined")
+
+        return self.reason

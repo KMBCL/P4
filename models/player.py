@@ -13,6 +13,7 @@ class PlayerInputData:
     chess_id: str
     last_name: str
     first_name: str
+    birthdate: str
 
 
 @dataclass
@@ -21,7 +22,7 @@ class Player:
     chess_id: str
     last_name: str
     first_name: str
-    birthdate: date | None = None
+    birthdate: str
 
     @classmethod
     def from_json(cls, json_data: dict[str, Any]) -> Player:
@@ -30,30 +31,7 @@ class Player:
             chess_id=json_data["chess_id"],
             last_name=json_data["last_name"],
             first_name=json_data["first_name"],
-        )
-        return player
-
-    def _to_content(self) -> str:
-        EXCEPT = ["pk", "birthdate"]
-        content: str = ""
-        for field in fields(self):
-            if field.name in EXCEPT:
-                continue
-
-            content = content + " - " if content else content
-            content = content + f"{field.name}={getattr(self,field.name)}"
-        return content
-
-    def to_data_item(self) -> DataItem:
-        return DataItem(shortcut=str(self.pk), content=self._to_content())
-
-    @classmethod
-    def from_player_input(cls, new_pk: int, player_input: PlayerInputData) -> Player:
-        player = cls(
-            pk=new_pk,
-            chess_id=player_input.chess_id,
-            last_name=player_input.last_name,
-            first_name=player_input.first_name,
+            birthdate=json_data["birthdate"],
         )
         return player
 
@@ -63,5 +41,17 @@ class Player:
             "chess_id": self.chess_id,
             "last_name": self.last_name,
             "first_name": self.first_name,
+            "birthdate": self.birthdate,
         }
         return json
+
+    @classmethod
+    def from_player_input(cls, new_pk: int, player_input: PlayerInputData) -> Player:
+        player = cls(
+            pk=new_pk,
+            chess_id=player_input.chess_id,
+            last_name=player_input.last_name,
+            first_name=player_input.first_name,
+            birthdate=player_input.birthdate,
+        )
+        return player
