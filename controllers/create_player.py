@@ -43,7 +43,7 @@ class ChessIDValidator:
     def validate_chess_id_max_numbers_group(self, numbers_group: str) -> Result:
         if len(numbers_group) != self.CHESS_ID_MAX_NUMBERS_GROUP:
             return Result.invalid(
-                f"Incorrect chess id numbers group : {numbers_group} - Expected '00000"
+                f"Incorrect chess id numbers group : {numbers_group} - Expected '00000'"
             )
         return Result.valid()
 
@@ -84,6 +84,7 @@ class ChessIDValidator:
 class PlayerController(ChessIDValidator):
 
     def __init__(self) -> None:
+        self.view = None
         self.repository = PlayerRepository()
 
     def validate_input_action(self, user_input: str) -> bool:
