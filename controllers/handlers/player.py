@@ -52,3 +52,8 @@ class PlayerRenderController:
 
     def render_players(self, players: list[Player]):
         self.view.render_models(players)
+
+    def render_undefined_action(self, action: str):
+        self.view.render_invalid_input(
+            reason=f"{action} shortcut exists, but no action handled"
+        )

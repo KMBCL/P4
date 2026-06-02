@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from typing import Callable, Any
+
 from views.player import PlayerView
 
+from controllers.action_routing import ActionRouting
 from controllers.shortcuts.player import PlayerShortcut
-
 from controllers.handlers.player import PlayerPromptHandler, PlayerRenderController
 
 from models.player import Player, PlayerInputData
@@ -14,6 +18,12 @@ class PlayerController:
         self.repository = PlayerRepository()
         self.prompt_controller = PlayerPromptHandler(view=view)
         self.render_controller = PlayerRenderController(view=view)
+        self.action_routing = ACTION_ROUTING
+
+    def get_action_from_routing(
+        self, action_shortcut: str
+    ) -> Callable[[Any], None] | None:
+        return self.action_routing.get(action_shortcut, None)
 
     def build_new_player(self, player_input: PlayerInputData, new_pk: int):
         new_player = Player.from_player_input(new_pk=new_pk, player_input=player_input)
@@ -42,10 +52,17 @@ class PlayerController:
         running = True
         while running:
             action = self.prompt_controller.prompt_action()
-            if action == PlayerShortcut.CREATE_PLAYER.value.shortcut:
-                self.create_new_player()
+
+            action_to_run = self.get_action_from_routing(action)
+
+            if action_to_run is None:
+                self.render_controller.render_undefined_action(action)
                 continue
 
-            if action == PlayerShortcut.PLAYERS.value.shortcut:
-                self.show_players()
-                continue
+            action_to_run(self)
+
+
+ACTION_ROUTING: ActionRouting = {
+    PlayerShortcut.CREATE_PLAYER.value.shortcut: PlayerController.create_new_player,
+    PlayerShortcut.PLAYERS.value.shortcut: PlayerController.show_players,
+}
