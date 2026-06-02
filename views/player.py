@@ -3,10 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from views.core_view import CoreView
-from controllers.player_shortcuts import PlayerShortcuts
+from models.player import Player
 
-if TYPE_CHECKING:
-    from models.player import Player
+from controllers.shortcuts.player import PlayerShortcuts
 
 
 class PlayerView(CoreView[Player]):
@@ -22,9 +21,6 @@ class PlayerView(CoreView[Player]):
 
     def prompt_birthdate(self) -> str:
         return self.console.input("Birthdate - 'YYYY-MM-DD' : ")
-
-    def render_invalid_input(self, reason: str) -> None:
-        self.console.print(reason)
 
     def render_available_actions(self):
         self.console.print("Select : ")

@@ -36,7 +36,7 @@ class Tournament(Dataclass){
     start_date : date
     end_date : str    
     description : str      
-    turn_count : int
+    round_count : int
     turns : list[Turn]
     players : list[Players]
 }

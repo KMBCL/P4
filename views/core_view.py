@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import fields, Field
-from typing import TYPE_CHECKING, Any, Generic
+from typing import TYPE_CHECKING, Any, Generic, Callable
 
 from models.core_model import TModel
 
@@ -31,3 +31,6 @@ class CoreView(Generic[TModel]):
             formatted_player = self.format_model(model)
             self.console.print(formatted_player)
         self.console.print(f"total : {len(models)}")
+
+    def render_invalid_input(self, reason: str) -> None:
+        self.console.print(reason)

@@ -25,7 +25,7 @@ rectangle "Tournaments Menu" #7f57c9 {
 rectangle "Run tournament Menu" #7f57c9 {
     [Select tournament] as select_tournament
     [Run tournament turn] as run_tournament
-    [Add turn results] as add_turn_results
+    [Add turn results] as add_round_results
 }
 
 rectangle "Reporting Menu" #FEF3C7 {
@@ -37,7 +37,7 @@ rectangle "Tournament Reporting Pages" #FDE68A {
     [Tournament details] as tournament_details
     [Tournament players] as tournament_players
     [Tournament turns] as tournament_turns
-    [Turn matches] as turn_matches
+    [Turn matches] as round_matches
 }
 
 menu_players --> add_player
@@ -51,7 +51,7 @@ add_player_to_tournament --> add_player
 
 menu_run_tournament --> select_tournament
 select_tournament --> run_tournament
-select_tournament --> add_turn_results
+select_tournament --> add_round_results
 
 menu_reporting --> report_players
 menu_reporting --> report_tournaments
@@ -59,6 +59,6 @@ menu_reporting --> report_tournaments
 report_tournaments --> tournament_details
 tournament_details --> tournament_players
 tournament_details --> tournament_turns
-tournament_turns --> turn_matches
+tournament_turns --> round_matches
 
 @enduml

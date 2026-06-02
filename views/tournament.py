@@ -3,18 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass, fields, Field
 from typing import TYPE_CHECKING, Any
 
-
-from controllers.player_shortcuts import PlayerShortcuts
+from views.core_view import CoreView
 
 if TYPE_CHECKING:
     from models.tournament import Tournament
-    from rich.console import Console
 
 
-class TournamentView:
-
-    def __init__(self, console: Console) -> None:
-        self.console: Console = console
+class TournamentView(CoreView[Tournament]):
 
     def prompt_name(self) -> str:
         return self.console.input("Name : ")
@@ -39,18 +34,3 @@ class TournamentView:
 
     def prompt_action(self) -> str:
         return self.console.input("Select choice : ").upper()
-
-    def format_field(self, tournament: Tournament, field: Field[Any]) -> str:
-        return f"{field.name}={getattr(tournament,field.name)}"
-
-    def format_tournament(self, tournament: Tournament):
-        formattedf_fields = [
-            self.format_field(tournament, field) for field in fields(tournament)
-        ]
-        return " - ".join(formattedf_fields)
-
-    def render_tournaments(self, tournaments: list[Tournament]):
-        for tournament in tournaments:
-            formatted_tournament = self.format_tournament(tournament)
-            self.console.print(formatted_tournament)
-        self.console.print(f"total : {len(tournaments)}")

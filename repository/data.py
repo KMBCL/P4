@@ -41,3 +41,9 @@ class DataRepository:
 
         with self.data_path.open("w", encoding="utf-8") as file:
             json.dump(models, file, indent=4, ensure_ascii=False)
+
+    def make_new_pk(self) -> int:
+        raw_data = self.read_json_file()
+        new_pk = len(raw_data) + 1
+
+        return new_pk

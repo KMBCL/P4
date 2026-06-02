@@ -27,9 +27,3 @@ class PlayerRepository(DataRepository):
         raw_data = self.read_json_file()
         players = self.convert_to_player(raw_data)
         return players
-
-    def make_new_pk(self) -> int:
-        raw_data = self.read_json_file()
-        new_pk = len(raw_data) + 1
-
-        return new_pk
