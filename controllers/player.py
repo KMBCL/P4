@@ -75,7 +75,7 @@ class RenderController:
         self.view = view
 
     def render_players(self, players: list[Player]):
-        self.view.render_players(players)
+        self.view.render_models(players)
 
 
 class PlayerController:

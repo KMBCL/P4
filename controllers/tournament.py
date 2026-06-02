@@ -14,24 +14,6 @@ if TYPE_CHECKING:
 
 class CreatePTournamentAction(Action[TournamentRepository]):
 
-    def input_new(self, renderer: Renderer) -> TournamentInputData:
-        name: str = renderer.render_step("Enter name : ")
-        place: str = renderer.render_step("Enter place : ")
-        start_date: str = renderer.render_step("Enter start date : ")
-        end_date: str = renderer.render_step("Enter enddate : ")
-        description: str = renderer.render_step("Enter description : ")
-        turn_count: str = renderer.render_step("Enter turn count : ")
-
-        player_input = TournamentInputData(
-            name=name,
-            place=place,
-            start_date=start_date,
-            end_date=end_date,
-            description=description,
-            turn_count=turn_count,
-        )
-        return player_input
-
     def build_new(self, user_input: TournamentInputData, new_pk: int):
         new = Tournament.from_user_input(new_pk=new_pk, user_input=user_input)
         return new

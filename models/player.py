@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from datetime import date
 
+from models.core_model import Model
 from repository.data import DataItem
 
 
@@ -17,7 +18,7 @@ class PlayerInputData:
 
 
 @dataclass
-class Player:
+class Player(Model):
     pk: int
     chess_id: str
     last_name: str
