@@ -1,6 +1,6 @@
 from views.tournament import TournamentView
 
-from controllers.shortcuts.tournament import TournamentShortcuts
+from controllers.shortcuts.tournament import TournamentShortcut
 
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
@@ -17,7 +17,7 @@ class TournamentPromptHandler:
 
     def prompt_action(self) -> str:
         return self.action_prompt_handler.prompt_action(
-            action_shortcuts=TournamentShortcuts
+            action_shortcuts=TournamentShortcut
         )
 
     def prompt_name(self) -> str:

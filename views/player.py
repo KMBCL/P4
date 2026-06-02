@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from views.core_view import CoreView
 from models.player import Player
 
-from controllers.shortcuts.player import PlayerShortcuts
+from controllers.shortcuts.player import PlayerShortcut
 
 
 class PlayerView(CoreView[Player]):
@@ -24,5 +24,5 @@ class PlayerView(CoreView[Player]):
 
     def render_available_actions(self):
         self.console.print("Select : ")
-        self.console.print(f"{PlayerShortcuts.PLAYERS} - Show all players")
-        self.console.print(f"{PlayerShortcuts.CREATE_PLAYER} - Create player")
+        self.console.print(f"{PlayerShortcut.PLAYERS} - Show all players")
+        self.console.print(f"{PlayerShortcut.CREATE_PLAYER} - Create player")

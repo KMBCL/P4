@@ -1,6 +1,6 @@
 from views.player import PlayerView
 
-from controllers.shortcuts.player import PlayerShortcuts
+from controllers.shortcuts.player import PlayerShortcut
 
 from controllers.handlers.player import PlayerPromptHandler, PlayerRenderController
 
@@ -27,13 +27,12 @@ class PlayerController:
             birthdate=self.prompt_controller.prompt_birthdate(),
         )
 
-    def create_new_player(self) -> str:
+    def create_new_player(self):
         player = self.build_new_player(
             player_input=self.get_player_input(),
             new_pk=self.repository.make_new_pk(),
         )
         self.repository.write_data(json_data=player.to_json())
-        return "success!"
 
     def show_players(self):
         players = self.repository.get_players()
@@ -43,10 +42,10 @@ class PlayerController:
         running = True
         while running:
             action = self.prompt_controller.prompt_action()
-            if action == PlayerShortcuts.CREATE_PLAYER:
+            if action == PlayerShortcut.CREATE_PLAYER:
                 self.create_new_player()
                 continue
 
-            if action == PlayerShortcuts.PLAYERS:
+            if action == PlayerShortcut.PLAYERS:
                 self.show_players()
                 continue

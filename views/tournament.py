@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, fields, Field
-from typing import TYPE_CHECKING, Any
-
 from views.core_view import CoreView
+from models.tournament import Tournament
 
-if TYPE_CHECKING:
-    from models.tournament import Tournament
+from controllers.shortcuts.tournament import TournamentShortcut
 
 
 class TournamentView(CoreView[Tournament]):
@@ -31,6 +28,10 @@ class TournamentView(CoreView[Tournament]):
 
     def render_available_actions(self):
         self.console.print("Select : ")
+        self.console.print(f"{TournamentShortcut.TOURNAMENTS} - Show all tournaments")
+        self.console.print(
+            f"{TournamentShortcut.CREATE_TOURNAMENT} - Create tournament"
+        )
 
     def prompt_action(self) -> str:
         return self.console.input("Select choice : ").upper()

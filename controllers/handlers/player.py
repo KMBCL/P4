@@ -4,7 +4,7 @@ from views.player import PlayerView
 
 from controllers.validators.chess_id import ChessIDValidator
 
-from controllers.shortcuts.player import PlayerShortcuts
+from controllers.shortcuts.player import PlayerShortcut
 
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
@@ -22,9 +22,7 @@ class PlayerPromptHandler:
         self.action_prompt_handler = ActionPromptHandler[Player](self.view)
 
     def prompt_action(self) -> str:
-        return self.action_prompt_handler.prompt_action(
-            action_shortcuts=PlayerShortcuts
-        )
+        return self.action_prompt_handler.prompt_action(action_shortcuts=PlayerShortcut)
 
     def prompt_chess_id(self) -> str:
         while True:

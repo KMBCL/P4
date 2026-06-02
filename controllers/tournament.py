@@ -1,6 +1,6 @@
 from views.tournament import TournamentView
 
-from controllers.shortcuts.tournament import TournamentShortcuts
+from controllers.shortcuts.tournament import TournamentShortcut
 
 from controllers.handlers.tournament import (
     TournamentPromptHandler,
@@ -32,12 +32,11 @@ class TournamentController:
             round_count=self.prompt_controller.prompt_round_count(),
         )
 
-    def create_new_tournament(self) -> str:
+    def create_new_tournament(self):
         tournament = self.build_new(
             user_input=self.get_tournament_input(), new_pk=self.repository.make_new_pk()
         )
         self.repository.write_data(json_data=tournament.to_json())
-        return "success!"
 
     def show_tournaments(self):
         tournaments = self.repository.get_models()
@@ -47,10 +46,10 @@ class TournamentController:
         running = True
         while running:
             action = self.prompt_controller.prompt_action()
-            if action == TournamentShortcuts.CREATE_TOURNAMENT:
+            if action == TournamentShortcut.CREATE_TOURNAMENT:
                 self.create_new_tournament()
                 continue
 
-            if action == TournamentShortcuts.TOURNAMENTS:
+            if action == TournamentShortcut.TOURNAMENTS:
                 self.show_tournaments()
                 continue
