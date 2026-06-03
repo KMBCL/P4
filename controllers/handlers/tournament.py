@@ -2,23 +2,24 @@ from views.tournament import TournamentView
 
 from controllers.shortcuts.tournament import TournamentShortcut
 
-from core.core_handler import PromptHandler
+from core.core_handler import CorePromptHandler
+from core.core_renderer import CoreRenderer
+
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
 
 from models.tournament import Tournament
 
 
-class TournamentPromptHandler(PromptHandler):
+class TournamentPromptHandler(CorePromptHandler):
 
     def __init__(self, view: TournamentView) -> None:
         self.view = view
         self.date_prompt_handler = DatePromptHandler[Tournament](self.view)
-        self.action_prompt_handler = ActionPromptHandler[Tournament](self.view)
 
-    def prompt_action(self) -> tuple[str, dict[str, str]]:
-        return self.action_prompt_handler.prompt_action(
-            action_shortcuts=TournamentShortcut
+        super().__init__(
+            action_prompt_handler=ActionPromptHandler[Tournament](self.view),
+            action_shortcuts=TournamentShortcut,
         )
 
     def prompt_name(self) -> str:
@@ -40,7 +41,7 @@ class TournamentPromptHandler(PromptHandler):
         return self.date_prompt_handler.prompt_date(self.view.prompt_end_date)
 
 
-class TournamentRenderHandler:
+class TournamentRenderHandler(CoreRenderer):
 
     def __init__(self, view: TournamentView) -> None:
         self.view = view

@@ -6,7 +6,7 @@ import json
 from typing import Any
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_BASE_ROOT = f"{BASE_DIR}/database"
+DATA_BASE_ROOT = f"{BASE_DIR.parent}/database"
 
 
 @dataclass

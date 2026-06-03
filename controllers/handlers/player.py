@@ -4,24 +4,25 @@ from controllers.validators.chess_id import ChessIDValidator
 
 from controllers.shortcuts.player import PlayerShortcut
 
-from core.core_handler import PromptHandler
+from core.core_handler import CorePromptHandler
+from core.core_renderer import CoreRenderer
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
 
 from models.player import Player
 
 
-class PlayerPromptHandler(PromptHandler):
+class PlayerPromptHandler(CorePromptHandler):
 
     def __init__(self, view: PlayerView) -> None:
         self.view = view
         self.chess_id_validator = ChessIDValidator()
-
         self.date_prompt_handler = DatePromptHandler[Player](self.view)
-        self.action_prompt_handler = ActionPromptHandler[Player](self.view)
 
-    def prompt_action(self) -> tuple[str, dict[str, str]]:
-        return self.action_prompt_handler.prompt_action(action_shortcuts=PlayerShortcut)
+        super().__init__(
+            action_prompt_handler=ActionPromptHandler[Player](self.view),
+            action_shortcuts=PlayerShortcut,
+        )
 
     def prompt_chess_id(self) -> str:
         while True:
@@ -44,15 +45,10 @@ class PlayerPromptHandler(PromptHandler):
         return self.date_prompt_handler.prompt_date(self.view.prompt_birthdate)
 
 
-class PlayerRenderController:
+class PlayerRenderController(CoreRenderer):
 
     def __init__(self, view: PlayerView) -> None:
         self.view = view
 
     def render_players(self, players: list[Player]):
         self.view.render_models(players)
-
-    def render_undefined_action(self, action: str):
-        self.view.render_invalid_input(
-            reason=f"{action} shortcut exists, but no action handled"
-        )

@@ -1,0 +1,93 @@
+[
+    {
+        "pk": 1,
+        "chess_id": "FR001",
+        "last_name": "Carlsen",
+        "first_name": "Magnus",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 2,
+        "chess_id": "FR002",
+        "last_name": "Nakamura",
+        "first_name": "Hikaru",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 3,
+        "chess_id": "FR003",
+        "last_name": "Bat",
+        "first_name": "Man",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 4,
+        "chess_id": "FR004",
+        "last_name": "Iron",
+        "first_name": "Man",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 5,
+        "chess_id": "FR005",
+        "last_name": "Green",
+        "first_name": "Man",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 6,
+        "chess_id": "FR006",
+        "last_name": "Bruce",
+        "first_name": "Banner",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 7,
+        "chess_id": "FR008",
+        "last_name": "Fist",
+        "first_name": "Iron",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 8,
+        "chess_id": "fr444",
+        "last_name": "iron",
+        "first_name": "boy",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 9,
+        "chess_id": "ER44556",
+        "last_name": "Mega",
+        "first_name": "Man",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 10,
+        "chess_id": "QW67889",
+        "last_name": "Iron",
+        "first_name": "Baron",
+        "birthdate": "1980-2-10"
+    },
+    {
+        "pk": 11,
+        "chess_id": "ee67887",
+        "last_name": "Black",
+        "first_name": "Metal",
+        "birthdate": "1987-10-10"
+    },
+    {
+        "pk": 12,
+        "chess_id": "YX66565",
+        "last_name": "Thanos",
+        "first_name": "Terror",
+        "birthdate": "1200-12-30"
+    },
+    {
+        "pk": 13,
+        "chess_id": "XY55645",
+        "last_name": "Dead",
+        "first_name": "Boy",
+        "birthdate": "2026-03-12"
+    }
+]

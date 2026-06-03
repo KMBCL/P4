@@ -1,9 +1,15 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 
-from controllers.action_routing import ActionRouting, Action
-from core.core_handler import PromptHandler
 from controllers.menu_state import MenuState
+
+if TYPE_CHECKING:
+    from core.core_handler import CorePromptHandler
+    from core.core_renderer import CoreRenderer
+
+    from controllers.action_routing import ActionRouting, Action
 
 
 class ActionRunner:
@@ -12,8 +18,8 @@ class ActionRunner:
         self,
         target_controller: Any,
         action_routing: ActionRouting,
-        prompt_handler: PromptHandler,
-        render_controller: Any,
+        prompt_handler: CorePromptHandler,
+        render_controller: CoreRenderer,
     ) -> None:
         self.target_controller = target_controller
         self.action_routing = action_routing
