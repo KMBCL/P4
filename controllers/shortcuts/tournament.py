@@ -1,5 +1,5 @@
 from enum import StrEnum, Enum
-from controllers.shortcuts.core_shortcuts import CoreShortcut, ShortcutDefinition
+from core.core_shortcuts import CoreShortcut, ShortcutDefinition
 
 
 class TournamentShortcut(Enum):

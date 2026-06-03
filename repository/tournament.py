@@ -3,13 +3,18 @@ from typing import Any, TypeAlias
 from pathlib import Path
 import json
 
-from repository.data import DATA_BASE_ROOT, DataSet, DataItem, DataRepository
+from core.core_data_repository import (
+    DATA_BASE_ROOT,
+    DataSet,
+    DataItem,
+    CoreDataRepository,
+)
 from models.tournament import Tournament
 
 Tournaments: TypeAlias = list[Tournament]
 
 
-class TournamentRepository(DataRepository):
+class TournamentRepository(CoreDataRepository):
 
     def __init__(self) -> None:
         self.data_path = Path(f"{DATA_BASE_ROOT}/tournaments.json")

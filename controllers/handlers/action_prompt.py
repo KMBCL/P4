@@ -5,7 +5,7 @@ from enum import Enum
 
 from controllers.validators.action import ActionValidator
 
-from views.core_view import CoreView
+from core.core_view import CoreView
 from models.core_model import TModel
 
 

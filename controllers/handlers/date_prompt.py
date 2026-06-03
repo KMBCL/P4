@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, Generic
 
-from views.core_view import CoreView
+from core.core_view import CoreView
 from models.core_model import TModel
 
 from controllers.validators.date import DateValidator

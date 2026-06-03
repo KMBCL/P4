@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from controllers.shortcuts.core_shortcuts import CoreShortcut, ShortcutDefinition
+from core.core_shortcuts import CoreShortcut, ShortcutDefinition
 
 
 class PlayerShortcut(Enum):

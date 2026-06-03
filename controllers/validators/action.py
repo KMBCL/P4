@@ -1,6 +1,6 @@
 from enum import Enum
 
-from controllers.shortcuts.core_shortcuts import ShortcutDefinition
+from core.core_shortcuts import ShortcutDefinition
 from controllers.result import Result
 
 

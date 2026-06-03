@@ -6,7 +6,7 @@ from controllers.validators.chess_id import ChessIDValidator
 
 from controllers.shortcuts.player import PlayerShortcut
 
-from controllers.handlers.core_handler import PromptHandler
+from core.core_handler import PromptHandler
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
 

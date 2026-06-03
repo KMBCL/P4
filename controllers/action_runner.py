@@ -4,7 +4,7 @@ from typing import Any
 
 
 from controllers.action_routing import ActionRouting, Action
-from controllers.handlers.core_handler import PromptHandler
+from core.core_handler import PromptHandler
 from controllers.menu_state import MenuState
 
 

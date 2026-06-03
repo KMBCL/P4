@@ -1,6 +1,6 @@
 from views.tournament import TournamentView
 
-from controllers.shortcuts.core_shortcuts import CoreShortcut
+from core.core_shortcuts import CoreShortcut
 from controllers.shortcuts.tournament import TournamentShortcut
 
 from controllers.handlers.tournament import (

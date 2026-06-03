@@ -23,7 +23,7 @@ class DataSet:
         self.data_items.append(data_item)
 
 
-class DataRepository:
+class CoreDataRepository:
     data_path: Path
 
     def __init__(self) -> None:

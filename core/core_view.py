@@ -9,7 +9,7 @@ from models.core_model import TModel
 if TYPE_CHECKING:
     from rich.console import Console
 
-    from controllers.shortcuts.core_shortcuts import ShortcutDefinition
+    from core.core_shortcuts import ShortcutDefinition
 
 
 class CoreView(Generic[TModel]):
