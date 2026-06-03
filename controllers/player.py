@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from views.player import PlayerView
 
 from controllers.action_routing import ActionRouting
@@ -49,6 +51,28 @@ class PlayerController:
         players = self.repository.get_players()
         self.render_controller.render_players(players)
 
+    def show_player(self, pk: str) -> None:
+        players = self.repository.get_players()
+        for player in players:
+            if player.pk == int(pk):
+                self.render_controller.render_players([player])
+
+    def show_filtered_players(self, **kwargs: Any) -> None:
+        players = self.repository.get_players()
+        filtered_players: list[Player] = []
+
+        if not kwargs:
+            return
+
+        field_name, field_value = next(iter(kwargs.items()))
+
+        for player in players:
+            player_attr: str = str(getattr(player, field_name)).lower()
+            if player_attr == field_value:
+                filtered_players.append(player)
+
+        self.render_controller.render_players(filtered_players)
+
     def run(self):
         self.action_runner.run()
 
@@ -56,5 +80,7 @@ class PlayerController:
 ACTION_ROUTING: ActionRouting = {
     PlayerShortcut.CREATE_PLAYER.value.shortcut: PlayerController.create_new_player,
     PlayerShortcut.PLAYERS.value.shortcut: PlayerController.show_players,
+    PlayerShortcut.SELECT_PLAYER.value.shortcut: PlayerController.show_player,
+    PlayerShortcut.FILTER_PLAYER.value.shortcut: PlayerController.show_filtered_players,
     PlayerShortcut.BACK.value.shortcut: lambda _: MenuState.break_loop(),
 }

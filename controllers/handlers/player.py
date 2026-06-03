@@ -22,7 +22,7 @@ class PlayerPromptHandler(PromptHandler):
         self.date_prompt_handler = DatePromptHandler[Player](self.view)
         self.action_prompt_handler = ActionPromptHandler[Player](self.view)
 
-    def prompt_action(self) -> str:
+    def prompt_action(self) -> tuple[str, dict[str, str]]:
         return self.action_prompt_handler.prompt_action(action_shortcuts=PlayerShortcut)
 
     def prompt_chess_id(self) -> str:

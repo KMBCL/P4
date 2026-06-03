@@ -31,7 +31,7 @@ class ActionRunner:
     def run(self):
         running = MenuState.continue_loop()
         while running:
-            action_shortcut = self.prompt_handler.prompt_action()
+            action_shortcut, action_kwargs = self.prompt_handler.prompt_action()
 
             action_to_run = self.get_action_from_routing(action_shortcut)
 
@@ -39,7 +39,9 @@ class ActionRunner:
                 self.render_controller.render_undefined_action(action_shortcut)
                 continue
 
-            result: MenuState | None = action_to_run(self.target_controller)
+            result: MenuState | None = action_to_run(
+                self.target_controller, **action_kwargs
+            )
             if result is None:
                 continue
 

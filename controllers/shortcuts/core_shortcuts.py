@@ -1,12 +1,17 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from enum import Enum
+
+
+def default_kwargs() -> list[str]:
+    return []
 
 
 @dataclass
 class ShortcutDefinition:
     shortcut: str
     full_label: str
+    kwargs: list[str] = field(default_factory=default_kwargs)
 
 
 class CoreShortcut(Enum):
