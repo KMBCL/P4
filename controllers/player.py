@@ -80,5 +80,5 @@ ACTION_ROUTING: ActionRouting = {
     PlayerShortcut.PLAYERS.value.shortcut: PlayerController.show_players,
     PlayerShortcut.SELECT_PLAYER.value.shortcut: PlayerController.show_player,
     PlayerShortcut.FILTER_PLAYER.value.shortcut: PlayerController.show_filtered_players,
-    PlayerShortcut.BACK.value.shortcut: lambda: MenuState.break_loop(),
+    PlayerShortcut.BACK.value.shortcut: lambda *args, **kwargs: MenuState.break_loop(),
 }

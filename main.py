@@ -1,16 +1,12 @@
 from rich.console import Console
 
-
-from views.player import PlayerView
-from controllers.player import PlayerController
-from controllers.tournament import TournamentController
+from controllers.main import MainController
 
 
 def main():
     console = Console()
-    player_display = PlayerView(console=console)
-    player_controller = PlayerController(view=player_display)
-    player_controller.run()
+    main_controller = MainController(console=console)
+    main_controller.run()
 
 
 if __name__ == "__main__":
