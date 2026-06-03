@@ -6,13 +6,14 @@ from controllers.validators.chess_id import ChessIDValidator
 
 from controllers.shortcuts.player import PlayerShortcut
 
+from controllers.handlers.core_handler import PromptHandler
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
 
 from models.player import Player
 
 
-class PlayerPromptHandler:
+class PlayerPromptHandler(PromptHandler):
 
     def __init__(self, view: PlayerView) -> None:
         self.view = view
