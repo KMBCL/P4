@@ -1,4 +1,5 @@
 from enum import Enum
+
 from core.core_shortcuts import CoreShortcut, ShortcutDefinition
 
 
@@ -10,5 +11,10 @@ class TournamentShortcut(Enum):
     TOURNAMENTS = ShortcutDefinition(
         shortcut="TS",
         full_label="Show all tournaments",
+    )
+    FILTER_TOURNAMENTS = ShortcutDefinition(
+        shortcut="FT",
+        full_label="Filter tournaments (ex : 'FP:place=somewhere')",
+        kwargs=["field_name", "field_value"],
     )
     BACK = CoreShortcut.BACK.value

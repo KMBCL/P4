@@ -1,12 +1,16 @@
 from views.tournament import TournamentView
 
-from core.core_shortcuts import CoreShortcut
+
+from controllers.action_routing import ActionRouting
+from controllers.action_runner import ActionRunner
 from controllers.shortcuts.tournament import TournamentShortcut
 
 from controllers.handlers.tournament import (
     TournamentPromptHandler,
     TournamentRenderHandler,
 )
+
+from controllers.menu_state import MenuState
 
 from models.tournament import Tournament, TournamentInputData
 from repository.tournament import TournamentRepository
@@ -16,8 +20,15 @@ class TournamentController:
 
     def __init__(self, view: TournamentView) -> None:
         self.repository = TournamentRepository()
-        self.prompt_controller = TournamentPromptHandler(view=view)
+        self.prompt_handler = TournamentPromptHandler(view=view)
         self.render_controller = TournamentRenderHandler(view=view)
+
+        self.action_runner = ActionRunner(
+            target_controller=self,
+            action_routing=ACTION_ROUTING,
+            prompt_handler=self.prompt_handler,
+            render_controller=self.render_controller,
+        )
 
     def build_new(self, user_input: TournamentInputData, new_pk: int):
         new = Tournament.from_user_input(new_pk=new_pk, user_input=user_input)
@@ -25,12 +36,12 @@ class TournamentController:
 
     def get_tournament_input(self) -> TournamentInputData:
         return TournamentInputData(
-            name=self.prompt_controller.prompt_name(),
-            place=self.prompt_controller.prompt_place(),
-            start_date=self.prompt_controller.prompt_start_date(),
-            end_date=self.prompt_controller.prompt_end_date(),
-            description=self.prompt_controller.prompt_description(),
-            round_count=self.prompt_controller.prompt_round_count(),
+            name=self.prompt_handler.prompt_name(),
+            place=self.prompt_handler.prompt_place(),
+            start_date=self.prompt_handler.prompt_start_date(),
+            end_date=self.prompt_handler.prompt_end_date(),
+            description=self.prompt_handler.prompt_description(),
+            round_count=self.prompt_handler.prompt_round_count(),
         )
 
     def create_new_tournament(self):
@@ -43,17 +54,13 @@ class TournamentController:
         tournaments = self.repository.get_models()
         self.render_controller.render_tournaments(tournaments)
 
-    def run(self) -> None:
-        running = True
-        while running:
-            action = self.prompt_controller.prompt_action()
-            if action == TournamentShortcut.CREATE_TOURNAMENT.value.shortcut:
-                self.create_new_tournament()
-                continue
+    def show_filtered_tournaments(self):
+        pass
 
-            if action == TournamentShortcut.TOURNAMENTS.value.shortcut:
-                self.show_tournaments()
-                continue
 
-            if action == CoreShortcut.BACK.value.shortcut:
-                continue
+ACTION_ROUTING: ActionRouting = {
+    TournamentShortcut.CREATE_TOURNAMENT.value.shortcut: TournamentController.create_new_tournament,
+    TournamentShortcut.TOURNAMENTS.value.shortcut: TournamentController.show_tournaments,
+    TournamentShortcut.FILTER_TOURNAMENTS.value.shortcut: TournamentController.show_filtered_tournaments,
+    TournamentShortcut.BACK.value.shortcut: lambda: MenuState.break_loop(),
+}

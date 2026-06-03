@@ -2,13 +2,14 @@ from views.tournament import TournamentView
 
 from controllers.shortcuts.tournament import TournamentShortcut
 
+from core.core_handler import PromptHandler
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
 
 from models.tournament import Tournament
 
 
-class TournamentPromptHandler:
+class TournamentPromptHandler(PromptHandler):
 
     def __init__(self, view: TournamentView) -> None:
         self.view = view
