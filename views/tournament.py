@@ -3,8 +3,6 @@ from __future__ import annotations
 from views.core_view import CoreView
 from models.tournament import Tournament
 
-from controllers.shortcuts.tournament import TournamentShortcut
-
 
 class TournamentView(CoreView[Tournament]):
 

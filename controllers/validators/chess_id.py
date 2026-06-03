@@ -29,13 +29,6 @@ class ChessIDValidator:
             )
         return Result.valid()
 
-    def validate_chess_id_max_numbers_group(self, numbers_group: str) -> Result:
-        if len(numbers_group) != self.CHESS_ID_MAX_NUMBERS_GROUP:
-            return Result.invalid(
-                f"Incorrect chess id numbers group : {numbers_group} - Expected '00000'"
-            )
-        return Result.valid()
-
     def split_chess_id(self, user_input: str) -> ChessID | None:
         match = re.fullmatch(r"([A-Za-z]+)(\d+)", user_input)
 
@@ -62,11 +55,5 @@ class ChessIDValidator:
         )
         if not max_letters_group_result:
             return max_letters_group_result
-
-        max_numbers_group_result = self.validate_chess_id_max_numbers_group(
-            chess_id.numbers_group
-        )
-        if not max_numbers_group_result:
-            return max_numbers_group_result
 
         return Result.valid()

@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from views.core_view import CoreView
 from models.player import Player
-
-from controllers.shortcuts.player import PlayerShortcut
 
 
 class PlayerView(CoreView[Player]):
