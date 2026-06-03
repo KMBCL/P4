@@ -1,4 +1,4 @@
-from enum import StrEnum, Enum
+from enum import Enum
 from core.core_shortcuts import CoreShortcut, ShortcutDefinition
 
 

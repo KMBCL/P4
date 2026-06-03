@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import fields, Field
-from typing import TYPE_CHECKING, Any, Generic, Callable
+from typing import TYPE_CHECKING, Any, Generic
 from enum import Enum
 
 from models.core_model import TModel

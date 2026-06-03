@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Callable, Generic
+from typing import Generic
 from enum import Enum
 
 from controllers.validators.action import ActionValidator
@@ -31,7 +29,7 @@ class ActionPromptHandler(Generic[TModel]):
 
         for pair in raw_args.split(ARGS_SPLITTER):
             if KEY_VALUE_SEPARATOR in pair:
-                key, value = pair.split("=", 1)
+                key, value = pair.split(KEY_VALUE_SEPARATOR, 1)
                 kwargs[key.strip()] = value.strip()
 
         return kwargs

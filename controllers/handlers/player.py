@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from views.player import PlayerView
 
 from controllers.validators.chess_id import ChessIDValidator

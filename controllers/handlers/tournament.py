@@ -15,7 +15,7 @@ class TournamentPromptHandler:
         self.date_prompt_handler = DatePromptHandler[Tournament](self.view)
         self.action_prompt_handler = ActionPromptHandler[Tournament](self.view)
 
-    def prompt_action(self) -> str:
+    def prompt_action(self) -> tuple[str, dict[str, str]]:
         return self.action_prompt_handler.prompt_action(
             action_shortcuts=TournamentShortcut
         )

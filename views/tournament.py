@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from core.core_view import CoreView
 from models.tournament import Tournament
 
