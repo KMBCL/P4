@@ -217,4 +217,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-repository/database/players.json
+database/players.json
+database/tournaments.json
