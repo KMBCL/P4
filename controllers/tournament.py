@@ -17,13 +17,14 @@ from controllers.handlers.tournament import (
 
 from controllers.menu_state import MenuState
 
-from models.tournament import Tournament, TournamentInputData
+
 from repository.tournament import TournamentRepository
 
 
 class TournamentController(CoreController):
 
     def __init__(self, console: Console) -> None:
+
         view: TournamentView = TournamentView(console=console)
         self.repository = TournamentRepository()
         self.prompt_handler = TournamentPromptHandler(view=view)

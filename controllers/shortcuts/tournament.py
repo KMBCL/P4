@@ -12,6 +12,11 @@ class TournamentShortcut(Enum):
         shortcut="TS",
         full_label="Show all tournaments",
     )
+    REGISTER_PLAYER = ShortcutDefinition(
+        shortcut="RP",
+        full_label="Register player to tournament",
+    )
+
     FILTER_TOURNAMENTS = ShortcutDefinition(
         shortcut="FT",
         full_label="Filter tournaments (ex : 'FP:place=somewhere')",

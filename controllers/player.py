@@ -8,11 +8,10 @@ from view.player import PlayerView
 
 from controllers.action_routing import ActionRouting
 from controllers.action_runner import ActionRunner
-from controllers.shortcuts.player import PlayerShortcut
 from controllers.handlers.player import PlayerPromptHandler, PlayerRenderHandler
+from controllers.shortcuts.player import PlayerShortcut
 from controllers.menu_state import MenuState
 
-from models.player import Player, PlayerInputData
 from repository.player import PlayerRepository
 
 
