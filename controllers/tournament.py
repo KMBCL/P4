@@ -10,7 +10,7 @@ from controllers.action_routing import ActionRouting
 from controllers.action_runner import ActionRunner
 from controllers.shortcuts.tournament import TournamentShortcut
 
-from view.handlers.tournament import (
+from controllers.handlers.tournament import (
     TournamentPromptHandler,
     TournamentRenderHandler,
 )
@@ -38,16 +38,10 @@ class TournamentController(CoreController):
 
         super().__init__(action_runner=action_runner)
 
-    def build_new(self, user_input: TournamentInputData, new_pk: int):
-        new = Tournament.from_user_input(new_pk=new_pk, user_input=user_input)
-        return new
-
     def create_new_tournament(self):
-        tournament = self.build_new(
-            user_input=self.prompt_handler.get_tournament_input(),
-            new_pk=self.repository.make_new_pk(),
+        self.repository.save_new_tournament(
+            user_input=self.prompt_handler.get_tournament_input()
         )
-        self.repository.write_data(json_data=tournament.to_json())
 
     def show_tournaments(self):
         tournaments = self.repository.get_models()

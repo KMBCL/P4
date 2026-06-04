@@ -8,7 +8,7 @@ from core.core_data_repository import (
     DataItem,
     CoreDataRepository,
 )
-from models.tournament import Tournament
+from models.tournament import Tournament, TournamentInputData
 
 Tournaments: TypeAlias = list[Tournament]
 
@@ -32,16 +32,6 @@ class TournamentRepository(CoreDataRepository):
         models = self.convert_to_model(raw_data)
         return models
 
-    def get_data(self) -> DataSet:
-        data_set: list[DataItem] = []
-
-        models = self.get_models()
-
-        for model in models:
-            data_set.append(model.to_data_item())
-
-        return DataSet(data_set)
-
     def get_model(self, key: str, value: str) -> Tournament | None:
         models: Tournaments = self.get_models()
 
@@ -54,3 +44,10 @@ class TournamentRepository(CoreDataRepository):
                 return model
 
         return None
+
+    def save_new_tournament(self, user_input: TournamentInputData) -> None:
+        tournament = Tournament.from_user_input(
+            new_pk=self.make_new_pk(),
+            user_input=user_input,
+        )
+        self.write_data(json_data=tournament.to_json())

@@ -6,10 +6,10 @@ from controllers.shortcuts.player import PlayerShortcut
 
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
-from view.handlers.date import DatePromptHandler
-from view.handlers.action import ActionPromptHandler
+from controllers.handlers.date import DatePromptHandler
+from controllers.handlers.action import ActionPromptHandler
 
-from models.player import Player
+from models.player import Player, PlayerInputData
 
 
 class PlayerPromptHandler(CorePromptHandler):
@@ -22,6 +22,14 @@ class PlayerPromptHandler(CorePromptHandler):
         super().__init__(
             action_prompt_handler=ActionPromptHandler[Player](self.view),
             action_shortcuts=PlayerShortcut,
+        )
+
+    def get_player_input(self) -> PlayerInputData:
+        return PlayerInputData(
+            chess_id=self.prompt_chess_id(),
+            last_name=self.prompt_last_name(),
+            first_name=self.prompt_first_name(),
+            birthdate=self.prompt_birthdate(),
         )
 
     def prompt_chess_id(self) -> str:

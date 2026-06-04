@@ -9,7 +9,7 @@ from view.player import PlayerView
 from controllers.action_routing import ActionRouting
 from controllers.action_runner import ActionRunner
 from controllers.shortcuts.player import PlayerShortcut
-from view.handlers.player import PlayerPromptHandler, PlayerRenderHandler
+from controllers.handlers.player import PlayerPromptHandler, PlayerRenderHandler
 from controllers.menu_state import MenuState
 
 from models.player import Player, PlayerInputData
@@ -33,49 +33,27 @@ class PlayerController(CoreController):
 
         super().__init__(action_runner=action_runner)
 
-    def build_new_player(self, player_input: PlayerInputData, new_pk: int):
-        new_player = Player.from_player_input(new_pk=new_pk, player_input=player_input)
-        return new_player
-
-    def get_player_input(self) -> PlayerInputData:
-        return PlayerInputData(
-            chess_id=self.prompt_handler.prompt_chess_id(),
-            last_name=self.prompt_handler.prompt_last_name(),
-            first_name=self.prompt_handler.prompt_first_name(),
-            birthdate=self.prompt_handler.prompt_birthdate(),
-        )
-
     def create_new_player(self) -> None:
-        player = self.build_new_player(
-            player_input=self.get_player_input(),
-            new_pk=self.repository.make_new_pk(),
+        self.repository.save_new_player(
+            player_input=self.prompt_handler.get_player_input()
         )
-        self.repository.write_data(json_data=player.to_json())
 
     def show_players(self) -> None:
         players = self.repository.get_players()
         self.render_controller.render_players(players)
 
     def show_player(self, pk: str) -> None:
-        players = self.repository.get_players()
-        for player in players:
-            if player.pk == int(pk):
-                self.render_controller.render_players([player])
+        player = self.repository.get_player_by_pk(pk)
+        if player is None:
+            return None
+
+        self.render_controller.render_players([player])
 
     def show_filtered_players(self, **kwargs: Any) -> None:
-        players = self.repository.get_players()
-        filtered_players: list[Player] = []
-
         if not kwargs:
             return
 
-        field_name, field_value = next(iter(kwargs.items()))
-
-        for player in players:
-            player_attr: str = str(getattr(player, field_name)).lower()
-            if player_attr == field_value:
-                filtered_players.append(player)
-
+        filtered_players = self.repository.get_filtered_players(filters=kwargs)
         self.render_controller.render_players(filtered_players)
 
 

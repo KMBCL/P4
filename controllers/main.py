@@ -18,7 +18,7 @@ from rich.console import Console
 
 from controllers.player import PlayerController
 from controllers.tournament import TournamentController
-from view.handlers.action import ActionPromptHandler
+from controllers.handlers.action import ActionPromptHandler
 
 
 class MainController(CoreController):

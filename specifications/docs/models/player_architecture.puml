@@ -7,11 +7,12 @@ autonumber
 
 box "View" #DBEAFE
     boundary View
-    control PromptHandler
-    control RenderHandler
+    
 end box
 
 box "Controller" #DCFCE7
+control PromptHandler
+    control RenderHandler
     control ActionRunner
     control PlayerController
     
@@ -41,20 +42,22 @@ group Input treatment
         PlayerController -> PlayerRepository : action()
         PlayerRepository -> DataBase : get_data()
         DataBase --> PlayerRepository : return json_data
-        PlayerRepository --> PlayerController : return model_data
-        PlayerController -> RenderHandler  : view.render_models(model_data)  
-        RenderHandler -> View : view.render_models(model_data)
+        PlayerRepository -> PlayerRepository : json_data to player_models
+        PlayerRepository --> PlayerController : return player_models
+        PlayerController -> RenderHandler  : render_handler.render_models(player_models)  
+        RenderHandler -> View : view.render_models(player_models)
     end
 
     group writing data
-        PlayerController -> PlayerRepository
-        PlayerRepository -> DataBase
+        PlayerController -> PlayerRepository : save_new_player(data_input)
+        PlayerRepository -> PlayerRepository : data_input to player_model
+        PlayerRepository -> DataBase : player_model to json
     end
 end
 
 
 group Looping
-    ActionRunner -> ActionRunner
+    ActionRunner -> ActionRunner : while MenuState.continue_loop()
 end
 
 
