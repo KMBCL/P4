@@ -1,4 +1,4 @@
-from views.player import PlayerView
+from view.player import PlayerView
 
 from controllers.validators.chess_id import ChessIDValidator
 
@@ -6,8 +6,8 @@ from controllers.shortcuts.player import PlayerShortcut
 
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
-from controllers.handlers.date_prompt import DatePromptHandler
-from controllers.handlers.action_prompt import ActionPromptHandler
+from view.handlers.date import DatePromptHandler
+from view.handlers.action import ActionPromptHandler
 
 from models.player import Player
 
@@ -45,7 +45,7 @@ class PlayerPromptHandler(CorePromptHandler):
         return self.date_prompt_handler.prompt_date(self.view.prompt_birthdate)
 
 
-class PlayerRenderController(CoreRenderer):
+class PlayerRenderHandler(CoreRenderer):
 
     def __init__(self, view: PlayerView) -> None:
         self.view = view

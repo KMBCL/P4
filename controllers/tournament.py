@@ -3,14 +3,14 @@ from rich.console import Console
 
 from core.core_controller import CoreController
 
-from views.tournament import TournamentView
+from view.tournament import TournamentView
 
 
 from controllers.action_routing import ActionRouting
 from controllers.action_runner import ActionRunner
 from controllers.shortcuts.tournament import TournamentShortcut
 
-from controllers.handlers.tournament import (
+from view.handlers.tournament import (
     TournamentPromptHandler,
     TournamentRenderHandler,
 )

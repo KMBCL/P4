@@ -1,0 +1,63 @@
+@startuml player_architecture
+title Player Workflow
+
+hide footbox
+
+autonumber
+
+box "View" #DBEAFE
+    boundary View
+    control PromptHandler
+    control RenderHandler
+end box
+
+box "Controller" #DCFCE7
+    control ActionRunner
+    control PlayerController
+    
+end box
+
+box "Data" #FEF3C7
+    control PlayerRepository
+    database DataBase
+end box
+
+
+
+group Waiting for user input
+    PlayerController -> ActionRunner : action_runner.run()
+    ActionRunner -> PromptHandler : prompt_handler.prompt_action()
+    PromptHandler -> View : view.prompt_action()
+end 
+
+group Recieve user input
+    View --> PromptHandler : return prompt_action()
+    PromptHandler -> PromptHandler : validator.validate_action_input()
+    PromptHandler --> PlayerController : return action
+end
+
+group Input treatment
+    group Getting data
+        PlayerController -> PlayerRepository : action()
+        PlayerRepository -> DataBase : get_data()
+        DataBase --> PlayerRepository : return json_data
+        PlayerRepository --> PlayerController : return model_data
+        PlayerController -> RenderHandler  : view.render_models(model_data)  
+        RenderHandler -> View : view.render_models(model_data)
+    end
+
+    group writing data
+        PlayerController -> PlayerRepository
+        PlayerRepository -> DataBase
+    end
+end
+
+
+group Looping
+    ActionRunner -> ActionRunner
+end
+
+
+
+
+@endumld

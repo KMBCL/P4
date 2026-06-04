@@ -1,12 +1,12 @@
-from views.tournament import TournamentView
+from view.tournament import TournamentView
 
 from controllers.shortcuts.tournament import TournamentShortcut
 
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
 
-from controllers.handlers.date_prompt import DatePromptHandler
-from controllers.handlers.action_prompt import ActionPromptHandler
+from view.handlers.date import DatePromptHandler
+from view.handlers.action import ActionPromptHandler
 
 from models.tournament import Tournament, TournamentInputData
 

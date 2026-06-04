@@ -1,7 +1,7 @@
 from typing import Any
 from enum import Enum
 
-from controllers.handlers.action_prompt import ActionPromptHandler
+from view.handlers.action import ActionPromptHandler
 
 
 class CorePromptHandler:

@@ -4,12 +4,12 @@ from rich.console import Console
 
 from core.core_controller import CoreController
 
-from views.player import PlayerView
+from view.player import PlayerView
 
 from controllers.action_routing import ActionRouting
 from controllers.action_runner import ActionRunner
 from controllers.shortcuts.player import PlayerShortcut
-from controllers.handlers.player import PlayerPromptHandler, PlayerRenderController
+from view.handlers.player import PlayerPromptHandler, PlayerRenderHandler
 from controllers.menu_state import MenuState
 
 from models.player import Player, PlayerInputData
@@ -22,7 +22,7 @@ class PlayerController(CoreController):
         view: PlayerView = PlayerView(console=console)
         self.repository = PlayerRepository()
         self.prompt_handler = PlayerPromptHandler(view=view)
-        self.render_controller = PlayerRenderController(view=view)
+        self.render_controller = PlayerRenderHandler(view=view)
 
         action_runner = ActionRunner(
             target_controller=self,
