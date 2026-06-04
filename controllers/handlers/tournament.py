@@ -8,7 +8,7 @@ from core.core_renderer import CoreRenderer
 from controllers.handlers.date_prompt import DatePromptHandler
 from controllers.handlers.action_prompt import ActionPromptHandler
 
-from models.tournament import Tournament
+from models.tournament import Tournament, TournamentInputData
 
 
 class TournamentPromptHandler(CorePromptHandler):
@@ -20,6 +20,16 @@ class TournamentPromptHandler(CorePromptHandler):
         super().__init__(
             action_prompt_handler=ActionPromptHandler[Tournament](self.view),
             action_shortcuts=TournamentShortcut,
+        )
+
+    def get_tournament_input(self):
+        return TournamentInputData(
+            name=self.prompt_name(),
+            place=self.prompt_place(),
+            start_date=self.prompt_start_date(),
+            end_date=self.prompt_end_date(),
+            description=self.prompt_description(),
+            round_count=self.prompt_round_count(),
         )
 
     def prompt_name(self) -> str:

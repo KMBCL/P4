@@ -1,5 +1,9 @@
 from typing import Any
 
+from rich.console import Console
+
+from core.core_controller import CoreController
+
 from views.player import PlayerView
 
 from controllers.action_routing import ActionRouting
@@ -12,19 +16,22 @@ from models.player import Player, PlayerInputData
 from repository.player import PlayerRepository
 
 
-class PlayerController:
+class PlayerController(CoreController):
 
-    def __init__(self, view: PlayerView) -> None:
+    def __init__(self, console: Console) -> None:
+        view: PlayerView = PlayerView(console=console)
         self.repository = PlayerRepository()
         self.prompt_handler = PlayerPromptHandler(view=view)
         self.render_controller = PlayerRenderController(view=view)
 
-        self.action_runner = ActionRunner(
+        action_runner = ActionRunner(
             target_controller=self,
             action_routing=ACTION_ROUTING,
             prompt_handler=self.prompt_handler,
             render_controller=self.render_controller,
         )
+
+        super().__init__(action_runner=action_runner)
 
     def build_new_player(self, player_input: PlayerInputData, new_pk: int):
         new_player = Player.from_player_input(new_pk=new_pk, player_input=player_input)
@@ -70,9 +77,6 @@ class PlayerController:
                 filtered_players.append(player)
 
         self.render_controller.render_players(filtered_players)
-
-    def run(self):
-        self.action_runner.run()
 
 
 ACTION_ROUTING: ActionRouting = {

@@ -1,3 +1,8 @@
+from rich.console import Console
+
+
+from core.core_controller import CoreController
+
 from views.tournament import TournamentView
 
 
@@ -16,37 +21,31 @@ from models.tournament import Tournament, TournamentInputData
 from repository.tournament import TournamentRepository
 
 
-class TournamentController:
+class TournamentController(CoreController):
 
-    def __init__(self, view: TournamentView) -> None:
+    def __init__(self, console: Console) -> None:
+        view: TournamentView = TournamentView(console=console)
         self.repository = TournamentRepository()
         self.prompt_handler = TournamentPromptHandler(view=view)
         self.render_controller = TournamentRenderHandler(view=view)
 
-        self.action_runner = ActionRunner(
+        action_runner = ActionRunner(
             target_controller=self,
             action_routing=ACTION_ROUTING,
             prompt_handler=self.prompt_handler,
             render_controller=self.render_controller,
         )
 
+        super().__init__(action_runner=action_runner)
+
     def build_new(self, user_input: TournamentInputData, new_pk: int):
         new = Tournament.from_user_input(new_pk=new_pk, user_input=user_input)
         return new
 
-    def get_tournament_input(self) -> TournamentInputData:
-        return TournamentInputData(
-            name=self.prompt_handler.prompt_name(),
-            place=self.prompt_handler.prompt_place(),
-            start_date=self.prompt_handler.prompt_start_date(),
-            end_date=self.prompt_handler.prompt_end_date(),
-            description=self.prompt_handler.prompt_description(),
-            round_count=self.prompt_handler.prompt_round_count(),
-        )
-
     def create_new_tournament(self):
         tournament = self.build_new(
-            user_input=self.get_tournament_input(), new_pk=self.repository.make_new_pk()
+            user_input=self.prompt_handler.get_tournament_input(),
+            new_pk=self.repository.make_new_pk(),
         )
         self.repository.write_data(json_data=tournament.to_json())
 
@@ -56,9 +55,6 @@ class TournamentController:
 
     def show_filtered_tournaments(self):
         pass
-
-    def run(self):
-        self.action_runner.run()
 
 
 ACTION_ROUTING: ActionRouting = {

@@ -16,10 +16,6 @@ from controllers.menu_state import MenuState
 
 from rich.console import Console
 
-
-from views.player import PlayerView
-from views.tournament import TournamentView
-
 from controllers.player import PlayerController
 from controllers.tournament import TournamentController
 from controllers.handlers.action_prompt import ActionPromptHandler
@@ -29,12 +25,8 @@ class MainController(CoreController):
 
     def __init__(self, console: Console) -> None:
 
-        self.player_controller = PlayerController(
-            PlayerView(console=console),
-        )
-        self.tournament_controller = TournamentController(
-            TournamentView(console=console),
-        )
+        self.player_controller = PlayerController(console=console)
+        self.tournament_controller = TournamentController(console=console)
 
         main_view = CoreView[Any](console)
         self.prompt_handler = CorePromptHandler(
