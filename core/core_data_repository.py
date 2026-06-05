@@ -82,16 +82,32 @@ class CoreDataRepository(Generic[TModel]):
 
     def get_filtered_models(self, filters: dict[str, Any]) -> list[TModel]:
         models = self.get_models()
+        if not filters:
+            return models
+
         filtered_models: list[TModel] = []
-        field_name, field_value = next(iter(filters.items()))
 
         for model in models:
-            try:
-                player_attr: str = str(getattr(model, field_name)).lower()
-            except AttributeError:
-                continue
+            match_all_filters = True
 
-            if player_attr == field_value.lower():
+            for filter_name, filter_value in filters.items():
+
+                try:
+                    model_attr: Any | None = getattr(model, filter_name)
+
+                    if model_attr is None:
+                        match_all_filters = False
+                        break
+
+                    if str(model_attr).lower() != str(filter_value).lower():
+                        match_all_filters = False
+                        break
+
+                except AttributeError:
+                    match_all_filters = False
+                    continue
+
+            if match_all_filters:
                 filtered_models.append(model)
 
         return filtered_models
