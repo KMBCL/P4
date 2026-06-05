@@ -1,57 +1,29 @@
-from typing import Any
-
-from core.core_view import CoreView
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
+from core.core_data_repository import CoreDataRepository
 from core.core_controller import CoreController
 
-from controllers.player import PlayerController
-from controllers.tournament import TournamentController
-
-from controllers.action_routing import ActionRouting
-from controllers.action_runner import ActionRunner
 from controllers.shortcuts.main import MainShortcut
 
-from controllers.menu_state import MenuState
 
-from rich.console import Console
+class MainController(
+    CoreController[
+        CoreDataRepository,
+        CorePromptHandler,
+        CoreRenderer,
+    ]
+):
 
-from controllers.player import PlayerController
-from controllers.tournament import TournamentController
-from controllers.handlers.action import ActionPromptHandler
+    def __init__(
+        self,
+        repository: CoreDataRepository,
+        prompt_handler: CorePromptHandler,
+        renderer_handler: CoreRenderer,
+    ) -> None:
+        super().__init__(repository, prompt_handler, renderer_handler)
 
+    def run_handle_players(self) -> None:
+        self.run_runner(runner_key=MainShortcut.HANDLE_PLAYERS.value.shortcut)
 
-class MainController(CoreController):
-
-    def __init__(self, console: Console) -> None:
-
-        self.player_controller = PlayerController(console=console)
-        self.tournament_controller = TournamentController(console=console)
-
-        main_view = CoreView[Any](console)
-        self.prompt_handler = CorePromptHandler(
-            action_prompt_handler=ActionPromptHandler[Any](view=main_view),
-            action_shortcuts=MainShortcut,
-        )
-
-        action_runner = ActionRunner(
-            target_controller=self,
-            action_routing=ACTION_ROUTING,
-            prompt_handler=self.prompt_handler,
-            render_controller=CoreRenderer(view=main_view),
-        )
-
-        super().__init__(action_runner=action_runner)
-
-    def run_player_controller(self) -> None:
-        self.player_controller.run()
-
-    def run_tournament_controller(self) -> None:
-        self.tournament_controller.run()
-
-
-ACTION_ROUTING: ActionRouting = {
-    MainShortcut.HANDLE_PLAYERS.value.shortcut: MainController.run_player_controller,
-    MainShortcut.HANDLE_TOURNAMENTS.value.shortcut: MainController.run_tournament_controller,
-    MainShortcut.EXIT.value.shortcut: lambda *args, **kwargs: MenuState.break_loop(),
-}
+    def run_handle_tournaments(self) -> None:
+        self.run_runner(runner_key=MainShortcut.HANDLE_TOURNAMENTS.value.shortcut)
