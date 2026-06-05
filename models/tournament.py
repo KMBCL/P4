@@ -24,6 +24,7 @@ class Tournament(Model[TournamentInputData]):
     start_date: str
     end_date: str
     description: str
+    player_count: int = 0
     round_count: int = 4
 
     @classmethod
@@ -35,6 +36,7 @@ class Tournament(Model[TournamentInputData]):
             start_date=json_data["start_date"],
             end_date=json_data["end_date"],
             description=json_data["description"],
+            player_count=len(json_data["registered_player_chess_ids"]),
             round_count=json_data["round_count"],
         )
         return tournament
