@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from models.core_model import Model
+from core.core_model import Model, ModelInputData
 
 
 @dataclass
-class PlayerInputData:
+class PlayerInputData(ModelInputData):
     chess_id: str
     last_name: str
     first_name: str
@@ -15,7 +15,7 @@ class PlayerInputData:
 
 
 @dataclass
-class Player(Model):
+class Player(Model[PlayerInputData]):
     pk: int
     chess_id: str
     last_name: str
@@ -44,12 +44,12 @@ class Player(Model):
         return json
 
     @classmethod
-    def from_player_input(cls, new_pk: int, player_input: PlayerInputData) -> Player:
+    def from_user_input(cls, new_pk: int, user_input: PlayerInputData) -> Player:
         player = cls(
             pk=new_pk,
-            chess_id=player_input.chess_id,
-            last_name=player_input.last_name,
-            first_name=player_input.first_name,
-            birthdate=player_input.birthdate,
+            chess_id=user_input.chess_id,
+            last_name=user_input.last_name,
+            first_name=user_input.first_name,
+            birthdate=user_input.birthdate,
         )
         return player

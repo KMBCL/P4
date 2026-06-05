@@ -1,14 +1,17 @@
+from typing import Any
+
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
 from core.core_data_repository import CoreDataRepository
 from core.core_controller import CoreController
+from core.core_model import Model
 
 from controllers.shortcuts.main import MainShortcut
 
 
 class MainController(
     CoreController[
-        CoreDataRepository,
+        CoreDataRepository[Model[Any]],
         CorePromptHandler,
         CoreRenderer,
     ]
@@ -16,7 +19,7 @@ class MainController(
 
     def __init__(
         self,
-        repository: CoreDataRepository,
+        repository: CoreDataRepository[Model[Any]],
         prompt_handler: CorePromptHandler,
         renderer_handler: CoreRenderer,
     ) -> None:

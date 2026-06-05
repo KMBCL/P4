@@ -14,16 +14,16 @@ class PlayerController(
 ):
 
     def create_new_player(self) -> None:
-        self.repository.save_new_player(
-            player_input=self.prompt_handler.get_player_input()
+        self.repository.save_new_model(
+            user_input=self.prompt_handler.get_player_input()
         )
 
     def show_players(self) -> None:
-        players = self.repository.get_players()
+        players = self.repository.get_models()
         self.renderer_handler.render_players(players)
 
     def show_player(self, pk: str) -> None:
-        player = self.repository.get_player_by_pk(pk)
+        player = self.repository.get_model(key="pk", value=pk)
         if player is None:
             return None
 
@@ -33,5 +33,5 @@ class PlayerController(
         if not kwargs:
             return
 
-        filtered_players = self.repository.get_filtered_players(filters=kwargs)
+        filtered_players = self.repository.get_filtered_models(filters=kwargs)
         self.renderer_handler.render_players(filtered_players)

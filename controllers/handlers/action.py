@@ -4,7 +4,7 @@ from enum import Enum
 from controllers.validators.action import ActionValidator
 
 from core.core_view import CoreView
-from models.core_model import TModel
+from core.core_model import TModel
 
 
 class ActionPromptHandler(Generic[TModel]):

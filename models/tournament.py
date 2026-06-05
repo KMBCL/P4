@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from models.core_model import Model
+from core.core_model import Model, ModelInputData
 
 
 @dataclass
-class TournamentInputData:
+class TournamentInputData(ModelInputData):
     name: str
     place: str
     start_date: str
@@ -17,7 +17,7 @@ class TournamentInputData:
 
 
 @dataclass
-class Tournament(Model):
+class Tournament(Model[TournamentInputData]):
     pk: int
     name: str
     place: str

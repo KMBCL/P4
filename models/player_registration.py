@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from models.core_model import Model
+from core.core_model import Model
 
 
 @dataclass

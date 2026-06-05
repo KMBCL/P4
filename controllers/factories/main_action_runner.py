@@ -9,6 +9,7 @@ from core.core_view import CoreView
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
 from core.core_data_repository import CoreDataRepository
+from core.core_model import Model
 
 
 from controllers.main import MainController
@@ -29,7 +30,7 @@ ACTION_ROUTING: ActionRouting = {
 
 def build_main_controller(console: Console) -> MainController:
     view = CoreView[Any](console=console)
-    repository = CoreDataRepository()
+    repository = CoreDataRepository[Any](model_class=Model)
     action_prompt_handler = ActionPromptHandler[Any](view=view)
     prompt_handler = CorePromptHandler(
         action_prompt_handler=action_prompt_handler,

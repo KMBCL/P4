@@ -21,7 +21,7 @@ class TournamentController(
 ):
 
     def create_new_tournament(self) -> None:
-        self.repository.save_new_tournament(
+        self.repository.save_new_model(
             user_input=self.prompt_handler.get_tournament_input()
         )
 

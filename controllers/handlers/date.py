@@ -1,7 +1,7 @@
 from typing import Callable, Generic
 
 from core.core_view import CoreView
-from models.core_model import TModel
+from core.core_model import TModel
 
 from controllers.validators.date import DateValidator
 

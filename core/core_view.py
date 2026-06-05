@@ -4,7 +4,7 @@ from dataclasses import fields, Field
 from typing import TYPE_CHECKING, Any, Generic
 from enum import Enum
 
-from models.core_model import TModel
+from core.core_model import TModel
 
 if TYPE_CHECKING:
     from rich.console import Console
