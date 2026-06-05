@@ -8,6 +8,7 @@ from controllers.handlers.action import ActionPromptHandler
 from controllers.shortcuts.tournament import TournamentShortcut
 
 from models.tournament import Tournament, TournamentInputData
+from models.player_registration import PlayerRegistration, PlayerRegistrationInputData
 
 
 class TournamentPromptHandler(CorePromptHandler):
@@ -48,6 +49,12 @@ class TournamentPromptHandler(CorePromptHandler):
 
     def prompt_end_date(self) -> str:
         return self.date_prompt_handler.prompt_date(self.view.prompt_end_date)
+
+    def get_player_registration_input(self):
+        return PlayerRegistrationInputData(
+            chess_id=self.view.prompt_player_chess_id(),
+            tournament_pk=self.view.prompt_tournament_pk(),
+        )
 
 
 class TournamentRenderHandler(CoreRenderer):

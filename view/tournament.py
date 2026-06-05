@@ -24,3 +24,9 @@ class TournamentView(CoreView[Tournament]):
 
     def prompt_action(self) -> str:
         return self.console.input("Select choice : ").upper()
+
+    def prompt_player_chess_id(self) -> str:
+        return self.console.input("Player chess id : ")
+
+    def prompt_tournament_pk(self) -> str:
+        return self.console.input("Tournament pk : ")

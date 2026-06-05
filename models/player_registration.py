@@ -3,26 +3,26 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from core.core_model import Model
+from core.core_model import Model, ModelInputData
 
 
 @dataclass
-class PlayerRegistrationInputData:
-    player_pk: str
+class PlayerRegistrationInputData(ModelInputData):
+    chess_id: str
     tournament_pk: str
 
 
 @dataclass
-class PlayerRegistration(Model):
+class PlayerRegistration(Model[PlayerRegistrationInputData]):
     pk: int
-    player_pk: str
+    chess_id: str
     tournament_pk: str
 
     @classmethod
     def from_json(cls, json_data: dict[str, Any]) -> PlayerRegistration:
         player_registration = cls(
             pk=json_data["pk"],
-            player_pk=json_data["player_pk"],
+            chess_id=json_data["chess_id"],
             tournament_pk=json_data["tournament_pk"],
         )
         return player_registration
@@ -30,7 +30,7 @@ class PlayerRegistration(Model):
     def to_json(self) -> dict[str, Any]:
         json: dict[str, Any] = {
             "pk": self.pk,
-            "player_pk": self.player_pk,
+            "chess_id": self.chess_id,
             "tournament_pk": self.tournament_pk,
         }
         return json
@@ -41,7 +41,7 @@ class PlayerRegistration(Model):
     ) -> PlayerRegistration:
         player_registration = cls(
             pk=new_pk,
-            player_pk=user_input.player_pk,
+            chess_id=user_input.chess_id,
             tournament_pk=user_input.tournament_pk,
         )
         return player_registration

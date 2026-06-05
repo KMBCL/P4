@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Any
 
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
@@ -6,7 +6,7 @@ from core.core_data_repository import CoreDataRepository
 
 from controllers.application_router import APPLICATION_ROUTER
 
-RepositoryT = TypeVar("RepositoryT", bound=CoreDataRepository)
+RepositoryT = TypeVar("RepositoryT", bound=CoreDataRepository[Any])
 PromptHandlerT = TypeVar("PromptHandlerT", bound=CorePromptHandler)
 RendererHandlerT = TypeVar("RendererHandlerT", bound=CoreRenderer)
 

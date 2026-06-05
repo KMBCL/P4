@@ -21,7 +21,7 @@ class PlayerRegistrationPromptHandler(CorePromptHandler):
 
     def get_player_registration_input(self):
         return PlayerRegistrationInputData(
-            player_pk=self.view.prompt_player_pk(),
+            player_pk=self.view.prompt_player_chess_id(),
             tournament_pk=self.view.prompt_tournament_pk(),
         )
 

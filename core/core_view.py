@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import fields, Field
-from typing import TYPE_CHECKING, Any, Generic
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from enum import Enum
 
-from core.core_model import TModel
+from core.core_model import Model
 
 if TYPE_CHECKING:
     from rich.console import Console
 
     from core.core_shortcuts import ShortcutDefinition
+
+TModel = TypeVar("TModel", bound=Model[Any])
 
 
 class CoreView(Generic[TModel]):
