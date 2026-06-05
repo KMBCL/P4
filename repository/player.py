@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 from core.core_data_repository import (
-    DATA_BASE_ROOT,
+    PLAYER_DIR,
     CoreDataRepository,
 )
 from models.player import Player
@@ -15,4 +15,4 @@ class PlayerRepository(CoreDataRepository[Player]):
 
     def __init__(self) -> None:
         super().__init__(model_class=Player)
-        self.data_path = Path(f"{DATA_BASE_ROOT}/players.json")
+        self.data_path = PLAYER_DIR

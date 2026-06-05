@@ -5,18 +5,21 @@ from pathlib import Path
 import json
 
 from core.core_data_repository import (
-    DATA_BASE_ROOT,
+    TOURNAMENT_DIR,
+    PLAYER_DIR,
     CoreDataRepository,
 )
 from controllers.result import Result
 
 from models.tournament import Tournament
+from models.player import Player
 
 Tournaments: TypeAlias = list[Tournament]
 
+REGISTERED_PLAYER_CHESS_IDS = "registered_player_chess_ids"
+
 
 class PlayerRegistration:
-    REGISTERED_PLAYER_CHESS_IDS = "registered_player_chess_ids"
 
     def ensure_registered_player_chess_ids_field(
         self,
@@ -24,8 +27,8 @@ class PlayerRegistration:
     ) -> dict[str, Any]:
         registered_player_chess_ids: list[str] = []
 
-        if self.REGISTERED_PLAYER_CHESS_IDS not in tournament:
-            tournament[self.REGISTERED_PLAYER_CHESS_IDS] = registered_player_chess_ids
+        if REGISTERED_PLAYER_CHESS_IDS not in tournament:
+            tournament[REGISTERED_PLAYER_CHESS_IDS] = registered_player_chess_ids
 
         return tournament
 
@@ -34,7 +37,7 @@ class PlayerRegistration:
         chess_id: str,
         tournament: dict[str, Any],
     ) -> Result:
-        if chess_id in tournament[self.REGISTERED_PLAYER_CHESS_IDS]:
+        if chess_id in tournament[REGISTERED_PLAYER_CHESS_IDS]:
             return Result.invalid(
                 reason=f"Player with chess_id : {chess_id} is already registered"
             )
@@ -60,7 +63,7 @@ class PlayerRegistration:
             if not already_registered_result:
                 return already_registered_result
 
-            tournament[self.REGISTERED_PLAYER_CHESS_IDS].append(chess_id)
+            tournament[REGISTERED_PLAYER_CHESS_IDS].append(chess_id)
             return Result.valid(value=tournaments)
 
         return Result.invalid(reason=f"Not tournament found with pk : {tournament_pk}")
@@ -70,7 +73,7 @@ class TournamentRepository(CoreDataRepository[Tournament]):
 
     def __init__(self) -> None:
         super().__init__(model_class=Tournament)
-        self.data_path = Path(f"{DATA_BASE_ROOT}/tournaments.json")
+        self.data_path = TOURNAMENT_DIR
         self.player_registration = PlayerRegistration()
 
     def register_player_to_tournament(
@@ -94,3 +97,26 @@ class TournamentRepository(CoreDataRepository[Tournament]):
             json.dump(updated_tournaments, file, indent=4, ensure_ascii=False)
 
         return result
+
+    def get_registered_players(self, tournament_pk: int) -> list[Player]:
+        tournaments: list[dict[str, Any]] = self.read_json_file()
+        registered_players: list[Player] = []
+
+        for tournament in tournaments:
+            if tournament.get("pk") != tournament_pk:
+                continue
+
+            registered_chess_ids: list[str] = tournament[REGISTERED_PLAYER_CHESS_IDS]
+            if not registered_chess_ids:
+                return registered_players
+
+            raw_players = self.read_json_file(path=PLAYER_DIR)
+
+            for raw_player in raw_players:
+                chess_id = raw_player["chess_id"]
+                if chess_id in registered_chess_ids:
+                    player = Player.from_json(raw_player)
+                    registered_players.append(player)
+                    registered_chess_ids.remove(chess_id)
+
+        return registered_players

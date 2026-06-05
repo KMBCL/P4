@@ -32,6 +32,15 @@ class TournamentPromptHandler(CorePromptHandler):
             round_count=self.prompt_round_count(),
         )
 
+    def get_player_registration_input(self):
+        return PlayerRegistrationInputData(
+            chess_id=self.view.prompt_player_chess_id(),
+            tournament_pk=self.prompt_tournament_pk(),
+        )
+
+    def get_tournament_pk_input(self) -> str:
+        return self.prompt_tournament_pk()
+
     def prompt_name(self) -> str:
         return self.view.prompt_name()
 
@@ -50,11 +59,8 @@ class TournamentPromptHandler(CorePromptHandler):
     def prompt_end_date(self) -> str:
         return self.date_prompt_handler.prompt_date(self.view.prompt_end_date)
 
-    def get_player_registration_input(self):
-        return PlayerRegistrationInputData(
-            chess_id=self.view.prompt_player_chess_id(),
-            tournament_pk=self.view.prompt_tournament_pk(),
-        )
+    def prompt_tournament_pk(self) -> str:
+        return self.view.prompt_tournament_pk()
 
 
 class TournamentRenderHandler(CoreRenderer):

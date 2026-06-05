@@ -11,6 +11,8 @@ from controllers.handlers.tournament import (
 
 from repository.tournament import TournamentRepository
 
+from view.player import PlayerView
+
 
 class TournamentController(
     CoreController[
@@ -26,7 +28,6 @@ class TournamentController(
         )
 
     def register_player(self) -> None:
-
         user_input = self.prompt_handler.get_player_registration_input()
         result = self.repository.register_player_to_tournament(
             tournament_pk=int(user_input.tournament_pk),
@@ -44,3 +45,12 @@ class TournamentController(
 
     def show_filtered_tournaments(self) -> None:
         pass
+
+    def show_tournament_players(self) -> None:
+        user_input = self.prompt_handler.get_tournament_pk_input()
+        registered_players = self.repository.get_registered_players(
+            tournament_pk=int(user_input)
+        )
+
+        player_view = PlayerView(console=self.renderer_handler.view.console)
+        player_view.render_models(registered_players)

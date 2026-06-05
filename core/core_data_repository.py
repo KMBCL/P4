@@ -12,6 +12,9 @@ from core.core_model import TModel, Model, ModelInputData
 BASE_DIR = Path(__file__).resolve().parent
 DATA_BASE_ROOT = f"{BASE_DIR.parent}/database"
 
+PLAYER_DIR = Path(f"{DATA_BASE_ROOT}/players.json")
+TOURNAMENT_DIR = Path(f"{DATA_BASE_ROOT}/tournaments.json")
+
 
 @dataclass
 class DataItem:
@@ -36,8 +39,9 @@ class CoreDataRepository(Generic[TModel]):
 
     def get_data(self) -> DataSet: ...
 
-    def read_json_file(self) -> list[dict[str, Any]]:
-        with self.data_path.open("r", encoding="utf-8") as file:
+    def read_json_file(self, path: Path | None = None) -> list[dict[str, Any]]:
+        data_path = path or self.data_path
+        with data_path.open("r", encoding="utf-8") as file:
             return json.load(file)
 
     def write_data(self, json_data: dict[str, Any]):
