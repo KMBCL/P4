@@ -23,6 +23,7 @@ ACTION_ROUTING: ActionRouting = {
     TournamentShortcut.CREATE_TOURNAMENT.value.shortcut: TournamentController.create_new_tournament,
     TournamentShortcut.TOURNAMENTS.value.shortcut: TournamentController.show_tournaments,
     TournamentShortcut.FILTER_TOURNAMENTS.value.shortcut: TournamentController.show_filtered_tournaments,
+    TournamentShortcut.TOURNAMENT_ROUNDS.value.shortcut: TournamentController.show_tournament_rounds,
     TournamentShortcut.REGISTERED_PLAYERS.value.shortcut: TournamentController.show_tournament_players,
     TournamentShortcut.REGISTER_PLAYER.value.shortcut: TournamentController.register_player,
     TournamentShortcut.BACK.value.shortcut: lambda *args, **kwargs: MenuState.break_loop(),

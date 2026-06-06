@@ -25,4 +25,8 @@ class TournamentShortcut(Enum):
         shortcut="FT",
         full_label="Filter tournaments (ex : 'FP:place=somewhere')",
     )
+    TOURNAMENT_ROUNDS = ShortcutDefinition(
+        shortcut="TR",
+        full_label="Show selected tournament rounds",
+    )
     BACK = CoreShortcut.BACK.value

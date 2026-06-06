@@ -12,6 +12,7 @@ from core.core_data_repository import (
 from controllers.result import Result
 
 from models.tournament import Tournament
+from models.round import Round
 from models.player import Player
 
 Tournaments: TypeAlias = list[Tournament]
@@ -120,3 +121,29 @@ class TournamentRepository(CoreDataRepository[Tournament]):
                     registered_chess_ids.remove(chess_id)
 
         return registered_players
+
+    def to_tournament_pks_dict(
+        self, raw_tournaments: list[dict[str, Any]]
+    ) -> dict[int, dict[str, Any]]:
+        tournament_pks: dict[int, dict[str, Any]] = {
+            raw_tournament["pk"]: raw_tournament for raw_tournament in raw_tournaments
+        }
+        return tournament_pks
+
+    def get_tournament_by_pk(self, tournament_pk: int):
+        raw_tournaments = self.read_json_file()
+        tournaments_by_pks = self.to_tournament_pks_dict(raw_tournaments)
+
+        return tournaments_by_pks.get(tournament_pk, None)
+
+    def extract_tournament_rounds(self, raw_tournament: dict[str, Any]):
+        return raw_tournament["rounds"]
+
+    def get_tournament_rounds(self, tournament_pk: int) -> Result:
+        raw_tournament = self.get_tournament_by_pk(tournament_pk)
+        if raw_tournament is None:
+            return Result.invalid(reason="Tournament not found")
+
+        raw_rounds = self.extract_tournament_rounds(raw_tournament)
+        rounds = [Round.from_json(raw_data) for raw_data in raw_rounds]
+        return Result.valid(value=rounds)

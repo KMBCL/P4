@@ -12,6 +12,7 @@ from controllers.handlers.tournament import (
 from repository.tournament import TournamentRepository
 
 from view.player import PlayerView
+from view.round import RoundView
 
 
 class TournamentController(
@@ -54,3 +55,15 @@ class TournamentController(
 
         player_view = PlayerView(console=self.renderer_handler.view.console)
         player_view.render_models(registered_players)
+
+    def show_tournament_rounds(self) -> None:
+        user_input = self.prompt_handler.get_tournament_pk_input()
+        result = self.repository.get_tournament_rounds(tournament_pk=int(user_input))
+        if not result:
+            self.renderer_handler.view.render_invalid_input(
+                reason=result.required_reason
+            )
+
+        tournament_rounds = result.required_value
+        round_view = RoundView(console=self.renderer_handler.view.console)
+        round_view.render_models(tournament_rounds)
