@@ -68,3 +68,18 @@ class TournamentController(
         tournament_rounds = result.required_value
         round_view = RoundView(console=self.renderer_handler.view.console)
         round_view.render_models(tournament_rounds)
+
+    def set_round_matches(self) -> None:
+        tournament_pk_input = self.prompt_handler.get_tournament_pk_input()
+        round_name_input = self.prompt_handler.get_round_name()
+
+        result = self.repository.set_round_matches(
+            tournament_pk=tournament_pk_input, round_name=round_name_input
+        )
+        if not result:
+            self.renderer_handler.view.render_invalid_input(
+                reason=result.required_reason
+            )
+            return
+
+        print("Fuck yeah!")

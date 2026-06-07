@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from core.core_model import Model, ModelInputData
+from models.round import Round
 
 
 @dataclass
@@ -21,8 +22,8 @@ def default_registered_players_chess_id() -> list[str]:
     return registered_player_chess_ids
 
 
-def default_rounds() -> list[dict[str, Any]]:
-    rounds: list[dict[str, Any]] = []
+def default_rounds() -> list[Round]:
+    rounds: list[Round] = []
     return rounds
 
 
@@ -39,7 +40,7 @@ class Tournament(Model[TournamentInputData]):
     registered_player_chess_ids: list[str] = field(
         default_factory=default_registered_players_chess_id
     )
-    rounds: list[dict[str, Any]] = field(default_factory=default_rounds)
+    rounds: list[Round] = field(default_factory=default_rounds)
 
     @classmethod
     def from_json(cls, json_data: dict[str, Any]) -> Tournament:
@@ -53,7 +54,15 @@ class Tournament(Model[TournamentInputData]):
             player_count=len(json_data["registered_player_chess_ids"]),
             round_count=json_data["round_count"],
             registered_player_chess_ids=json_data["registered_player_chess_ids"],
-            rounds=json_data["rounds"],
+            rounds=[
+                Round(
+                    name=data["name"],
+                    start_timestamp=data["start_timestamp"],
+                    end_timestamp=data["end_timestamp"],
+                    round_matches=data["round_matches"],
+                )
+                for data in json_data["rounds"]
+            ],
         )
         return tournament
 
@@ -67,25 +76,23 @@ class Tournament(Model[TournamentInputData]):
             "description": self.description,
             "round_count": self.round_count,
             "registered_player_chess_ids": self.registered_player_chess_ids,
-            "rounds": self.rounds,
+            "rounds": [round.to_json() for round in self.rounds],
         }
         return json
 
     @classmethod
-    def new_round_json(cls, index: int):
-        round_json: dict[str, Any] = {
-            "name": "round_" + str(index),
-            "start_timestamp": "",
-            "end_timestamp": "",
-            "round_matches": [],
-        }
-        return round_json
+    def new_round(cls, index: int):
+        round = Round(
+            name="round_" + str(index),
+            start_timestamp="",
+            end_timestamp="",
+            round_matches=[],
+        )
+        return round
 
     @classmethod
     def add_rounds(cls, round_count: int):
-        rounds: list[dict[str, Any]] = [
-            cls.new_round_json(index) for index in range(round_count)
-        ]
+        rounds: list[Round] = [cls.new_round(index) for index in range(round_count)]
         return rounds
 
     @classmethod
@@ -104,3 +111,10 @@ class Tournament(Model[TournamentInputData]):
             rounds=cls.add_rounds(int(user_input.round_count)),
         )
         return tournament
+
+    def get_round(self, round_name: str) -> Round | None:
+        for round in self.rounds:
+            if round.name == round_name:
+                return round
+
+        return None

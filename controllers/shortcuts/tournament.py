@@ -29,4 +29,7 @@ class TournamentShortcut(Enum):
         shortcut="TR",
         full_label="Show selected tournament rounds",
     )
+    SET_ROUND_MATCHES = ShortcutDefinition(
+        shortcut="SM", full_label="Set round matches"
+    )
     BACK = CoreShortcut.BACK.value

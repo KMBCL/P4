@@ -41,6 +41,9 @@ class TournamentPromptHandler(CorePromptHandler):
     def get_tournament_pk_input(self) -> str:
         return self.prompt_tournament_pk()
 
+    def get_round_name(self) -> str:
+        return self.view.prompt_round_name()
+
     def prompt_name(self) -> str:
         return self.view.prompt_name()
 

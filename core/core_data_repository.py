@@ -33,7 +33,7 @@ class DataSet:
 
 class ExtractMixin:
 
-    def to_data_by_field_name_dict(
+    def to_data_dict(
         self,
         raw_data: list[dict[str, Any]],
         field_name: str,
@@ -53,9 +53,7 @@ class ExtractMixin:
         field_value: str,
         field_name: str = "pk",
     ) -> Result:
-        data_by_field_name = self.to_data_by_field_name_dict(
-            raw_data=raw_data, field_name=field_name
-        )
+        data_by_field_name = self.to_data_dict(raw_data=raw_data, field_name=field_name)
         data: dict[str, Any] | None = data_by_field_name.get(field_value, None)
         if data is None:
             return Result.invalid(reason="Tournament not found")

@@ -30,3 +30,6 @@ class TournamentView(CoreView[Tournament]):
 
     def prompt_tournament_pk(self) -> str:
         return self.console.input("Tournament pk : ")
+
+    def prompt_round_name(self) -> str:
+        return self.console.input("Round name : ")
