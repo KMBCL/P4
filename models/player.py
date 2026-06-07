@@ -16,7 +16,7 @@ class PlayerInputData(ModelInputData):
 
 @dataclass
 class Player(Model[PlayerInputData]):
-    pk: int
+    pk: str
     chess_id: str
     last_name: str
     first_name: str
@@ -44,7 +44,7 @@ class Player(Model[PlayerInputData]):
         return json
 
     @classmethod
-    def from_user_input(cls, new_pk: int, user_input: PlayerInputData) -> Player:
+    def from_user_input(cls, new_pk: str, user_input: PlayerInputData) -> Player:
         player = cls(
             pk=new_pk,
             chess_id=user_input.chess_id,

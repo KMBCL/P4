@@ -8,6 +8,7 @@ import json
 from typing import Any
 
 from core.core_model import TModel, Model, ModelInputData
+from controllers.result import Result
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_BASE_ROOT = f"{BASE_DIR.parent}/database"
@@ -30,7 +31,41 @@ class DataSet:
         self.data_items.append(data_item)
 
 
-class CoreDataRepository(Generic[TModel]):
+class ExtractMixin:
+
+    def to_data_by_field_name_dict(
+        self,
+        raw_data: list[dict[str, Any]],
+        field_name: str,
+    ) -> dict[str, dict[str, Any]]:
+        data_by_field_name: dict[str, dict[str, Any]] = {
+            str(data[field_name]): data for data in raw_data
+        }
+        return data_by_field_name
+
+    def to_data_json(self, data_by_dict: dict[str, dict[str, Any]]):
+        data_json = [data for _, data in data_by_dict.items()]
+        return data_json
+
+    def extract_data_by_field(
+        self,
+        raw_data: list[dict[str, Any]],
+        field_value: str,
+        field_name: str = "pk",
+    ) -> Result:
+        data_by_field_name = self.to_data_by_field_name_dict(
+            raw_data=raw_data, field_name=field_name
+        )
+        data: dict[str, Any] | None = data_by_field_name.get(field_value, None)
+        if data is None:
+            return Result.invalid(reason="Tournament not found")
+        return Result.valid(value=data)
+
+
+class CoreDataRepository(
+    Generic[TModel],
+    ExtractMixin,
+):
     data_path: Path
 
     def __init__(self, model_class: Type[TModel]) -> None:
@@ -51,11 +86,11 @@ class CoreDataRepository(Generic[TModel]):
         with self.data_path.open("w", encoding="utf-8") as file:
             json.dump(models, file, indent=4, ensure_ascii=False)
 
-    def make_new_pk(self) -> int:
+    def make_new_pk(self) -> str:
         raw_data = self.read_json_file()
         new_pk = len(raw_data) + 1
 
-        return new_pk
+        return str(new_pk)
 
     def convert_to_model(self, raw_data: list[dict[str, Any]]) -> list[TModel]:
         models: list[TModel] = []

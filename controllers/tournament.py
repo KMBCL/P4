@@ -31,7 +31,7 @@ class TournamentController(
     def register_player(self) -> None:
         user_input = self.prompt_handler.get_player_registration_input()
         result = self.repository.register_player_to_tournament(
-            tournament_pk=int(user_input.tournament_pk),
+            tournament_pk=user_input.tournament_pk,
             chess_id=user_input.chess_id,
         )
 
@@ -49,20 +49,21 @@ class TournamentController(
 
     def show_tournament_players(self) -> None:
         user_input = self.prompt_handler.get_tournament_pk_input()
-        registered_players = self.repository.get_registered_players(
-            tournament_pk=int(user_input)
+        registered_players_result = self.repository.get_registered_players(
+            tournament_pk=user_input
         )
 
         player_view = PlayerView(console=self.renderer_handler.view.console)
-        player_view.render_models(registered_players)
+        player_view.render_models(registered_players_result.required_value)
 
     def show_tournament_rounds(self) -> None:
         user_input = self.prompt_handler.get_tournament_pk_input()
-        result = self.repository.get_tournament_rounds(tournament_pk=int(user_input))
+        result = self.repository.get_tournament_rounds(tournament_pk=user_input)
         if not result:
             self.renderer_handler.view.render_invalid_input(
                 reason=result.required_reason
             )
+            return
 
         tournament_rounds = result.required_value
         round_view = RoundView(console=self.renderer_handler.view.console)

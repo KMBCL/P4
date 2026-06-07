@@ -14,7 +14,7 @@ class PlayerRegistrationInputData(ModelInputData):
 
 @dataclass
 class PlayerRegistration(Model[PlayerRegistrationInputData]):
-    pk: int
+    pk: str
     chess_id: str
     tournament_pk: str
 
@@ -37,7 +37,7 @@ class PlayerRegistration(Model[PlayerRegistrationInputData]):
 
     @classmethod
     def from_user_input(
-        cls, new_pk: int, user_input: PlayerRegistrationInputData
+        cls, new_pk: str, user_input: PlayerRegistrationInputData
     ) -> PlayerRegistration:
         player_registration = cls(
             pk=new_pk,
