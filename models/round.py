@@ -26,10 +26,9 @@ class RoundMatch(Model[Any]):
     score_b: Score
 
     @classmethod
-    def from_json(cls, json_data: dict[str, Any]) -> Self:
-        raw_scores = json_data["scores"]
+    def from_json_list(cls, json_data: list[str]) -> Self:
         scores: list[Score] = [
-            Score(chess_id=raw_score[0], score=raw_score[1]) for raw_score in raw_scores
+            Score(chess_id=raw_score[0], score=raw_score[1]) for raw_score in json_data
         ]
         round_match = cls(
             score_a=scores[0],
@@ -65,9 +64,9 @@ class Round(Model[Any]):
 
     @classmethod
     def from_json(cls, json_data: dict[str, Any]) -> Self:
-        raw_matches: list[dict[str, Any]] = json_data["round_matches"]
+        raw_matches: list[list[str]] = json_data["round_matches"]
         round_matches: list[RoundMatch] = [
-            RoundMatch.from_json(raw_match) for raw_match in raw_matches
+            RoundMatch.from_json_list(raw_match) for raw_match in raw_matches
         ]
         round = cls(
             name=json_data["name"],

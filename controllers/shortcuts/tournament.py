@@ -32,4 +32,7 @@ class TournamentShortcut(Enum):
     SET_ROUND_MATCHES = ShortcutDefinition(
         shortcut="SM", full_label="Set round matches"
     )
+    SET_MATCHES_SCORE = ShortcutDefinition(
+        shortcut="MS", full_label="Set matches scores"
+    )
     BACK = CoreShortcut.BACK.value

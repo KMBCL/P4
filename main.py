@@ -20,10 +20,12 @@ def main():
 
     APPLICATION_ROUTER.register(ROOT, main_runner)
     APPLICATION_ROUTER.register(
-        MainShortcut.HANDLE_PLAYERS.value.shortcut, player_runner
+        MainShortcut.HANDLE_PLAYERS.value.shortcut,
+        player_runner,
     )
     APPLICATION_ROUTER.register(
-        MainShortcut.HANDLE_TOURNAMENTS.value.shortcut, tournament_runner
+        MainShortcut.HANDLE_TOURNAMENTS.value.shortcut,
+        tournament_runner,
     )
 
     APPLICATION_ROUTER.redirect_to(ROOT)

@@ -54,15 +54,16 @@ class Tournament(Model[TournamentInputData]):
             player_count=len(json_data["registered_player_chess_ids"]),
             round_count=json_data["round_count"],
             registered_player_chess_ids=json_data["registered_player_chess_ids"],
-            rounds=[
-                Round(
-                    name=data["name"],
-                    start_timestamp=data["start_timestamp"],
-                    end_timestamp=data["end_timestamp"],
-                    round_matches=data["round_matches"],
-                )
-                for data in json_data["rounds"]
-            ],
+            # rounds=[
+            #     Round(
+            #         name=data["name"],
+            #         start_timestamp=data["start_timestamp"],
+            #         end_timestamp=data["end_timestamp"],
+            #         round_matches=data["round_matches"],
+            #     )
+            #     for data in json_data["rounds"]
+            # ],
+            rounds=[Round.from_json(data) for data in json_data["rounds"]],
         )
         return tournament
 

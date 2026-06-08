@@ -14,6 +14,8 @@ from repository.tournament import TournamentRepository
 from view.player import PlayerView
 from view.round import RoundView
 
+from models.round import Round, RoundMatch
+
 
 class TournamentController(
     CoreController[
@@ -82,4 +84,34 @@ class TournamentController(
             )
             return
 
-        print("Fuck yeah!")
+    def auto_score_b(self, score_a: float) -> float:
+        if score_a == 1:
+            return 0
+        if score_a == 0.5:
+            return 0.5
+
+        return 1
+
+    def set_matches_scores(self) -> None:
+        tournament_pk_input = self.prompt_handler.get_tournament_pk_input()
+        round_name_input = self.prompt_handler.get_round_name()
+
+        round_matches_result = self.repository.get_round_matches(
+            tournament_pk_input, round_name_input
+        )
+        if not round_matches_result:
+            self.renderer_handler.view.render_invalid_input(
+                reason=round_matches_result.required_reason
+            )
+            return
+
+        round_matches: list[RoundMatch] = round_matches_result.required_value
+        for round_match in round_matches:
+            print("round match", round_match)
+            print("Display chess id", round_match.score_a.chess_id)
+            round_match.score_a.score_value = float(input("Enter player's score : "))
+            round_match.score_b.score_value = self.auto_score_b(
+                round_match.score_a.score_value
+            )
+
+        print(round_matches)

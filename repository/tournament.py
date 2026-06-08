@@ -147,6 +147,16 @@ class RoundHandler:
         return Result.valid(value=tournament)
 
 
+class ScoreHandler:
+
+    def set_match_scores(self, tournament: Tournament, round_name: str):
+        round = tournament.get_round(round_name)
+        if round is None:
+            return Result.invalid(
+                reason=f"Round : {round_name} not found in tournament"
+            )
+
+
 class TournamentRepository(CoreDataRepository[Tournament]):
 
     def __init__(self) -> None:
@@ -228,9 +238,7 @@ class TournamentRepository(CoreDataRepository[Tournament]):
         return raw_tournament["rounds"]
 
     def get_tournament_rounds(self, tournament_pk: str) -> Result:
-        tournament_result = self.get_tournament_by_pk(
-            tournament_pk=tournament_pk,
-        )
+        tournament_result = self.get_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
@@ -239,9 +247,7 @@ class TournamentRepository(CoreDataRepository[Tournament]):
         return Result.valid(value=rounds)
 
     def set_round_matches(self, tournament_pk: str, round_name: str) -> Result:
-        tournament_result = self.get_tournament_by_pk(
-            tournament_pk=tournament_pk,
-        )
+        tournament_result = self.get_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
@@ -252,4 +258,16 @@ class TournamentRepository(CoreDataRepository[Tournament]):
         )
         tournament_json = tournament.to_json()
         self.write_tournament(tournament_json)
-        return Result.valid()
+        return Result.valid(value=tournament.get_round(round_name=round_name))
+
+    def get_round_matches(self, tournament_pk: str, round_name: str) -> Result:
+        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        if not tournament_result:
+            return tournament_result
+
+        tournament = Tournament.from_json(tournament_result.required_value)
+        round = tournament.get_round(round_name)
+        if round is None:
+            return Result.invalid(reason="Round not found")
+
+        return Result.valid(value=round.round_matches)
