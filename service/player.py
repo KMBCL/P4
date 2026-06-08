@@ -11,8 +11,8 @@ from models.player import Player
 Players: TypeAlias = list[Player]
 
 
-class PlayerRepository(CoreDataRepository[Player]):
+class PlayerService:
 
     def __init__(self) -> None:
-        super().__init__(model_class=Player)
-        self.data_path = PLAYER_DIR
+        self.repository = CoreDataRepository[Player](Player)
+        self.repository.data_path = PLAYER_DIR

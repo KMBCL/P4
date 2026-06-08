@@ -11,7 +11,6 @@ from controllers.shortcuts.main import MainShortcut
 
 class MainController(
     CoreController[
-        CoreDataRepository[Model[Any]],
         CorePromptHandler,
         CoreRenderer,
     ]
@@ -19,11 +18,10 @@ class MainController(
 
     def __init__(
         self,
-        repository: CoreDataRepository[Model[Any]],
         prompt_handler: CorePromptHandler,
         renderer_handler: CoreRenderer,
     ) -> None:
-        super().__init__(repository, prompt_handler, renderer_handler)
+        super().__init__(prompt_handler, renderer_handler)
 
     def run_handle_players(self) -> None:
         self.run_runner(runner_key=MainShortcut.HANDLE_PLAYERS.value.shortcut)

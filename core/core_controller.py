@@ -11,15 +11,13 @@ PromptHandlerT = TypeVar("PromptHandlerT", bound=CorePromptHandler)
 RendererHandlerT = TypeVar("RendererHandlerT", bound=CoreRenderer)
 
 
-class CoreController(Generic[RepositoryT, PromptHandlerT, RendererHandlerT]):
+class CoreController(Generic[PromptHandlerT, RendererHandlerT]):
 
     def __init__(
         self,
-        repository: RepositoryT,
         prompt_handler: PromptHandlerT,
         renderer_handler: RendererHandlerT,
     ) -> None:
-        self.repository = repository
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
 

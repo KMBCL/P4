@@ -30,7 +30,6 @@ ACTION_ROUTING: ActionRouting = {
 
 def build_main_controller(console: Console) -> MainController:
     view = CoreView[Any](console=console)
-    repository = CoreDataRepository[Any](model_class=Model)
     action_prompt_handler = ActionPromptHandler[Any](view=view)
     prompt_handler = CorePromptHandler(
         action_prompt_handler=action_prompt_handler,
@@ -38,7 +37,6 @@ def build_main_controller(console: Console) -> MainController:
     )
     renderer_handler = CoreRenderer(view=view)
     main_controller = MainController(
-        repository=repository,
         prompt_handler=prompt_handler,
         renderer_handler=renderer_handler,
     )

@@ -2,7 +2,7 @@ from rich.console import Console
 
 
 from view.player import PlayerView
-from repository.player import PlayerRepository
+from service.player import PlayerService
 
 from controllers.handlers.player import PlayerPromptHandler, PlayerRenderHandler
 from controllers.player import PlayerController
@@ -24,11 +24,9 @@ ACTION_ROUTING: ActionRouting = {
 
 def build_player_controller(console: Console) -> PlayerController:
     view = PlayerView(console=console)
-    repository = PlayerRepository()
     prompt_handler = PlayerPromptHandler(view=view)
     renderer_handler = PlayerRenderHandler(view=view)
     player_controller = PlayerController(
-        repository=repository,
         prompt_handler=prompt_handler,
         renderer_handler=renderer_handler,
     )

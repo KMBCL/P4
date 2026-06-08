@@ -2,7 +2,7 @@ from rich.console import Console
 
 
 from view.tournament import TournamentView
-from repository.tournament import TournamentRepository
+from service.tournament import TournamentService
 
 from controllers.handlers.tournament import (
     TournamentPromptHandler,
@@ -15,9 +15,6 @@ from controllers.shortcuts.tournament import TournamentShortcut
 from controllers.action_routing import ActionRouting
 from controllers.action_runner import ActionRunner
 from controllers.menu_state import MenuState
-
-
-from repository.tournament import TournamentRepository
 
 ACTION_ROUTING: ActionRouting = {
     TournamentShortcut.CREATE_TOURNAMENT.value.shortcut: TournamentController.create_new_tournament,
@@ -34,11 +31,9 @@ ACTION_ROUTING: ActionRouting = {
 
 def build_tournament_controller(console: Console) -> TournamentController:
     view = TournamentView(console=console)
-    repository = TournamentRepository()
     prompt_handler = TournamentPromptHandler(view=view)
     renderer_handler = TournamentRenderHandler(view=view)
     tournament_controller = TournamentController(
-        repository=repository,
         prompt_handler=prompt_handler,
         renderer_handler=renderer_handler,
     )

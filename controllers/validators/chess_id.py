@@ -30,7 +30,7 @@ class ChessIDValidator:
         return Result.valid()
 
     def split_chess_id(self, user_input: str) -> ChessID | None:
-        match = re.fullmatch(r"([A-Za-z]+)(\d+)", user_input)
+        match = re.fullmatch(r"([A-Za-z]{2})(\d{5})", user_input)
 
         if not match:
             return None

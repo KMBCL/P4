@@ -21,7 +21,6 @@ class ActionRunner:
     def __init__(
         self,
         target_controller: CoreController[
-            RepositoryT,
             PromptHandlerT,
             RendererHandlerT,
         ],

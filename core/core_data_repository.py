@@ -77,12 +77,21 @@ class CoreDataRepository(
         with data_path.open("r", encoding="utf-8") as file:
             return json.load(file)
 
-    def write_data(self, json_data: dict[str, Any]):
-        models = self.read_json_file()
-        models.append(json_data)
-
+    def write_json_data(self, json_data: list[dict[str, Any]]) -> None:
         with self.data_path.open("w", encoding="utf-8") as file:
-            json.dump(models, file, indent=4, ensure_ascii=False)
+            json.dump(json_data, file, indent=4, ensure_ascii=False)
+
+    def add_model_json(self, model_json: dict[str, Any]) -> list[dict[str, Any]]:
+        models = self.read_json_file()
+        models.append(model_json)
+        return models
+
+    def update_model_json(self, model_json: dict[str, Any]) -> list[dict[str, Any]]:
+        raw_models = self.read_json_file()
+        models_by_pk = self.to_data_dict(raw_data=raw_models, field_name="pk")
+        models_by_pk[model_json["pk"]] = model_json
+        uploaded_models = self.to_data_json(models_by_pk)
+        return uploaded_models
 
     def make_new_pk(self) -> str:
         raw_data = self.read_json_file()
@@ -154,4 +163,9 @@ class CoreDataRepository(
             new_pk=self.make_new_pk(),
             user_input=user_input,
         )
-        self.write_data(json_data=model.to_json())
+        models = self.add_model_json(model.to_json())
+        self.write_json_data(models)
+
+    def update_model(self, model_json: dict[str, Any]) -> None:
+        updated_models = self.update_model_json(model_json)
+        self.write_json_data(updated_models)
