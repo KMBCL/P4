@@ -13,7 +13,7 @@ from core.core_data_repository import (
 from controllers.result import Result
 
 from models.tournament import Tournament
-from models.round import Round
+from models.round import Round, RoundMatch
 from models.player import Player
 
 Tournaments: TypeAlias = list[Tournament]
@@ -271,3 +271,19 @@ class TournamentRepository(CoreDataRepository[Tournament]):
             return Result.invalid(reason="Round not found")
 
         return Result.valid(value=round.round_matches)
+
+    def save_round_matches(
+        self, round_matches: list[RoundMatch], tournament_pk: str, round_name: str
+    ):
+        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        if not tournament_result:
+            return tournament_result
+
+        tournament = Tournament.from_json(tournament_result.required_value)
+        round = tournament.get_round(round_name)
+        if round is None:
+            return Result.invalid(reason="Round not found")
+
+        tournament.update_round_matches(round_matches, round_name)
+        tournament_json = tournament.to_json()
+        self.write_tournament(tournament_json)

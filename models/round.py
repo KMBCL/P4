@@ -95,3 +95,7 @@ class Round(Model[Any]):
             for player_a, player_b in player_pairs
         ]
         self.round_matches = round_matches
+
+    def set_round_matches(self, round_matches: list[RoundMatch]) -> Self:
+        self.round_matches = round_matches
+        return self

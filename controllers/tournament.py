@@ -114,4 +114,8 @@ class TournamentController(
                 round_match.score_a.score_value
             )
 
-        print(round_matches)
+        self.repository.save_round_matches(
+            round_matches,
+            tournament_pk_input,
+            round_name_input,
+        )
