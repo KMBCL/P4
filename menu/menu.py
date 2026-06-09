@@ -1,0 +1,115 @@
+from __future__ import annotations
+
+from typing import Any
+from dataclasses import dataclass
+import inspect
+
+
+from core.core_data_repository import CoreDataRepository, MENU_DIR
+from core.core_model import Model
+
+from controllers.menu_state import MenuState
+
+from menu.registry import REGISTRY, Action, MenuCode
+from models.menu import MenuItem, MenuStructure
+
+
+@dataclass
+class SessionContext:
+    tournament_pk: str | None = None
+    player_pk: str | None = None
+
+
+class MenuService:
+    menu_structure: MenuStructure
+    actual_menu_item: MenuItem
+    menu_item_history: list[MenuItem]
+
+    def __init__(self) -> None:
+        repository = CoreDataRepository[Any](Model)
+        self.menu_structure = MenuStructure.from_json(
+            repository.read_json_file(MENU_DIR)
+        )
+        self.menu_item_history = []
+        self.actual_menu_item = self.menu_structure.root_item
+        self.view = MenuView()
+        self.context = SessionContext()
+
+    def needs_context(self, action_to_run: Action) -> bool:
+        signature = inspect.signature(action_to_run)
+        parameters = signature.parameters
+
+        return bool(parameters.get("session_context", None))
+
+    def find_action(self, menu_item: MenuItem) -> Action | None:
+        return REGISTRY.get(menu_item.code, None)
+
+    def run_action(
+        self,
+        menu_item: MenuItem,
+        context: SessionContext,
+    ) -> MenuState | None:
+        action = self.find_action(menu_item)
+        if action is None:
+            return None
+
+        if self.needs_context(action):
+            return action(context=context)
+
+        return action()
+
+    def handle_back(self) -> None:
+
+        self.actual_menu_item = self.menu_item_history[-1]
+        self.menu_item_history.pop(-1)
+
+    def handle_exit(self, menu_item: MenuItem) -> MenuState:
+        if menu_item.code != MenuCode.EXIT:
+            return MenuState.continue_loop()
+
+        return MenuState.break_loop()
+
+    def has_sub_menus(self, menu_item: MenuItem) -> bool:
+        return bool(menu_item.sub_menus)
+
+    def handle_navigation(self, menu_item: MenuItem) -> None:
+        if menu_item.code == MenuCode.BACK:
+            return self.handle_back()
+
+        if not self.has_sub_menus(menu_item):
+            return None
+
+        self.menu_item_history.append(self.actual_menu_item)
+        self.actual_menu_item = menu_item
+
+    def get_menu_input(self):
+        menu_state = MenuState.continue_loop()
+
+        while menu_state:
+            menu_items = self.actual_menu_item.sub_menus
+            self.view.show_menu_items(menu_items)
+            user_input = self.view.prompt_menu_key()
+
+            selected_menu_item = menu_items[user_input - 1]
+
+            menu_state = self.handle_exit(selected_menu_item)
+            if not menu_state:
+                continue
+
+            self.run_action(selected_menu_item, self.context)
+
+            self.handle_navigation(selected_menu_item)
+
+
+class MenuView:
+
+    def show_menu_items(self, menu_items: list[MenuItem]):
+        MENU_START = 1
+        menu_key = MENU_START
+        for menu_item in menu_items:
+            displayed = f"{menu_key} - {menu_item.title}"
+            print(displayed)
+            menu_key += 1
+
+    def prompt_menu_key(self) -> int:
+        return int(input("Select key menu : "))

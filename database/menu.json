@@ -1,0 +1,86 @@
+[
+    {
+        "code": "root",
+        "title": "Root",
+        "sub_menus": [
+            {
+                "code": "handle_players",
+                "title": "Handle Players",
+                "sub_menus": [
+                    {
+                        "code": "create_new_player",
+                        "title": "Create new player",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "show_players",
+                        "title": "Show players",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "back",
+                        "title": "Back",
+                        "sub_menus": []
+                    }
+                ]
+            },
+            {
+                "code": "handle_tournaments",
+                "title": "Handle Tournaments",
+                "sub_menus": [
+                    {
+                        "code": "create_new_tournament",
+                        "title": "Create new tournament",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "show_tournaments",
+                        "title": "Show all tournaments",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "show_filtered_tournaments",
+                        "title": "Show filtered tournaments",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "select_tournament",
+                        "title": "Select tournament",
+                        "sub_menus": [
+                            {
+                                "code": "register_player",
+                                "title": "Register players",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "show_register_players",
+                                "title": "Register players",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "run_tournament",
+                                "title": "Run tournament",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "back",
+                                "title": "Back",
+                                "sub_menus": []
+                            }
+                        ]
+                    },
+                    {
+                        "code": "back",
+                        "title": "Back",
+                        "sub_menus": []
+                    }
+                ]
+            },
+            {
+                "code": "exit",
+                "title": "Exit",
+                "sub_menus": []
+            }
+        ]
+    }
+]
