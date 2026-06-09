@@ -30,6 +30,15 @@ class PlayerMenuCode(StrEnum):
 
 class TournamentMenuCode(StrEnum):
     CREATE_NEW_TOURNAMENT = "create_new_tournament"
+    SHOW_TOURNAMENTS = "show_tournaments"
+    # SHOW_FILTERED_TOURNAMENTS = "show_filtered_tournaments"
+    HANDLE_TOURNAMENT = "handle_tournament"
+    CHANGE_TOURNAMENT = "change_tournament"
+    SHOW_TOURNAMENT_ROUNDS = "show_tournament_rounds"
+    SHOW_REGISTERED_PLAYERS = "show_register_players"
+    REGISTER_PLAYER = "register_player"
+    SET_ROUND_MATCHES = "set_round_matches"
+    SET_MATCHES_SCORE = "set_matches_scores"
 
 
 console = Console()
@@ -41,4 +50,12 @@ REGISTRY: ActionRouting = {
     PlayerMenuCode.CREATE_NEW_PLAYER: player_controller.create_new_player,
     PlayerMenuCode.SHOW_PLAYERS: player_controller.show_players,
     TournamentMenuCode.CREATE_NEW_TOURNAMENT: tournament_controller.create_new_tournament,
+    TournamentMenuCode.SHOW_TOURNAMENTS: tournament_controller.show_tournaments,
+    TournamentMenuCode.HANDLE_TOURNAMENT: tournament_controller.handle_tournament,
+    TournamentMenuCode.CHANGE_TOURNAMENT: tournament_controller.change_tournament,
+    TournamentMenuCode.SHOW_TOURNAMENT_ROUNDS: tournament_controller.show_tournament_rounds,
+    TournamentMenuCode.SHOW_REGISTERED_PLAYERS: tournament_controller.show_register_players,
+    TournamentMenuCode.REGISTER_PLAYER: tournament_controller.register_player,
+    TournamentMenuCode.SET_ROUND_MATCHES: tournament_controller.set_round_matches,
+    TournamentMenuCode.SET_MATCHES_SCORE: tournament_controller.set_matches_scores,
 }

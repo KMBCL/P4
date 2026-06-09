@@ -44,8 +44,8 @@
                         "sub_menus": []
                     },
                     {
-                        "code": "select_tournament",
-                        "title": "Select tournament",
+                        "code": "handle_tournament",
+                        "title": "Handle Tournament",
                         "sub_menus": [
                             {
                                 "code": "register_player",
@@ -54,12 +54,17 @@
                             },
                             {
                                 "code": "show_register_players",
-                                "title": "Register players",
+                                "title": "Show registered players",
                                 "sub_menus": []
                             },
                             {
                                 "code": "run_tournament",
                                 "title": "Run tournament",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "change_tournament",
+                                "title": "Change tournament",
                                 "sub_menus": []
                             },
                             {

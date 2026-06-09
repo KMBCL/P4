@@ -16,6 +16,8 @@ from view.round import RoundView
 
 from models.round import Round, RoundMatch
 
+from menu.session_context import SessionContext
+
 
 class TournamentController(
     CoreController[
@@ -55,10 +57,9 @@ class TournamentController(
     def show_filtered_tournaments(self) -> None:
         pass
 
-    def show_tournament_players(self) -> None:
-        user_input = self.prompt_handler.get_tournament_pk_input()
+    def show_register_players(self, session_context: SessionContext) -> None:
         registered_players_result = self.service.get_registered_players(
-            tournament_pk=user_input
+            tournament_pk=session_context.required_tournament_pk
         )
 
         player_view = PlayerView(console=self.renderer_handler.view.console)
@@ -125,3 +126,25 @@ class TournamentController(
             tournament_pk_input,
             round_name_input,
         )
+
+    def handle_tournament(self, session_context: SessionContext):
+        tournament_pk = (
+            session_context.tournament_pk
+            or self.prompt_handler.get_tournament_pk_input()
+        )
+
+        tournament_result = self.service.get_tournament_by_pk(tournament_pk)
+        if not tournament_result:
+            self.renderer_handler.view.render_invalid_input(
+                reason=tournament_result.required_reason
+            )
+            return
+
+        session_context.tournament_pk = tournament_pk
+        self.renderer_handler.render_selected_tournament_name(
+            tournament_result.required_value
+        )
+
+    def change_tournament(self, session_context: SessionContext) -> None:
+        session_context.tournament_pk = None
+        self.handle_tournament(session_context)

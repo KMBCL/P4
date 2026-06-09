@@ -32,7 +32,7 @@ class TournamentService:
         self.repository.data_path = TOURNAMENT_DIR
         self.player_registration = PlayerRegistration()
 
-    def get_tournament_by_pk(self, tournament_pk: str) -> Result:
+    def get_raw_tournament_by_pk(self, tournament_pk: str) -> Result:
         raw_tournaments: list[dict[str, Any]] = self.repository.read_json_file()
         tournament_result = self.repository.extract_data_by_field(
             raw_data=raw_tournaments,
@@ -43,12 +43,21 @@ class TournamentService:
 
         return tournament_result
 
+    def get_tournament_by_pk(self, tournament_pk: str) -> Result:
+        raw_tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
+        if not raw_tournament_result:
+            return raw_tournament_result
+
+        return Result.valid(
+            value=Tournament.from_json(raw_tournament_result.required_value)
+        )
+
     def register_player_to_tournament(
         self,
         tournament_pk: str,
         chess_id: str,
     ) -> Result:
-        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         tournament = tournament_result.required_value
         result = self.player_registration.register_player_to_tournament(
             raw_tournament=tournament,
@@ -75,7 +84,7 @@ class TournamentService:
         return registered_players
 
     def get_registered_players(self, tournament_pk: str) -> Result:
-        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
@@ -97,7 +106,7 @@ class TournamentService:
         return raw_tournament["rounds"]
 
     def get_tournament_rounds(self, tournament_pk: str) -> Result:
-        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
@@ -106,7 +115,7 @@ class TournamentService:
         return Result.valid(value=rounds)
 
     def set_round_matches(self, tournament_pk: str, round_name: str) -> Result:
-        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
@@ -120,13 +129,12 @@ class TournamentService:
 
         tournament = tournament_result.required_value
         tournament_json = tournament.to_json()
-        print("tournament", tournament_json)
         uploaded_tournaments = self.repository.update_model_json(tournament_json)
         self.repository.write_json_data(uploaded_tournaments)
         return Result.valid(value=tournament.get_round(round_name=round_name))
 
     def get_round_matches(self, tournament_pk: str, round_name: str) -> Result:
-        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
@@ -140,7 +148,7 @@ class TournamentService:
     def save_round_matches(
         self, round_matches: list[RoundMatch], tournament_pk: str, round_name: str
     ):
-        tournament_result = self.get_tournament_by_pk(tournament_pk)
+        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 

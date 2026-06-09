@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
-from dataclasses import dataclass
+
 import inspect
 
 
@@ -11,13 +11,8 @@ from core.core_model import Model
 from controllers.menu_state import MenuState
 
 from menu.registry import REGISTRY, Action, MenuCode
+from menu.session_context import SessionContext
 from models.menu import MenuItem, MenuStructure
-
-
-@dataclass
-class SessionContext:
-    tournament_pk: str | None = None
-    player_pk: str | None = None
 
 
 class MenuService:
@@ -54,7 +49,7 @@ class MenuService:
             return None
 
         if self.needs_context(action):
-            return action(context=context)
+            return action(session_context=context)
 
         return action()
 
@@ -97,7 +92,6 @@ class MenuService:
                 continue
 
             self.run_action(selected_menu_item, self.context)
-
             self.handle_navigation(selected_menu_item)
 
 

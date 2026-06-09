@@ -29,7 +29,7 @@ class TournamentView(CoreView[Tournament]):
         return self.console.input("Player chess id : ")
 
     def prompt_tournament_pk(self) -> str:
-        return self.console.input("Tournament pk : ")
+        return self.console.input("Select tournament by 'pk' : ")
 
     def prompt_round_name(self) -> str:
         return self.console.input("Round name : ")

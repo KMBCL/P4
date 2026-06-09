@@ -71,5 +71,8 @@ class TournamentRenderHandler(CoreRenderer):
     def __init__(self, view: TournamentView) -> None:
         self.view = view
 
-    def render_tournaments(self, tournaments: list[Tournament]):
+    def render_tournaments(self, tournaments: list[Tournament]) -> None:
         self.view.render_models(tournaments)
+
+    def render_selected_tournament_name(self, tournament: Tournament) -> None:
+        self.view.console.print(f"Selected tournament : {tournament.name}")
