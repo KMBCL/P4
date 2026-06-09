@@ -1,11 +1,8 @@
-from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
+from core.core_handler import CorePromptHandler
 
 from view.tournament import TournamentView
-
 from controllers.handlers.date import DatePromptHandler
-from controllers.handlers.action import ActionPromptHandler
-from controllers.shortcuts.tournament import TournamentShortcut
 
 from models.tournament import Tournament, TournamentInputData
 from models.player_registration import PlayerRegistration, PlayerRegistrationInputData
@@ -16,11 +13,6 @@ class TournamentPromptHandler(CorePromptHandler):
     def __init__(self, view: TournamentView) -> None:
         self.view = view
         self.date_prompt_handler = DatePromptHandler[Tournament](self.view)
-
-        super().__init__(
-            action_prompt_handler=ActionPromptHandler[Tournament](self.view),
-            action_shortcuts=TournamentShortcut,
-        )
 
     def get_tournament_input(self):
         return TournamentInputData(
