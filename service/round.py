@@ -71,17 +71,12 @@ class RoundHandler:
         first_round = [round for round in rounds if round.name == self.FIRST_ROUND_NAME]
         return self.round_not_started(first_round[0])
 
-    def set_round_players(self, tournament: Tournament, round_name: str) -> Result:
+    def set_round_players(self, tournament: Tournament, round: Round) -> Result:
         player_pairs_check_result = self.check_registered_players_pairs(tournament)
         if not player_pairs_check_result:
             return player_pairs_check_result
 
         shuffled_pairs: list[tuple[str, str]] = self.make_player_pairs(tournament)
-        round = tournament.get_round(round_name)
-        if round is None:
-            return Result.invalid(
-                reason=f"Round : {round_name} not found in tournament"
-            )
         round.set_round_players(player_pairs=shuffled_pairs)
 
         return Result.valid(value=tournament)

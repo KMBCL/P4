@@ -8,7 +8,7 @@ from controllers.handlers.tournament import (
     TournamentPromptHandler,
     TournamentRenderHandler,
 )
-
+from models.tournament import Tournament
 from service.tournament import TournamentService
 
 from view.player import PlayerView
@@ -78,19 +78,6 @@ class TournamentController(
         round_view = RoundView(console=self.renderer_handler.view.console)
         round_view.render_models(tournament_rounds)
 
-    def set_round_matches(self) -> None:
-        tournament_pk_input = self.prompt_handler.get_tournament_pk_input()
-        round_name_input = self.prompt_handler.get_round_name()
-
-        result = self.service.set_round_matches(
-            tournament_pk=tournament_pk_input, round_name=round_name_input
-        )
-        if not result:
-            self.renderer_handler.view.render_invalid_input(
-                reason=result.required_reason
-            )
-            return
-
     def auto_score_b(self, score_a: float) -> float:
         if score_a == 1:
             return 0
@@ -148,3 +135,27 @@ class TournamentController(
     def change_tournament(self, session_context: SessionContext) -> None:
         session_context.tournament_pk = None
         self.handle_tournament(session_context)
+
+    def set_round_matches(self, tournament_pk: str) -> None:
+
+        result = self.service.set_round_matches(tournament_pk=tournament_pk)
+        if not result:
+            self.renderer_handler.view.render_invalid_input(
+                reason=result.required_reason
+            )
+            return
+
+    def run_tournament(self, session_context: SessionContext):
+        tournament_result = self.service.get_tournament_by_pk(
+            session_context.required_tournament_pk
+        )
+        if not tournament_result:
+            self.renderer_handler.view.render_invalid_input(
+                reason=tournament_result.required_reason
+            )
+            return
+
+        self.set_round_matches(session_context.required_tournament_pk)
+
+        # check rounds
+        # check scores

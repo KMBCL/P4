@@ -39,6 +39,7 @@ class TournamentMenuCode(StrEnum):
     REGISTER_PLAYER = "register_player"
     SET_ROUND_MATCHES = "set_round_matches"
     SET_MATCHES_SCORE = "set_matches_scores"
+    RUN_TOURNAMENT = "run_tournament"
 
 
 console = Console()
@@ -58,4 +59,5 @@ REGISTRY: ActionRouting = {
     TournamentMenuCode.REGISTER_PLAYER: tournament_controller.register_player,
     TournamentMenuCode.SET_ROUND_MATCHES: tournament_controller.set_round_matches,
     TournamentMenuCode.SET_MATCHES_SCORE: tournament_controller.set_matches_scores,
+    TournamentMenuCode.RUN_TOURNAMENT: tournament_controller.run_tournament,
 }

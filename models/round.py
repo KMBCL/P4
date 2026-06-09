@@ -99,3 +99,16 @@ class Round(Model[Any]):
     def set_round_matches(self, round_matches: list[RoundMatch]) -> Self:
         self.round_matches = round_matches
         return self
+
+    def are_round_matches_defined(self) -> bool:
+        return bool(self.round_matches)
+
+    def is_round_score_complete(self) -> bool:
+        SCORE = 1
+        total_score = 0
+        for round_match in self.round_matches:
+            score_a = round_match.score_a.score_value
+            score_b = round_match.score_b.score_value
+            total_score = total_score + score_a + score_b
+
+        return total_score == len(self.round_matches) * SCORE

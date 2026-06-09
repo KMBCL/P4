@@ -114,24 +114,45 @@ class TournamentService:
         rounds = [Round.from_json(raw_data) for raw_data in raw_rounds]
         return Result.valid(value=rounds)
 
-    def set_round_matches(self, tournament_pk: str, round_name: str) -> Result:
+    def get_next_round(self, tournament_rounds: list[Round]) -> Round | None:
+        for round in tournament_rounds:
+            round_completed = bool(
+                round.are_round_matches_defined() and round.is_round_score_complete()
+            )
+            if not round_completed:
+                return round
+
+        return None
+
+    def set_round_players(self, tournament: Tournament, round: Round) -> Result:
+        round_handler = RoundHandler()
+        tournament_result = round_handler.set_round_players(
+            tournament=tournament, round=round
+        )
+        return tournament_result
+
+    def save_tournament(self, tournament: Tournament) -> None:
+        tournament_json = tournament.to_json()
+        uploaded_tournaments = self.repository.update_model_json(tournament_json)
+        self.repository.write_json_data(uploaded_tournaments)
+
+    def set_round_matches(self, tournament_pk: str) -> Result:
         tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
         tournament: Tournament = Tournament.from_json(tournament_result.required_value)
-        round_handler = RoundHandler()
-        tournament_result = round_handler.set_round_players(
-            tournament=tournament, round_name=round_name
-        )
+        next_round: Round | None = self.get_next_round(tournament.rounds)
+        if next_round is None:
+            return Result.invalid(reason="no more rounds to set")
+
+        tournament_result = self.set_round_players(tournament, next_round)
         if not tournament_result:
             return tournament_result
 
         tournament = tournament_result.required_value
-        tournament_json = tournament.to_json()
-        uploaded_tournaments = self.repository.update_model_json(tournament_json)
-        self.repository.write_json_data(uploaded_tournaments)
-        return Result.valid(value=tournament.get_round(round_name=round_name))
+        self.save_tournament(tournament)
+        return Result.valid(value=round)
 
     def get_round_matches(self, tournament_pk: str, round_name: str) -> Result:
         tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
