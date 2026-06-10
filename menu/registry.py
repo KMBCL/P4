@@ -57,7 +57,5 @@ REGISTRY: ActionRouting = {
     TournamentMenuCode.SHOW_TOURNAMENT_ROUNDS: tournament_controller.show_tournament_rounds,
     TournamentMenuCode.SHOW_REGISTERED_PLAYERS: tournament_controller.show_register_players,
     TournamentMenuCode.REGISTER_PLAYER: tournament_controller.register_player,
-    TournamentMenuCode.SET_ROUND_MATCHES: tournament_controller.set_round_matches,
-    TournamentMenuCode.SET_MATCHES_SCORE: tournament_controller.set_matches_scores,
     TournamentMenuCode.RUN_TOURNAMENT: tournament_controller.run_tournament,
 }

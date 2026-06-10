@@ -4,6 +4,18 @@ from dataclasses import dataclass, field
 from typing import Any, Self, TypeAlias
 
 from core.core_model import Model, ModelInputData
+from core.constants import WinningCondition
+
+SCORE = 1
+VICTORY_SCORE = 1.0
+DEFEAT_SCORE = 0.0
+DRAW_SCORE = 0.5
+
+SCORE_DEFINITION = {
+    WinningCondition.VICTORY: VICTORY_SCORE,
+    WinningCondition.DEFEAT: DEFEAT_SCORE,
+    WinningCondition.DRAW: DRAW_SCORE,
+}
 
 
 @dataclass
@@ -48,6 +60,25 @@ class RoundMatch(Model[Any]):
             ],
         ]
         return json
+
+    def calculate_match_score(self) -> float:
+        return self.score_a.score_value + self.score_b.score_value
+
+    def is_score_complete(self):
+        return self.calculate_match_score() == SCORE
+
+    def give_score_b_value(self, winning_condition: WinningCondition) -> float:
+        if winning_condition == WinningCondition.VICTORY:
+            return DEFEAT_SCORE
+
+        if winning_condition == WinningCondition.DEFEAT:
+            return VICTORY_SCORE
+
+        return DRAW_SCORE
+
+    def set_score(self, winning_condition: WinningCondition):
+        self.score_a.score_value = SCORE_DEFINITION.get(winning_condition, DEFEAT_SCORE)
+        self.score_b.score_value = self.give_score_b_value(winning_condition)
 
 
 def default_matches():
@@ -104,11 +135,9 @@ class Round(Model[Any]):
         return bool(self.round_matches)
 
     def is_round_score_complete(self) -> bool:
-        SCORE = 1
         total_score = 0
         for round_match in self.round_matches:
-            score_a = round_match.score_a.score_value
-            score_b = round_match.score_b.score_value
-            total_score = total_score + score_a + score_b
+            match_score = round_match.calculate_match_score()
+            total_score = total_score + match_score
 
         return total_score == len(self.round_matches) * SCORE

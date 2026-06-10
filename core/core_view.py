@@ -9,7 +9,6 @@ from core.core_model import Model
 if TYPE_CHECKING:
     from rich.console import Console
 
-    from core.core_shortcuts import ShortcutDefinition
 
 TModel = TypeVar("TModel", bound=Model[Any])
 
@@ -18,14 +17,6 @@ class CoreView(Generic[TModel]):
 
     def __init__(self, console: Console) -> None:
         self.console: Console = console
-
-    def render_available_actions(self, action_shortcuts: type[Enum]) -> None:
-        self.console.print("Select : ")
-        for member in action_shortcuts:
-            shortcut_definition: ShortcutDefinition = member.value
-            self.console.print(
-                f"{shortcut_definition.shortcut} - {shortcut_definition.full_label}"
-            )
 
     def prompt_action(self) -> str:
         return self.console.input("Select choice : ").upper()
