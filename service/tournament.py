@@ -5,12 +5,14 @@ from itertools import combinations
 import random
 import json
 
+
 from core.core_data_repository import (
     TOURNAMENT_DIR,
     PLAYER_DIR,
     CoreDataRepository,
 )
 from controllers.result import Result
+
 
 from models.tournament import Tournament
 from models.round import Round, RoundMatch
@@ -52,15 +54,48 @@ class TournamentService:
             value=Tournament.from_json(raw_tournament_result.required_value)
         )
 
+    def check_chess_id_exists(self, chess_id: str) -> Result:
+        if not self.player_registration.validate_chess_id_exists(
+            chess_id, self.repository.read_json_file(path=PLAYER_DIR)
+        ):
+            return Result.invalid(
+                reason=f"Player with this chess ID : {chess_id} doesn't exists in database"
+            )
+
+        return Result.valid()
+
+    def check_tournament_is_begun(self, tournament_pk: str) -> Result:
+        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
+        tournament: Tournament = Tournament.from_json(tournament_result.required_value)
+        if tournament.has_begun:
+            return Result.invalid(
+                reason="Tournament is already begun, cannot add new players"
+            )
+
+        return Result.valid()
+
     def register_player_to_tournament(
         self,
         tournament_pk: str,
         chess_id: str,
     ) -> Result:
+        # chess_id_result = self.check_chess_id_exists(chess_id)
+        # if not chess_id_result:
+        #     return chess_id_result
+
         tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
-        tournament = tournament_result.required_value
+        # if not tournament_result:
+        #     return tournament_result
+
+        # has_begun_result = self.check_tournament_is_begun(
+        #     tournament_result.required_value
+        # )
+        # if not has_begun_result:
+        #     return has_begun_result
+
+        raw_tournament = tournament_result.required_value
         result = self.player_registration.register_player_to_tournament(
-            raw_tournament=tournament,
+            raw_tournament=raw_tournament,
             chess_id=chess_id,
         )
         if not result:
@@ -146,14 +181,26 @@ class TournamentService:
         self.save_tournament(tournament)
         return Result.valid(value=round)
 
-    def get_round_matches(self, tournament_pk: str, round_name: str) -> Result:
-        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
-        if not tournament_result:
-            return tournament_result
+    def extract_incomplete_matches(self, round: Round) -> list[RoundMatch]:
+        incomplete_scores: list[RoundMatch] = []
+        if not round.is_round_score_complete():
+            incomplete_scores = [
+                round_match
+                for round_match in round.round_matches
+                if not round_match.is_score_complete()
+            ]
+        return incomplete_scores
 
-        tournament = Tournament.from_json(tournament_result.required_value)
-        round = tournament.get_round(round_name)
-        if round is None:
-            return Result.invalid(reason="Round not found")
+    def prepare_next_round(self, tournament: Tournament) -> Result:
+        next_round = self.get_next_round(tournament.rounds)
+        round_players_result: Result = Result.valid()
+        if next_round is None:
+            return Result.invalid(reason="no more rounds to run.")
 
-        return Result.valid(value=round.round_matches)
+        if not next_round.are_round_matches_defined():
+            round_players_result = self.set_round_players(tournament, next_round)
+
+        if not round_players_result:
+            return round_players_result
+
+        return Result.valid(value=next_round)

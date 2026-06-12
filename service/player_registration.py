@@ -79,3 +79,9 @@ class PlayerRegistration:
             Player.from_json(raw_player) for raw_player in registered_raw_players
         ]
         return players
+
+    def validate_chess_id_exists(
+        self, chess_id: str, players: list[dict[str, Any]]
+    ) -> bool:
+        chess_ids: list[str] = [player["chess_id"] for player in players]
+        return chess_id in chess_ids

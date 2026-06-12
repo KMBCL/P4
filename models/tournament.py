@@ -120,3 +120,8 @@ class Tournament(Model[TournamentInputData]):
             )
             for round in self.rounds
         ]
+
+    @property
+    def has_begun(self) -> bool:
+        round_matches = [round.round_matches for round in self.rounds]
+        return bool(round_matches)

@@ -49,7 +49,7 @@ class TournamentController(
             user_input=self.prompt_handler.get_tournament_input()
         )
 
-    def register_player(self) -> None:
+    def register_player(self, session_context: SessionContext) -> None:
         user_input = self.prompt_handler.get_player_registration_input()
         result = self.service.register_player_to_tournament(
             tournament_pk=user_input.tournament_pk,
@@ -116,15 +116,25 @@ class TournamentController(
             round_match.set_score(winning_condition)
             self.service.save_tournament(tournament)
 
-    def extract_incomplete_matches(self, round: Round) -> list[RoundMatch]:
-        incomplete_scores: list[RoundMatch] = []
-        if not round.is_round_score_complete():
-            incomplete_scores = [
-                round_match
-                for round_match in round.round_matches
-                if not round_match.is_score_complete()
-            ]
-        return incomplete_scores
+    def should_continue_setting_scores(
+        self, is_first_score_input: bool, next_round_name: str
+    ) -> bool:
+        if not is_first_score_input:
+            return self.prompt_handler.prompt_continue_setting_scores(next_round_name)
+
+        return True
+
+    def run_setting_scores(self, next_round: Round, tournament: Tournament) -> bool:
+        incomplete_scores: list[RoundMatch] = self.service.extract_incomplete_matches(
+            next_round
+        )
+        if not incomplete_scores:
+            return False
+
+        self.renderer_handler.view.render_setting_scores_for_round(next_round.name)
+        self.set_incomplete_scores(incomplete_scores, tournament)
+
+        return True
 
     def run_tournament(self, session_context: SessionContext):
         tournament = self.get_tournament(session_context.required_tournament_pk)
@@ -132,32 +142,25 @@ class TournamentController(
             return None
 
         running = True
-        running_flag = True
+        is_first_score_input = True
         while running:
-            next_round = self.service.get_next_round(tournament.rounds)
-
-            if next_round is None:
-                running = False
-                continue
-
-            if not next_round.are_round_matches_defined():
-                self.service.set_round_players(tournament, next_round)
-
-            incomplete_scores: list[RoundMatch] = self.extract_incomplete_matches(
-                next_round
-            )
-
-            if not incomplete_scores:
-                continue
-
-            if not running_flag:
-                running = self.prompt_handler.prompt_continue_setting_scores(
-                    next_round.name
+            next_round_result = self.service.prepare_next_round(tournament)
+            if not next_round_result:
+                running = next_round_result
+                self.renderer_handler.view.render_invalid_input(
+                    next_round_result.required_reason
                 )
+                continue
 
+            next_round: Round = next_round_result.required_value
+            running = self.should_continue_setting_scores(
+                is_first_score_input, next_round.name
+            )
             if not running:
                 continue
 
-            self.renderer_handler.view.render_setting_scores_for_round(next_round.name)
-            self.set_incomplete_scores(incomplete_scores, tournament)
-            running_flag = False
+            scores_were_set = self.run_setting_scores(next_round, tournament)
+            if not scores_were_set:
+                continue
+
+            is_first_score_input = False

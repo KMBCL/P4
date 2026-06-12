@@ -2,8 +2,10 @@ from core.core_renderer import CoreRenderer
 from core.core_handler import CorePromptHandler
 from core.constants import WinningCondition
 
+from view.player import PlayerView
 from view.tournament import TournamentView
 from controllers.handlers.date import DatePromptHandler
+from controllers.handlers.player import PlayerPromptHandler
 
 from models.tournament import Tournament, TournamentInputData
 from models.player_registration import PlayerRegistration, PlayerRegistrationInputData
@@ -13,7 +15,11 @@ class TournamentPromptHandler(CorePromptHandler):
 
     def __init__(self, view: TournamentView) -> None:
         self.view = view
+
         self.date_prompt_handler = DatePromptHandler[Tournament](self.view)
+
+        player_view = PlayerView(view.console)
+        self.player_prompt_handler = PlayerPromptHandler(player_view)
 
     def get_tournament_input(self):
         return TournamentInputData(
@@ -26,9 +32,11 @@ class TournamentPromptHandler(CorePromptHandler):
         )
 
     def get_player_registration_input(self):
+        chess_id = self.player_prompt_handler.prompt_chess_id()
+        tournament_pk = self.prompt_tournament_pk()
         return PlayerRegistrationInputData(
-            chess_id=self.view.prompt_player_chess_id(),
-            tournament_pk=self.prompt_tournament_pk(),
+            chess_id,
+            tournament_pk,
         )
 
     def get_tournament_pk_input(self) -> str:
