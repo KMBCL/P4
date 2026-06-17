@@ -79,13 +79,13 @@ class TournamentService:
         tournament_pk: str,
         chess_id: str,
     ) -> Result:
-        # chess_id_result = self.check_chess_id_exists(chess_id)
-        # if not chess_id_result:
-        #     return chess_id_result
+        chess_id_result = self.check_chess_id_exists(chess_id)
+        if not chess_id_result:
+            return chess_id_result
 
         tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
-        # if not tournament_result:
-        #     return tournament_result
+        if not tournament_result:
+            return tournament_result
 
         # has_begun_result = self.check_tournament_is_begun(
         #     tournament_result.required_value

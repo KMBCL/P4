@@ -1,33 +1,43 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import inspect
-
 
 from core.core_data_repository import CoreDataRepository, MENU_DIR
 from core.core_model import Model
 
+from controllers.handlers.menu import MenuPromptHandler, MenuRendererHandler
 from controllers.menu_state import MenuState
 
-from menu.registry import REGISTRY, Action, MenuCode
 from menu.session_context import SessionContext
 from models.menu import MenuItem, MenuStructure
+from menu.constants import MenuCode
+
+if TYPE_CHECKING:
+    from menu.registry import Action, ActionRouting
 
 
-class MenuService:
+class MenuController:
     menu_structure: MenuStructure
     actual_menu_item: MenuItem
     menu_item_history: list[MenuItem]
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        prompt_handler: MenuPromptHandler,
+        renderer_handler: MenuRendererHandler,
+        registry: ActionRouting,
+    ) -> None:
+        self.renderer_handler = renderer_handler
+        self.prompt_handler = prompt_handler
+        self.regisgry = registry
         repository = CoreDataRepository[Any](Model)
         self.menu_structure = MenuStructure.from_json(
             repository.read_json_file(MENU_DIR)
         )
         self.menu_item_history = []
         self.actual_menu_item = self.menu_structure.root_item
-        self.view = MenuView()
         self.context = SessionContext()
 
     def needs_context(self, action_to_run: Action) -> bool:
@@ -37,7 +47,7 @@ class MenuService:
         return bool(parameters.get("session_context", None))
 
     def find_action(self, menu_item: MenuItem) -> Action | None:
-        return REGISTRY.get(menu_item.code, None)
+        return self.regisgry.get(menu_item.code, None)
 
     def run_action(
         self,
@@ -82,8 +92,8 @@ class MenuService:
 
         while menu_state:
             menu_items = self.actual_menu_item.sub_menus
-            self.view.show_menu_items(menu_items)
-            user_input = self.view.prompt_menu_key()
+            self.renderer_handler.render_choice_menu(menu_items)
+            user_input = self.prompt_handler.prompt_menu_key(menu_items)
 
             selected_menu_item = menu_items[user_input - 1]
 
@@ -93,17 +103,3 @@ class MenuService:
 
             self.run_action(selected_menu_item, self.context)
             self.handle_navigation(selected_menu_item)
-
-
-class MenuView:
-
-    def show_menu_items(self, menu_items: list[MenuItem]):
-        MENU_START = 1
-        menu_key = MENU_START
-        for menu_item in menu_items:
-            displayed = f"{menu_key} - {menu_item.title}"
-            print(displayed)
-            menu_key += 1
-
-    def prompt_menu_key(self) -> int:
-        return int(input("Select key menu : "))

@@ -52,8 +52,8 @@ class TournamentController(
     def register_player(self, session_context: SessionContext) -> None:
         user_input = self.prompt_handler.get_player_registration_input()
         result = self.service.register_player_to_tournament(
-            tournament_pk=user_input.tournament_pk,
-            chess_id=user_input.chess_id,
+            tournament_pk=session_context.required_tournament_pk,
+            chess_id=user_input,
         )
 
         if not result:

@@ -32,12 +32,7 @@ class TournamentPromptHandler(CorePromptHandler):
         )
 
     def get_player_registration_input(self):
-        chess_id = self.player_prompt_handler.prompt_chess_id()
-        tournament_pk = self.prompt_tournament_pk()
-        return PlayerRegistrationInputData(
-            chess_id,
-            tournament_pk,
-        )
+        return self.player_prompt_handler.prompt_chess_id()
 
     def get_tournament_pk_input(self) -> str:
         return self.prompt_tournament_pk()

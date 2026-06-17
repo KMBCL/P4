@@ -1,26 +1,18 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import TypeAlias, Callable, Any, Self
-from dataclasses import dataclass, field
+from typing import TypeAlias, Callable
 
 from rich.console import Console
 
+from controllers.factories.menu_controller import build_menu_controller
 from controllers.factories.player_action_runner import build_player_controller
 from controllers.factories.tournament_action_runner import build_tournament_controller
-
-from core.core_data_repository import CoreDataRepository, MENU_DIR
-from core.core_model import Model
 
 from controllers.menu_state import MenuState
 
 Action: TypeAlias = Callable[..., MenuState | None]
 ActionRouting: TypeAlias = dict[str, Action]
-
-
-class MenuCode(StrEnum):
-    EXIT = "exit"
-    BACK = "back"
 
 
 class PlayerMenuCode(StrEnum):
@@ -43,9 +35,9 @@ class TournamentMenuCode(StrEnum):
 
 
 console = Console()
+
 player_controller = build_player_controller(console)
 tournament_controller = build_tournament_controller(console)
-
 
 REGISTRY: ActionRouting = {
     PlayerMenuCode.CREATE_NEW_PLAYER: player_controller.create_new_player,
@@ -59,3 +51,5 @@ REGISTRY: ActionRouting = {
     TournamentMenuCode.REGISTER_PLAYER: tournament_controller.register_player,
     TournamentMenuCode.RUN_TOURNAMENT: tournament_controller.run_tournament,
 }
+
+menu_controller = build_menu_controller(console, REGISTRY)
