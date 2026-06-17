@@ -12,7 +12,7 @@ from controllers.handlers.menu import (
     MenuPromptHandler,
     MenuRendererHandler,
 )
-from menu.menu import MenuController
+from controllers.menu import MenuController
 
 if TYPE_CHECKING:
     from menu.registry import ActionRouting

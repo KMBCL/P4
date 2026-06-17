@@ -87,6 +87,11 @@ class MenuController:
         self.menu_item_history.append(self.actual_menu_item)
         self.actual_menu_item = menu_item
 
+    def select_menu_item(self, user_input: str, menu_items: list[MenuItem]) -> MenuItem:
+        menu_item_index = int(user_input) - 1
+        selected_menu_item = menu_items[menu_item_index]
+        return selected_menu_item
+
     def get_menu_input(self):
         menu_state = MenuState.continue_loop()
 
@@ -95,7 +100,7 @@ class MenuController:
             self.renderer_handler.render_choice_menu(menu_items)
             user_input = self.prompt_handler.prompt_menu_key(menu_items)
 
-            selected_menu_item = menu_items[user_input - 1]
+            selected_menu_item = self.select_menu_item(user_input, menu_items)
 
             menu_state = self.handle_exit(selected_menu_item)
             if not menu_state:

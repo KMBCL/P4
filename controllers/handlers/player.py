@@ -6,7 +6,6 @@ from controllers.validators.chess_id import ChessIDValidator
 from controllers.validators.date import DateValidator
 
 from core.core_renderer import CoreRenderer
-from controllers.handlers.date import DatePromptHandler
 
 
 from models.player import Player, PlayerInputData
@@ -16,7 +15,6 @@ class PlayerPromptHandler(CorePromptHandler[PlayerView]):
 
     def __init__(self, view: PlayerView) -> None:
         self.view = view
-        self.date_prompt_handler = DatePromptHandler[Player](self.view)
 
     def get_player_input(self) -> PlayerInputData:
         return PlayerInputData(
