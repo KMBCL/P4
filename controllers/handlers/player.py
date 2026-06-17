@@ -3,7 +3,7 @@ from core.core_handler import CorePromptHandler
 from view.player import PlayerView
 
 from controllers.validators.chess_id import ChessIDValidator
-
+from controllers.validators.date import DateValidator
 
 from core.core_renderer import CoreRenderer
 from controllers.handlers.date import DatePromptHandler
@@ -12,11 +12,10 @@ from controllers.handlers.date import DatePromptHandler
 from models.player import Player, PlayerInputData
 
 
-class PlayerPromptHandler(CorePromptHandler):
+class PlayerPromptHandler(CorePromptHandler[PlayerView]):
 
     def __init__(self, view: PlayerView) -> None:
         self.view = view
-        self.chess_id_validator = ChessIDValidator()
         self.date_prompt_handler = DatePromptHandler[Player](self.view)
 
     def get_player_input(self) -> PlayerInputData:
@@ -28,15 +27,9 @@ class PlayerPromptHandler(CorePromptHandler):
         )
 
     def prompt_chess_id(self) -> str:
-        while True:
-            user_input = self.view.prompt_chess_id()
-
-            user_input_result = self.chess_id_validator.validate_chess_id(user_input)
-            if not user_input_result:
-                self.view.render_invalid_input(user_input_result.required_reason)
-                continue
-
-            return user_input
+        return self.prompt(
+            self.view.prompt_chess_id, ChessIDValidator.validate_chess_id
+        )
 
     def prompt_last_name(self) -> str:
         return self.view.prompt_last_name()
@@ -45,7 +38,7 @@ class PlayerPromptHandler(CorePromptHandler):
         return self.view.prompt_first_name()
 
     def prompt_birthdate(self) -> str:
-        return self.date_prompt_handler.prompt_date(self.view.prompt_birthdate)
+        return self.prompt(self.view.prompt_birthdate, DateValidator.validate_date)
 
 
 class PlayerRenderHandler(CoreRenderer):

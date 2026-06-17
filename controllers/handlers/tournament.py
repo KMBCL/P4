@@ -2,24 +2,15 @@ from core.core_renderer import CoreRenderer
 from core.core_handler import CorePromptHandler
 from core.constants import WinningCondition
 
-from view.player import PlayerView
+
 from view.tournament import TournamentView
-from controllers.handlers.date import DatePromptHandler
-from controllers.handlers.player import PlayerPromptHandler
+from controllers.validators.chess_id import ChessIDValidator
+from controllers.validators.date import DateValidator
 
 from models.tournament import Tournament, TournamentInputData
-from models.player_registration import PlayerRegistration, PlayerRegistrationInputData
 
 
-class TournamentPromptHandler(CorePromptHandler):
-
-    def __init__(self, view: TournamentView) -> None:
-        self.view = view
-
-        self.date_prompt_handler = DatePromptHandler[Tournament](self.view)
-
-        player_view = PlayerView(view.console)
-        self.player_prompt_handler = PlayerPromptHandler(player_view)
+class TournamentPromptHandler(CorePromptHandler[TournamentView]):
 
     def get_tournament_input(self):
         return TournamentInputData(
@@ -32,7 +23,9 @@ class TournamentPromptHandler(CorePromptHandler):
         )
 
     def get_player_registration_input(self):
-        return self.player_prompt_handler.prompt_chess_id()
+        return self.prompt(
+            self.view.prompt_register_player, ChessIDValidator.validate_chess_id
+        )
 
     def get_tournament_pk_input(self) -> str:
         return self.prompt_tournament_pk()
@@ -53,10 +46,10 @@ class TournamentPromptHandler(CorePromptHandler):
         return self.view.prompt_round_count()
 
     def prompt_start_date(self) -> str:
-        return self.date_prompt_handler.prompt_date(self.view.prompt_start_date)
+        return self.prompt(self.view.prompt_start_date, DateValidator.validate_date)
 
     def prompt_end_date(self) -> str:
-        return self.date_prompt_handler.prompt_date(self.view.prompt_end_date)
+        return self.prompt(self.view.prompt_end_date, DateValidator.validate_date)
 
     def prompt_tournament_pk(self) -> str:
         return self.view.prompt_tournament_pk()

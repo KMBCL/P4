@@ -90,12 +90,14 @@ class TournamentController(
         round_view.render_models(tournament_rounds)
 
     def handle_tournament(self, session_context: SessionContext):
-        tournament = self.get_tournament(
-            session_context.tournament_pk
-            or self.prompt_handler.get_tournament_pk_input()
-        )
-        if tournament is None:
-            return None
+        tournament: Tournament | None = None
+        while not tournament:
+            tournament = self.get_tournament(
+                session_context.tournament_pk
+                or self.prompt_handler.get_tournament_pk_input()
+            )
+        # if tournament is None:
+        #     return None
 
         session_context.tournament_pk = tournament.pk
         self.renderer_handler.render_selected_tournament_name(tournament)
