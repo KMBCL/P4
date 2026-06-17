@@ -1,7 +1,7 @@
 import re
 
 
-from controllers.result import Result
+from core.result import Result
 
 
 class ChessIDValidator:

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from controllers.result import Result
+from core.result import Result
 
 
 class DateValidator:

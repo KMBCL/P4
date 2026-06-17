@@ -1,4 +1,4 @@
-from controllers.result import Result
+from core.result import Result
 from models.menu import MenuItem
 
 

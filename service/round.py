@@ -10,7 +10,7 @@ from core.core_data_repository import (
     PLAYER_DIR,
     CoreDataRepository,
 )
-from controllers.result import Result
+from core.result import Result
 
 from models.tournament import Tournament
 from models.round import Round, RoundMatch

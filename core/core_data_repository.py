@@ -8,7 +8,7 @@ import json
 from typing import Any
 
 from core.core_model import TModel, Model, ModelInputData
-from controllers.result import Result
+from core.result import Result
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_BASE_ROOT = f"{BASE_DIR.parent}/database"
