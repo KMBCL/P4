@@ -6,8 +6,8 @@ from typing import TypeAlias, Callable
 from rich.console import Console
 
 from controllers.factories.menu_controller import build_menu_controller
-from controllers.factories.player_action_runner import build_player_controller
-from controllers.factories.tournament_action_runner import build_tournament_controller
+from controllers.factories.player_controller import build_player_controller
+from controllers.factories.tournament_controller import build_tournament_controller
 
 from controllers.menu_state import MenuState
 
