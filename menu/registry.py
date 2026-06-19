@@ -4,7 +4,7 @@ from enum import StrEnum
 from typing import TypeAlias, Callable
 
 from rich.console import Console
-
+from core.core_view import CoreView, ListView
 from controllers.factories.menu_controller import build_menu_controller
 from controllers.factories.player_controller import build_player_controller
 from controllers.factories.tournament_controller import build_tournament_controller
@@ -35,9 +35,10 @@ class TournamentMenuCode(StrEnum):
 
 
 console = Console()
+list_view = ListView(console)
 
-player_controller = build_player_controller(console)
-tournament_controller = build_tournament_controller(console)
+player_controller = build_player_controller(console, list_view)
+tournament_controller = build_tournament_controller(console, list_view)
 
 REGISTRY: ActionRouting = {
     PlayerMenuCode.CREATE_NEW_PLAYER: player_controller.create_new_player,
@@ -52,4 +53,4 @@ REGISTRY: ActionRouting = {
     TournamentMenuCode.RUN_TOURNAMENT: tournament_controller.run_tournament,
 }
 
-menu_controller = build_menu_controller(console, REGISTRY)
+menu_controller = build_menu_controller(console, list_view, REGISTRY)

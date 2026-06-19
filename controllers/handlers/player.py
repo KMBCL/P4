@@ -45,4 +45,9 @@ class PlayerRenderHandler(CoreRenderer):
         self.view = view
 
     def render_players(self, players: list[Player]):
-        self.view.render_models(players)
+        self.view.console.print("*** Player list ***")
+
+        for player in players:
+            self.view.console.print(
+                f"Chess id : '{player.chess_id}' - '{player.last_name} {player.first_name}' - Birthdate : '{player.birthdate}'"
+            )

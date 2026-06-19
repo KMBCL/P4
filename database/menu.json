@@ -39,11 +39,6 @@
                         "sub_menus": []
                     },
                     {
-                        "code": "show_filtered_tournaments",
-                        "title": "Show filtered tournaments",
-                        "sub_menus": []
-                    },
-                    {
                         "code": "handle_tournament",
                         "title": "Handle Tournament",
                         "sub_menus": [

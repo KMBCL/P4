@@ -54,6 +54,23 @@ class TournamentService:
             value=Tournament.from_json(raw_tournament_result.required_value)
         )
 
+    def get_tournament_by_name(self, tournament_name: str) -> Result:
+        raw_tournaments = self.repository.get_models()
+        tournament_by_names: dict[str, Tournament] = {
+            tournament.name: tournament for tournament in raw_tournaments
+        }
+        similar_tournaments = [
+            tournament
+            for key, tournament in tournament_by_names.items()
+            if tournament_name in key
+        ]
+        if not similar_tournaments:
+            return Result.invalid(
+                reason=f"No tournaments found with {tournament_name} name"
+            )
+
+        return Result.valid(value=similar_tournaments)
+
     def check_chess_id_exists(self, chess_id: str) -> Result:
         if not self.player_registration.validate_chess_id_exists(
             chess_id, self.repository.read_json_file(path=PLAYER_DIR)

@@ -97,7 +97,7 @@ class MenuController:
 
         while menu_state:
             menu_items = self.actual_menu_item.sub_menus
-            self.renderer_handler.render_choice_menu(menu_items)
+            self.renderer_handler.render_menu_items(menu_items)
             user_input = self.prompt_handler.prompt_menu_key(menu_items)
 
             selected_menu_item = self.select_menu_item(user_input, menu_items)

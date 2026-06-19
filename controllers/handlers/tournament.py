@@ -54,6 +54,9 @@ class TournamentPromptHandler(CorePromptHandler[TournamentView]):
     def prompt_tournament_pk(self) -> str:
         return self.view.prompt_tournament_pk()
 
+    def prompt_select_by_name(self, nearest_tournaments: list[Tournament]) -> str:
+        return self.view.prompt_name()
+
     def prompt_round_match_winning_condition(self, chess_id: str) -> WinningCondition:
         user_input = self.view.prompt_round_match_winning_condition(chess_id)
         winning_condition = WinningCondition(user_input)
@@ -75,7 +78,15 @@ class TournamentRenderHandler(CoreRenderer):
         self.view = view
 
     def render_tournaments(self, tournaments: list[Tournament]) -> None:
-        self.view.render_models(tournaments)
+        self.view.console.print("*** Tournament list ***")
+
+        for tournament in tournaments:
+            self.view.console.print(
+                f"'{tournament.name}' - Starts : {tournament.start_date} - Ends : {tournament.end_date} - Place : '{tournament.place}'"
+            )
+
+    def render_tournament_details(self, tournament: Tournament) -> None:
+        pass
 
     def render_selected_tournament_name(self, tournament: Tournament) -> None:
         self.view.console.print(f"Selected tournament : {tournament.name}")
