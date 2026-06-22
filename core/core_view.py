@@ -54,4 +54,4 @@ class CoreView(Generic[TModel]):
         return self.console.input("Select choice : ").upper()
 
     def render_invalid_input(self, reason: str) -> None:
-        self.console.print(reason)
+        self.console.print(f"[red]{reason}[/red]")

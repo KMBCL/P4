@@ -4,6 +4,9 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from core.core_model import Model, ModelInputData
+
+from models.helpers.flat import flat_rounds, flat_scores
+
 from models.round import Round, RoundMatch
 
 
@@ -120,6 +123,29 @@ class Tournament(Model[TournamentInputData]):
             )
             for round in self.rounds
         ]
+
+    def sort_player_scores(self, player_scores: dict[str, float]) -> dict[str, float]:
+        return dict(
+            sorted(
+                player_scores.items(),
+                key=lambda item: item[1],
+                reverse=True,
+            )
+        )
+
+    def get_player_scores(self) -> dict[str, float]:
+        player_scores: dict[str, float] = {}
+        round_matches = flat_rounds(self.rounds)
+        scores = flat_scores(round_matches)
+        for score in scores:
+            if player_scores.get(score.chess_id, None) is None:
+                player_scores[score.chess_id] = score.score_value
+                continue
+
+            player_scores[score.chess_id] += score.score_value
+
+        sorted_players = self.sort_player_scores(player_scores)
+        return sorted_players
 
     @property
     def has_begun(self) -> bool:

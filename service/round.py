@@ -40,15 +40,21 @@ class RoundHandler:
                 pair = []
         return pairs
 
+    def prepare_chess_ids(self, tournament: Tournament) -> list[str]:
+        if self.is_first_round(tournament.rounds):
+            chess_ids = tournament.registered_player_chess_ids
+            random.shuffle(chess_ids)
+            return chess_ids
+
+        sorted_players = tournament.get_player_scores()
+        chess_ids: list[str] = [chess_id for chess_id, _ in sorted_players.items()]
+        return chess_ids
+
     def make_player_pairs(
         self,
         tournament: Tournament,
     ) -> list[tuple[str, str]]:
-        pairs: list[tuple[str, str]] = []
-        chess_ids = tournament.registered_player_chess_ids
-        if self.is_first_round(tournament.rounds):
-            random.shuffle(chess_ids)
-
+        chess_ids: list[str] = self.prepare_chess_ids(tournament)
         pairs = self.make_pairs(chess_ids)
         return pairs
 

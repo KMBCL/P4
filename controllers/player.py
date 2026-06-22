@@ -1,20 +1,18 @@
 from typing import Any
 
-from core.core_controller import CoreController
+
 from service.player import PlayerService
 from controllers.handlers.player import PlayerPromptHandler, PlayerRenderHandler
 
 
-class PlayerController(
-    CoreController[
-        PlayerPromptHandler,
-        PlayerRenderHandler,
-    ]
-):
+class PlayerController:
     def __init__(
-        self, prompt_handler: PlayerPromptHandler, renderer_handler: PlayerRenderHandler
+        self,
+        prompt_handler: PlayerPromptHandler,
+        renderer_handler: PlayerRenderHandler,
     ) -> None:
-        super().__init__(prompt_handler, renderer_handler)
+        self.prompt_handler = prompt_handler
+        self.renderer_handler = renderer_handler
         self.service = PlayerService()
 
     def create_new_player(self) -> None:

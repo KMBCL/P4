@@ -4,10 +4,24 @@ from enum import StrEnum
 from typing import TypeAlias, Callable
 
 from rich.console import Console
-from core.core_view import CoreView, ListView
+from core.core_view import ListView
 from controllers.factories.menu_controller import build_menu_controller
 from controllers.factories.player_controller import build_player_controller
-from controllers.factories.tournament_controller import build_tournament_controller
+
+
+from view.tournament import TournamentView
+from controllers.handlers.tournament import (
+    TournamentPromptHandler,
+    TournamentRenderHandler,
+)
+from controllers.tournament import (
+    TournamentController,
+    TournamentSelector,
+    TournamentRunner,
+    TournamentRounds,
+    TournamentPlayer,
+)
+from service.tournament import TournamentService
 
 from controllers.menu_state import MenuState
 
@@ -37,20 +51,50 @@ class TournamentMenuCode(StrEnum):
 console = Console()
 list_view = ListView(console)
 
+
 player_controller = build_player_controller(console, list_view)
-tournament_controller = build_tournament_controller(console, list_view)
+
+tournament_view = TournamentView(console)
+tournament_prompt_handler = TournamentPromptHandler(tournament_view)
+tournament_rendered_handler = TournamentRenderHandler(tournament_view)
+tournament_service = TournamentService()
+tournament_selector = TournamentSelector(
+    tournament_prompt_handler,
+    tournament_rendered_handler,
+    tournament_service,
+)
+tournament_controller = TournamentController(
+    tournament_prompt_handler,
+    tournament_rendered_handler,
+    tournament_service,
+)
+tournament_runner = TournamentRunner(
+    tournament_prompt_handler,
+    tournament_rendered_handler,
+    tournament_service,
+)
+tournament_rounds = TournamentRounds(
+    tournament_prompt_handler,
+    tournament_rendered_handler,
+    tournament_service,
+)
+tournament_player = TournamentPlayer(
+    tournament_prompt_handler,
+    tournament_rendered_handler,
+    tournament_service,
+)
 
 REGISTRY: ActionRouting = {
     PlayerMenuCode.CREATE_NEW_PLAYER: player_controller.create_new_player,
     PlayerMenuCode.SHOW_PLAYERS: player_controller.show_players,
     TournamentMenuCode.CREATE_NEW_TOURNAMENT: tournament_controller.create_new_tournament,
     TournamentMenuCode.SHOW_TOURNAMENTS: tournament_controller.show_tournaments,
-    TournamentMenuCode.HANDLE_TOURNAMENT: tournament_controller.handle_tournament,
-    TournamentMenuCode.CHANGE_TOURNAMENT: tournament_controller.change_tournament,
-    TournamentMenuCode.SHOW_TOURNAMENT_ROUNDS: tournament_controller.show_tournament_rounds,
-    TournamentMenuCode.SHOW_REGISTERED_PLAYERS: tournament_controller.show_register_players,
-    TournamentMenuCode.REGISTER_PLAYER: tournament_controller.register_player,
-    TournamentMenuCode.RUN_TOURNAMENT: tournament_controller.run_tournament,
+    TournamentMenuCode.HANDLE_TOURNAMENT: tournament_selector.handle_tournament,
+    TournamentMenuCode.CHANGE_TOURNAMENT: tournament_selector.change_tournament,
+    TournamentMenuCode.SHOW_TOURNAMENT_ROUNDS: tournament_rounds.show_tournament_rounds,
+    TournamentMenuCode.SHOW_REGISTERED_PLAYERS: tournament_player.show_register_players,
+    TournamentMenuCode.REGISTER_PLAYER: tournament_player.register_player,
+    TournamentMenuCode.RUN_TOURNAMENT: tournament_runner.run_tournament,
 }
 
 menu_controller = build_menu_controller(console, list_view, REGISTRY)

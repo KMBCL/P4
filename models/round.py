@@ -80,6 +80,9 @@ class RoundMatch(Model[Any]):
         self.score_a.score_value = SCORE_DEFINITION.get(winning_condition, DEFEAT_SCORE)
         self.score_b.score_value = self.give_score_b_value(winning_condition)
 
+    def to_list(self) -> list[Score]:
+        return [self.score_a, self.score_b]
+
 
 def default_matches():
     default_matches: list[RoundMatch] = []

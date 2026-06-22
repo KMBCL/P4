@@ -62,14 +62,14 @@ class TournamentPromptHandler(CorePromptHandler[TournamentView]):
         winning_condition = WinningCondition(user_input)
         return winning_condition
 
-    def prompt_continue_setting_scores(self, round_name: str) -> bool:
+    def prompt_continue_setting_scores(self, round_name: str) -> str:
         user_input = self.view.console.input(
             f"""New round beginned : {round_name} Continue to setting scores ?
                                              - 1 - Yes
                                              - 2 - No 
                                              Select : """
         )
-        return True if user_input == "1" else False
+        return "YES" if user_input == "1" else "NO"
 
 
 class TournamentRenderHandler(CoreRenderer):
