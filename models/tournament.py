@@ -149,5 +149,5 @@ class Tournament(Model[TournamentInputData]):
 
     @property
     def has_begun(self) -> bool:
-        round_matches = [round.round_matches for round in self.rounds]
+        round_matches = flat_rounds(self.rounds)
         return bool(round_matches)

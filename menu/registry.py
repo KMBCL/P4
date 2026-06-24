@@ -22,6 +22,7 @@ from controllers.tournament import (
     TournamentPlayer,
 )
 from service.tournament import TournamentService
+from service.player import PlayerService
 
 from controllers.menu_state import MenuState
 
@@ -54,6 +55,8 @@ list_view = ListView(console)
 
 player_controller = build_player_controller(console, list_view)
 
+player_service = PlayerService()
+
 tournament_view = TournamentView(console)
 tournament_prompt_handler = TournamentPromptHandler(tournament_view)
 tournament_rendered_handler = TournamentRenderHandler(tournament_view)
@@ -82,6 +85,7 @@ tournament_player = TournamentPlayer(
     tournament_prompt_handler,
     tournament_rendered_handler,
     tournament_service,
+    player_service,
 )
 
 REGISTRY: ActionRouting = {

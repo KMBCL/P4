@@ -36,7 +36,7 @@ class TournamentView(CoreView[Tournament]):
         return self.console.input("Round name : ")
 
     def prompt_register_player(self) -> str:
-        return self.console.input("Register player by 'chess id'")
+        return self.console.input("Register player by 'last name'")
 
     def prompt_round_match_winning_condition(self, chess_id: str) -> str:
         return self.console.input(

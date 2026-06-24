@@ -55,14 +55,11 @@ class TournamentService:
         )
 
     def get_tournament_by_name(self, tournament_name: str) -> Result:
-        raw_tournaments = self.repository.get_models()
-        tournament_by_names: dict[str, Tournament] = {
-            tournament.name: tournament for tournament in raw_tournaments
-        }
+        tournaments = self.repository.get_models()
         similar_tournaments = [
             tournament
-            for key, tournament in tournament_by_names.items()
-            if tournament_name in key
+            for tournament in tournaments
+            if tournament_name.lower() in tournament.name.lower()
         ]
         if not similar_tournaments:
             return Result.invalid(
@@ -103,12 +100,6 @@ class TournamentService:
         tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
-
-        # has_begun_result = self.check_tournament_is_begun(
-        #     tournament_result.required_value
-        # )
-        # if not has_begun_result:
-        #     return has_begun_result
 
         raw_tournament = tournament_result.required_value
         result = self.player_registration.register_player_to_tournament(

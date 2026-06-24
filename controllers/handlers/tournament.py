@@ -23,9 +23,7 @@ class TournamentPromptHandler(CorePromptHandler[TournamentView]):
         )
 
     def get_player_registration_input(self):
-        return self.prompt(
-            self.view.prompt_register_player, ChessIDValidator.validate_chess_id
-        )
+        return self.view.prompt_register_player()
 
     def get_tournament_pk_input(self) -> str:
         return self.prompt_tournament_pk()

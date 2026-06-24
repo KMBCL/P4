@@ -55,3 +55,6 @@ class CoreView(Generic[TModel]):
 
     def render_invalid_input(self, reason: str) -> None:
         self.console.print(f"[red]{reason}[/red]")
+
+    def render_success(self, success_message: str) -> None:
+        self.console.print(f"[green]{success_message}[/green]")

@@ -9,30 +9,30 @@ class Result:
         self, is_valid: bool, reason: str | None = None, value: Any | None = None
     ) -> None:
         self.is_valid: bool = is_valid
-        self.reason = reason
-        self.value = value
+        self._reason = reason
+        self._value = value
 
     @classmethod
     def valid(cls, value: Any | None = None) -> Result:
-        return Result(is_valid=True, value=value)
+        return cls(is_valid=True, value=value)
 
     @classmethod
     def invalid(cls, reason: str) -> Result:
-        return Result(is_valid=False, reason=reason)
+        return cls(is_valid=False, reason=reason)
 
     def __bool__(self) -> bool:
         return self.is_valid
 
     @property
     def required_reason(self) -> str:
-        if self.reason is None:
+        if self._reason is None:
             raise ValueError("Reason is not defined")
 
-        return self.reason
+        return self._reason
 
     @property
     def required_value(self) -> Any:
-        if self.value is None:
+        if self._value is None:
             raise ValueError("Value is not defined")
 
-        return self.value
+        return self._value

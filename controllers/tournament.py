@@ -13,7 +13,9 @@ from controllers.handlers.tournament import (
 from controllers.validators.menu import MenuValidator
 from models.round import Round, RoundMatch
 from models.tournament import Tournament
+from models.player import Player
 from service.tournament import TournamentService
+from service.player import PlayerService
 
 from view.player import PlayerView
 from view.round import RoundView
@@ -141,13 +143,18 @@ class TournamentRunner:
 
         tournament: Tournament = tournament_result.required_value
         running_result = self.service.prepare_next_round(tournament)
+        if not running_result:
+            self.renderer_handler.view.render_invalid_input(
+                running_result.required_reason
+            )
+
         while running_result:
             next_round: Round = running_result.required_value
             self.run_setting_scores(next_round, tournament)
             next_round_result = self.service.prepare_next_round(tournament)
             if not next_round_result:
                 self.renderer_handler.view.render_invalid_input(
-                    tournament_result.required_reason
+                    next_round_result.required_reason
                 )
                 continue
             next_round = next_round_result.required_value
@@ -161,32 +168,103 @@ class TournamentPlayer:
         prompt_handler: TournamentPromptHandler,
         renderer_handler: TournamentRenderHandler,
         service: TournamentService,
+        player_service: PlayerService,
     ) -> None:
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.service = service
+        self.player_service = player_service
 
-    def register_player(self, session_context: SessionContext) -> None:
-        tournament_result = self.service.get_tournament_by_pk(
-            session_context.required_tournament_pk
+    def select_player_from_list(self, players: list[Player]) -> Player:
+        menu_items = ModelToMenuItem.player_to_menu_item(players)
+        self.renderer_handler.view.list_view.render_menu_items(menu_items)
+        user_input = self.prompt_handler.prompt(
+            self.prompt_handler.view.list_view.prompt_menu_choice,
+            lambda user_input: MenuValidator.is_choice_in_range(user_input, menu_items),
         )
+        player = players[int(user_input) - 1]
+        return player
+
+    def get_unregistered_players(
+        self, user_input: str, players: list[Player], tournament: Tournament
+    ) -> Result:
+        unregistered_players: list[Player] = [
+            player
+            for player in players
+            if player.chess_id not in tournament.registered_player_chess_ids
+        ]
+        if not unregistered_players:
+            return Result.invalid(
+                f"All players matching '{user_input}' are already register"
+            )
+
+        return Result.valid(value=unregistered_players)
+
+    def select_player_by_name(self, tournament: Tournament):
+        user_input = self.prompt_handler.get_player_registration_input()
+        players_result = self.player_service.get_player_by_name(user_input)
+        if not players_result:
+            return players_result
+
+        players: list[Player] = players_result.required_value
+        unregistered_players_result = self.get_unregistered_players(
+            user_input, players, tournament
+        )
+        if not unregistered_players_result:
+            return unregistered_players_result
+
+        unregistered_players: list[Player] = unregistered_players_result.required_value
+        if len(unregistered_players) > 1:
+            return Result.valid(
+                value=self.select_player_from_list(unregistered_players)
+            )
+
+        return Result.valid(value=unregistered_players[0])
+
+    def is_tournament_registration_open(self, tournament_pk: str) -> Result:
+        tournament_result = self.service.get_tournament_by_pk(tournament_pk)
         tournament: Tournament = tournament_result.required_value
         if tournament.has_begun:
-            self.renderer_handler.view.render_invalid_input(
-                reason="Tournament already begun"
-            )
-            return
+            return Result.invalid(reason="Registration is now closed")
 
-        user_input = self.prompt_handler.get_player_registration_input()
-        result = self.service.register_player_to_tournament(
-            tournament_pk=session_context.required_tournament_pk,
-            chess_id=user_input,
-        )
+        return Result.valid(value=tournament)
 
+    def display_result(self, result: Result) -> None:
         if not result:
             self.renderer_handler.view.render_invalid_input(
                 reason=result.required_reason
             )
+            return None
+
+        self.renderer_handler.view.render_success("Done !")
+
+    def register_player(self, session_context: SessionContext) -> None:
+        registration_open_result = self.is_tournament_registration_open(
+            session_context.required_tournament_pk
+        )
+        if not registration_open_result:
+            self.display_result(registration_open_result)
+            return None
+
+        tournament: Tournament = registration_open_result.required_value
+        regsitration_result = Result.invalid(reason="initial loop")
+        while not regsitration_result:
+            regsitration_result = self.select_player_by_name(tournament)
+            if not regsitration_result:
+                self.display_result(regsitration_result)
+                continue
+
+            player: Player = regsitration_result.required_value
+            regsitration_result = self.service.register_player_to_tournament(
+                tournament_pk=session_context.required_tournament_pk,
+                chess_id=player.chess_id,
+            )
+
+            if not regsitration_result:
+                self.display_result(regsitration_result)
+                continue
+
+            self.display_result(regsitration_result)
 
     def show_register_players(self, session_context: SessionContext) -> None:
         registered_players_result = self.service.get_registered_players(
