@@ -23,7 +23,7 @@ class CorePromptHandler(Generic[TView]):
 
             user_input_result = validation_function(user_input)
             if not user_input_result:
-                self.view.render_invalid_input(user_input_result.required_reason)
+                self.view.render_invalid_input(user_input_result.get_reason())
                 continue
 
             return user_input

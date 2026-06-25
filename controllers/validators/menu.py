@@ -21,7 +21,7 @@ class MenuValidator:
         if not menu_number_result:
             return menu_number_result
 
-        menu_number: int = menu_number_result.required_value
+        menu_number: int = menu_number_result.get_result()
 
         if not MIN_RANGE <= menu_number <= max_range:
             return Result.invalid(

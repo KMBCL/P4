@@ -23,7 +23,7 @@ Tournaments: TypeAlias = list[Tournament]
 REGISTERED_PLAYER_CHESS_IDS = "registered_player_chess_ids"
 
 from service.player_registration import PlayerRegistration
-from service.round import RoundHandler
+from controllers.handlers.round import RoundHandler
 
 
 class TournamentService:
@@ -51,7 +51,7 @@ class TournamentService:
             return raw_tournament_result
 
         return Result.valid(
-            value=Tournament.from_json(raw_tournament_result.required_value)
+            value=Tournament.from_json(raw_tournament_result.get_result())
         )
 
     def get_tournament_by_name(self, tournament_name: str) -> Result:
@@ -80,7 +80,7 @@ class TournamentService:
 
     def check_tournament_is_begun(self, tournament_pk: str) -> Result:
         tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
-        tournament: Tournament = Tournament.from_json(tournament_result.required_value)
+        tournament: Tournament = Tournament.from_json(tournament_result.get_result())
         if tournament.has_begun:
             return Result.invalid(
                 reason="Tournament is already begun, cannot add new players"
@@ -101,7 +101,7 @@ class TournamentService:
         if not tournament_result:
             return tournament_result
 
-        raw_tournament = tournament_result.required_value
+        raw_tournament = tournament_result.get_result()
         result = self.player_registration.register_player_to_tournament(
             raw_tournament=raw_tournament,
             chess_id=chess_id,
@@ -109,7 +109,7 @@ class TournamentService:
         if not result:
             return result
 
-        self.repository.update_model(result.required_value)
+        self.repository.update_model(result.get_result())
         return result
 
     def extract_registered_players(
@@ -132,7 +132,7 @@ class TournamentService:
             return tournament_result
 
         registered_players: list[Player] = []
-        tournament = tournament_result.required_value
+        tournament = tournament_result.get_result()
 
         registered_chess_ids: list[str] = tournament[REGISTERED_PLAYER_CHESS_IDS]
         if not registered_chess_ids:
@@ -153,7 +153,7 @@ class TournamentService:
         if not tournament_result:
             return tournament_result
 
-        raw_rounds = self.extract_tournament_rounds(tournament_result.required_value)
+        raw_rounds = self.extract_tournament_rounds(tournament_result.get_result())
         rounds = [Round.from_json(raw_data) for raw_data in raw_rounds]
         return Result.valid(value=rounds)
 
@@ -185,7 +185,7 @@ class TournamentService:
         if not tournament_result:
             return tournament_result
 
-        tournament = tournament_result.required_value
+        tournament = tournament_result.get_result()
         self.save_tournament(tournament)
         return Result.valid(value=round)
 
