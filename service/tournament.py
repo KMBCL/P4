@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 from typing import Any, TypeAlias
-from itertools import combinations
-import random
-import json
 
 
 from core.core_data_repository import (
@@ -15,7 +12,6 @@ from core.result import Result
 
 
 from models.tournament import Tournament
-from models.round import Round, RoundMatch
 from models.player import Player
 
 Tournaments: TypeAlias = list[Tournament]
@@ -23,7 +19,6 @@ Tournaments: TypeAlias = list[Tournament]
 REGISTERED_PLAYER_CHESS_IDS = "registered_player_chess_ids"
 
 from service.player_registration import PlayerRegistration
-from controllers.handlers.round import RoundHandler
 
 
 class TournamentService:
@@ -145,70 +140,7 @@ class TournamentService:
 
         return Result.valid(value=registered_players)
 
-    def extract_tournament_rounds(self, raw_tournament: dict[str, Any]):
-        return raw_tournament["rounds"]
-
-    def get_tournament_rounds(self, tournament_pk: str) -> Result:
-        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
-        if not tournament_result:
-            return tournament_result
-
-        raw_rounds = self.extract_tournament_rounds(tournament_result.get_result())
-        rounds = [Round.from_json(raw_data) for raw_data in raw_rounds]
-        return Result.valid(value=rounds)
-
-    def get_next_round(self, tournament_rounds: list[Round]) -> Round | None:
-        for round in tournament_rounds:
-            round_completed = bool(
-                round.are_round_matches_defined() and round.is_round_score_complete()
-            )
-            if not round_completed:
-                return round
-
-        return None
-
-    def set_round_players(self, tournament: Tournament, round: Round) -> Result:
-        round_handler = RoundHandler()
-        tournament_result = round_handler.set_round_players(
-            tournament=tournament, round=round
-        )
-        self.save_tournament(tournament)
-        return tournament_result
-
     def save_tournament(self, tournament: Tournament) -> None:
         tournament_json = tournament.to_json()
         uploaded_tournaments = self.repository.update_model_json(tournament_json)
         self.repository.write_json_data(uploaded_tournaments)
-
-    def set_round_matches(self, tournament: Tournament, round: Round) -> Result:
-        tournament_result = self.set_round_players(tournament, round)
-        if not tournament_result:
-            return tournament_result
-
-        tournament = tournament_result.get_result()
-        self.save_tournament(tournament)
-        return Result.valid(value=round)
-
-    def extract_incomplete_matches(self, round: Round) -> list[RoundMatch]:
-        incomplete_scores: list[RoundMatch] = []
-        if not round.is_round_score_complete():
-            incomplete_scores = [
-                round_match
-                for round_match in round.round_matches
-                if not round_match.is_score_complete()
-            ]
-        return incomplete_scores
-
-    def prepare_next_round(self, tournament: Tournament) -> Result:
-        next_round = self.get_next_round(tournament.rounds)
-        round_players_result: Result = Result.valid()
-        if next_round is None:
-            return Result.invalid(reason="no more rounds to run.")
-
-        if not next_round.are_round_matches_defined():
-            round_players_result = self.set_round_players(tournament, next_round)
-
-        if not round_players_result:
-            return round_players_result
-
-        return Result.valid(value=next_round)

@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
+from typing import TYPE_CHECKING
 import inspect
-
-from core.core_data_repository import CoreDataRepository, MENU_DIR
-from core.core_model import Model
 
 from controllers.handlers.menu import MenuPromptHandler, MenuRendererHandler
 from controllers.menu_state import MenuState
@@ -15,7 +11,7 @@ from models.menu import MenuItem, MenuStructure
 from menu.constants import MenuCode
 
 if TYPE_CHECKING:
-    from menu.registry import Action, ActionRouting
+    from registry import Action, ActionRouting
 
 
 class MenuController:
@@ -28,14 +24,12 @@ class MenuController:
         prompt_handler: MenuPromptHandler,
         renderer_handler: MenuRendererHandler,
         registry: ActionRouting,
+        menu_structure: MenuStructure,
     ) -> None:
         self.renderer_handler = renderer_handler
         self.prompt_handler = prompt_handler
         self.regisgry = registry
-        repository = CoreDataRepository[Any](Model)
-        self.menu_structure = MenuStructure.from_json(
-            repository.read_json_file(MENU_DIR)
-        )
+        self.menu_structure = menu_structure
         self.menu_item_history = []
         self.actual_menu_item = self.menu_structure.root_item
         self.context = SessionContext()
