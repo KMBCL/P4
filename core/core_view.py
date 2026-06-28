@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import fields, Field
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
-from enum import Enum
+
 
 from core.core_model import Model
 from models.menu import MenuItem

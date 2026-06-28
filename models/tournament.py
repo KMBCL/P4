@@ -107,23 +107,6 @@ class Tournament(Model[TournamentInputData]):
         )
         return tournament
 
-    def get_round(self, round_name: str) -> Round | None:
-        for round in self.rounds:
-            if round.name == round_name:
-                return round
-
-        return None
-
-    def update_round_matches(self, round_matches: list[RoundMatch], round_name: str):
-        self.rounds = [
-            (
-                round.set_round_matches(round_matches)
-                if round.name == round_name
-                else round
-            )
-            for round in self.rounds
-        ]
-
     def sort_player_scores(self, player_scores: dict[str, float]) -> dict[str, float]:
         return dict(
             sorted(

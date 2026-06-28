@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
-
 from core.result import Result
 
 from controllers.handlers.model_to_menu_item import ModelToMenuItem
@@ -11,15 +8,16 @@ from controllers.handlers.tournament import (
     TournamentRenderHandler,
 )
 from controllers.validators.menu import MenuValidator
+from controllers.round import RoundController
 from models.round import Round, RoundMatch
 from models.tournament import Tournament
 from models.player import Player
 from service.tournament import TournamentService
 from service.player import PlayerService
-from service.round import RoundService
+
 
 from view.player import PlayerView
-from view.round import RoundView
+
 
 from menu.session_context import SessionContext
 
@@ -54,18 +52,25 @@ class TournamentSelector:
         if not tournaments_result:
             return tournaments_result
 
-        tournaments: list[Tournament] = tournaments_result.get_result()
+        tournaments: list[Tournament] = tournaments_result.get_value()
         if len(tournaments) > 1:
             return Result.valid(value=self.select_tournament_from_list(tournaments))
 
         return Result.valid(value=tournaments[0])
 
-    def select_tournament_by_stragegy(self, session_context: SessionContext) -> Result:
-        if session_context.tournament_pk is not None:
-            tournament_result = self.tournament_service.get_tournament_by_pk(
-                session_context.required_tournament_pk
-            )
-            return tournament_result
+    def use_cache(self, session_context: SessionContext) -> Result | None:
+        if session_context.tournament_pk is None:
+            return None
+
+        tournament_result = self.tournament_service.get_tournament_by_pk(
+            session_context.required_tournament_pk
+        )
+        return tournament_result
+
+    def select_tournament(self, session_context: SessionContext) -> Result:
+        cached_tournament_result = self.use_cache(session_context)
+        if cached_tournament_result is not None:
+            return cached_tournament_result
 
         return self.select_tournament_by_name()
 
@@ -73,16 +78,15 @@ class TournamentSelector:
         tournament_result = Result.invalid(reason="initial loop")
 
         while not tournament_result:
-            tournament_result = self.select_tournament_by_stragegy(session_context)
+            tournament_result = self.select_tournament(session_context)
             if not tournament_result:
                 self.renderer_handler.view.render_invalid_input(
                     reason=tournament_result.get_reason()
                 )
 
-        tournament: Tournament = tournament_result.get_result()
+        tournament: Tournament = tournament_result.get_value()
         session_context.tournament_pk = tournament.pk
         self.renderer_handler.render_selected_tournament_name(tournament)
-        tournament.get_player_scores()
 
     def change_tournament(self, session_context: SessionContext) -> None:
         session_context.tournament_pk = None
@@ -96,41 +100,27 @@ class TournamentRunner:
         prompt_handler: TournamentPromptHandler,
         renderer_handler: TournamentRenderHandler,
         tournament_service: TournamentService,
-        round_service: RoundService,
+        round_controller: RoundController,
     ) -> None:
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
-        self.round_service = round_service
-
-    def set_incomplete_scores(
-        self, round_matches: list[RoundMatch], tournament: Tournament
-    ) -> None:
-        for round_match in round_matches:
-            winning_condition = (
-                self.prompt_handler.prompt_round_match_winning_condition(
-                    round_match.score_a.chess_id
-                )
-            )
-            round_match.set_score(winning_condition)
-            self.tournament_service.save_tournament(tournament)
-
-    def should_continue_setting_scores(self, next_round_name: str) -> Result:
-        user_input = self.prompt_handler.prompt_continue_setting_scores(next_round_name)
-        return Result.valid() if user_input == "1" else Result.invalid("Stopped")
+        self.round_controller = round_controller
 
     def run_setting_scores(self, next_round: Round, tournament: Tournament) -> None:
         incomplete_scores: list[RoundMatch] = (
-            self.round_service.extract_incomplete_matches(next_round)
+            self.round_controller.get_incomplete_matches(next_round)
         )
         if not incomplete_scores:
             return None
 
         self.renderer_handler.view.render_setting_scores_for_round(next_round.name)
-        self.set_incomplete_scores(incomplete_scores, tournament)
+        self.round_controller.set_incomplete_scores(incomplete_scores, tournament)
 
     def should_continue(self, round: Round) -> Result:
-        should_continue_result = self.should_continue_setting_scores(round.name)
+        should_continue_result = self.round_controller.should_continue_setting_scores(
+            round.name
+        )
         if not should_continue_result:
             return should_continue_result
 
@@ -146,21 +136,21 @@ class TournamentRunner:
             )
             return None
 
-        tournament: Tournament = tournament_result.get_result()
-        running_result = self.round_service.prepare_next_round(tournament)
+        tournament: Tournament = tournament_result.get_value()
+        running_result = self.round_controller.prepare_next_round(tournament)
         if not running_result:
             self.renderer_handler.view.render_invalid_input(running_result.get_reason())
 
         while running_result:
-            next_round: Round = running_result.get_result()
+            next_round: Round = running_result.get_value()
             self.run_setting_scores(next_round, tournament)
-            next_round_result = self.tournament_service.prepare_next_round(tournament)
+            next_round_result = self.round_controller.prepare_next_round(tournament)
             if not next_round_result:
                 self.renderer_handler.view.render_invalid_input(
                     next_round_result.get_reason()
                 )
                 continue
-            next_round = next_round_result.get_result()
+            next_round = next_round_result.get_value()
             running_result = self.should_continue(next_round)
 
 
@@ -209,14 +199,14 @@ class TournamentPlayer:
         if not players_result:
             return players_result
 
-        players: list[Player] = players_result.get_result()
+        players: list[Player] = players_result.get_value()
         unregistered_players_result = self.get_unregistered_players(
             user_input, players, tournament
         )
         if not unregistered_players_result:
             return unregistered_players_result
 
-        unregistered_players: list[Player] = unregistered_players_result.get_result()
+        unregistered_players: list[Player] = unregistered_players_result.get_value()
         if len(unregistered_players) > 1:
             return Result.valid(
                 value=self.select_player_from_list(unregistered_players)
@@ -226,7 +216,7 @@ class TournamentPlayer:
 
     def is_tournament_registration_open(self, tournament_pk: str) -> Result:
         tournament_result = self.tournament_service.get_tournament_by_pk(tournament_pk)
-        tournament: Tournament = tournament_result.get_result()
+        tournament: Tournament = tournament_result.get_value()
         if tournament.has_begun:
             return Result.invalid(reason="Registration is now closed")
 
@@ -247,7 +237,7 @@ class TournamentPlayer:
             self.display_result(registration_open_result)
             return None
 
-        tournament: Tournament = registration_open_result.get_result()
+        tournament: Tournament = registration_open_result.get_value()
         regsitration_result = Result.invalid(reason="initial loop")
         while not regsitration_result:
             regsitration_result = self.select_player_by_name(tournament)
@@ -255,7 +245,7 @@ class TournamentPlayer:
                 self.display_result(regsitration_result)
                 continue
 
-            player: Player = regsitration_result.get_result()
+            player: Player = regsitration_result.get_value()
             regsitration_result = self.tournament_service.register_player_to_tournament(
                 tournament_pk=session_context.required_tournament_pk,
                 chess_id=player.chess_id,
@@ -273,31 +263,7 @@ class TournamentPlayer:
         )
 
         player_view = PlayerView(console=self.renderer_handler.view.console)
-        player_view.list_view.render_models(registered_players_result.get_result())
-
-
-class TournamentRounds:
-
-    def __init__(
-        self,
-        prompt_handler: TournamentPromptHandler,
-        renderer_handler: TournamentRenderHandler,
-        tournament_service: TournamentService,
-    ) -> None:
-        self.prompt_handler = prompt_handler
-        self.renderer_handler = renderer_handler
-        self.tournament_service = tournament_service
-
-    def show_tournament_rounds(self) -> None:
-        user_input = self.prompt_handler.get_tournament_pk_input()
-        result = self.tournament_service.get_tournament_rounds(tournament_pk=user_input)
-        if not result:
-            self.renderer_handler.view.render_invalid_input(reason=result.get_reason())
-            return
-
-        tournament_rounds = result.get_result()
-        round_view = RoundView(console=self.renderer_handler.view.console)
-        round_view.list_view.render_models(tournament_rounds)
+        player_view.list_view.render_models(registered_players_result.get_value())
 
 
 class TournamentController:
@@ -312,13 +278,19 @@ class TournamentController:
         self.tournament_service = tournament_service
 
     def create_new_tournament(self) -> None:
-        self.tournament_service.repository.save_new_model(
-            user_input=self.prompt_handler.get_tournament_input()
-        )
+        user_input = self.prompt_handler.get_tournament_input()
+        create_result = self.tournament_service.create_tournament(user_input)
+        if not create_result:
+            self.renderer_handler.view.render_invalid_input(create_result.get_reason())
+
+        self.renderer_handler.view.render_success(create_result.get_success_message())
 
     def show_tournaments(self) -> None:
-        tournaments = self.tournament_service.repository.get_models()
-        self.renderer_handler.render_tournaments(tournaments)
+        tournaments_result = self.tournament_service.get_tournaments()
+        if not tournaments_result:
+            self.renderer_handler.view.render_invalid_input(
+                tournaments_result.get_reason()
+            )
 
-    def show_filtered_tournaments(self) -> None:
-        pass
+        tournaments: list[Tournament] = tournaments_result.get_value()
+        self.renderer_handler.render_tournaments(tournaments)

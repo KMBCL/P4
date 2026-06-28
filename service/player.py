@@ -6,7 +6,7 @@ from core.core_data_repository import (
     PLAYER_DIR,
     CoreDataRepository,
 )
-from models.player import Player
+from models.player import Player, PlayerInputData
 
 Players: TypeAlias = list[Player]
 
@@ -16,9 +16,6 @@ class PlayerService:
     def __init__(self) -> None:
         self.repository = CoreDataRepository[Player](Player)
         self.repository.data_path = PLAYER_DIR
-
-    def make_key(self, player: Player) -> str:
-        return f"{player.last_name}-{player.first_name}-{player.chess_id}".lower()
 
     def get_player_by_name(self, player_name: str) -> Result:
         players = self.repository.get_models()
@@ -33,3 +30,28 @@ class PlayerService:
             )
 
         return Result.valid(value=similar_players)
+
+    def can_save(self, chess_id: str) -> Result:
+        filter: dict[str, str] = {"chess_id": chess_id}
+        players = self.repository.get_filtered_models(filter)
+        if players:
+            return Result.invalid(
+                reason=f"Found existing players {players} with same chess_id {chess_id}"
+            )
+
+        return Result.valid()
+
+    def create_new_player(self, player_input: PlayerInputData) -> Result:
+        can_save_resut = self.can_save(player_input.chess_id)
+        if not can_save_resut:
+            return can_save_resut
+
+        self.repository.save_new_model(player_input)
+        return Result.valid(success_message="Successfully saved new player!")
+
+    def get_players(self) -> Result:
+        players = self.repository.get_models()
+        if not players:
+            return Result.invalid("No players found")
+
+        return Result.valid(players)

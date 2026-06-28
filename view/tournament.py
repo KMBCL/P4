@@ -1,5 +1,5 @@
 from core.core_view import CoreView
-from core.constants import WinningCondition
+
 from models.tournament import Tournament
 
 
@@ -23,30 +23,11 @@ class TournamentView(CoreView[Tournament]):
     def prompt_round_count(self) -> str:
         return self.console.input("Round count - default=4 : ")
 
-    def prompt_action(self) -> str:
-        return self.console.input("Select choice : ").upper()
-
-    def prompt_player_chess_id(self) -> str:
-        return self.console.input("Player chess id : ")
-
     def prompt_tournament_pk(self) -> str:
         return self.console.input("Select tournament by 'pk' : ")
 
-    def prompt_round_name(self) -> str:
-        return self.console.input("Round name : ")
-
     def prompt_register_player(self) -> str:
         return self.console.input("Register player by 'last name'")
-
-    def prompt_round_match_winning_condition(self, chess_id: str) -> str:
-        return self.console.input(
-            f"""Enter match outcome for chess ID player '{chess_id}' :
-            Choices are :
-            - {WinningCondition.VICTORY} - Victory
-            - {WinningCondition.DEFEAT} - Defeat
-            - {WinningCondition.DRAW} - Draw
-            Select : """
-        )
 
     def render_setting_scores_for_round(self, round_name: str) -> None:
         return self.console.print(f"Setting scores for {round_name}")

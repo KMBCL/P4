@@ -1,6 +1,4 @@
-from typing import Any
-
-
+from models.player import Player
 from service.player import PlayerService
 from controllers.handlers.player import PlayerPromptHandler, PlayerRenderHandler
 
@@ -10,30 +8,30 @@ class PlayerController:
         self,
         prompt_handler: PlayerPromptHandler,
         renderer_handler: PlayerRenderHandler,
+        player_service: PlayerService,
     ) -> None:
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
-        self.service = PlayerService()
+        self.player_service = player_service
 
     def create_new_player(self) -> None:
-        self.service.repository.save_new_model(
-            user_input=self.prompt_handler.get_player_input()
-        )
+        user_input = self.prompt_handler.get_player_input()
+        create_result = self.player_service.create_new_player(user_input)
+        if not create_result:
+            self.renderer_handler.view.render_invalid_input(create_result.get_reason())
+
+        self.renderer_handler.view.render_success(create_result.get_success_message())
 
     def show_players(self) -> None:
-        players = self.service.repository.get_models()
+        players_result = self.player_service.get_players()
+        if not players_result:
+            self.renderer_handler.view.render_invalid_input(players_result.get_reason())
+
+        players: list[Player] = players_result.get_value()
         self.renderer_handler.render_players(players)
 
-    def show_player(self, pk: str) -> None:
-        player = self.service.repository.get_model(key="pk", value=pk)
-        if player is None:
-            return None
-
-        self.renderer_handler.render_players([player])
-
-    def show_filtered_players(self, **kwargs: Any) -> None:
-        if not kwargs:
-            return
-
-        filtered_players = self.service.repository.get_filtered_models(filters=kwargs)
-        self.renderer_handler.render_players(filtered_players)
+    # def show_player(self) -> None:
+    #     user_input = self.prompt_handler.prompt_last_name()
+    #     player_result = self.player_service.get_player_by_name(user_input)
+    #     if not player_result:
+    #         sel

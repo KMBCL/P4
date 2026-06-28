@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Generic, Type
+from typing import Any, Generic, Type
 from pathlib import Path
 import json
 
 from typing import Any
 
-from core.core_model import TModel, Model, ModelInputData
+from core.core_model import TModel, ModelInputData
 from core.result import Result
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -16,20 +16,6 @@ DATA_BASE_ROOT = f"{BASE_DIR.parent}/database"
 PLAYER_DIR = Path(f"{DATA_BASE_ROOT}/players.json")
 TOURNAMENT_DIR = Path(f"{DATA_BASE_ROOT}/tournaments.json")
 MENU_DIR = Path(f"{DATA_BASE_ROOT}/menu.json")
-
-
-@dataclass
-class DataItem:
-    content: str
-    shortcut: str
-
-
-@dataclass
-class DataSet:
-    data_items: list[DataItem]
-
-    def add_data(self, data_item: DataItem) -> None:
-        self.data_items.append(data_item)
 
 
 class ExtractMixin:
@@ -70,8 +56,6 @@ class CoreDataRepository(
     def __init__(self, model_class: Type[TModel]) -> None:
         self.data_path = Path()
         self.model_class = model_class
-
-    def get_data(self) -> DataSet: ...
 
     def read_json_file(self, path: Path | None = None) -> list[dict[str, Any]]:
         data_path = path or self.data_path

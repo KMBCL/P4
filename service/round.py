@@ -25,6 +25,40 @@ REGISTERED_PLAYER_CHESS_IDS = "registered_player_chess_ids"
 class RoundService:
     FIRST_ROUND_NAME: str = "round_0"
 
+    def make_pairs(self, chess_ids: list[str]) -> list[tuple[str, str]]:
+        PAIR_LENGTH = 2
+        pairs: list[tuple[str, str]] = []
+        pair: list[str] = []
+        for chess_id in chess_ids:
+            pair.append(chess_id)
+            if len(pair) == PAIR_LENGTH:
+                pairs.append(
+                    (
+                        pair[0],
+                        pair[1],
+                    )
+                )
+                pair = []
+        return pairs
+
+    def make_player_pairs(
+        self,
+        tournament: Tournament,
+    ) -> list[tuple[str, str]]:
+        chess_ids: list[str] = self.prepare_chess_ids(tournament)
+        pairs = self.make_pairs(chess_ids)
+        return pairs
+
+    def set_round_players(self, tournament: Tournament, round: Round) -> Result:
+        player_pairs_check_result = self.check_registered_players_pairs(tournament)
+        if not player_pairs_check_result:
+            return player_pairs_check_result
+
+        shuffled_pairs: list[tuple[str, str]] = self.make_player_pairs(tournament)
+        round.set_round_players(player_pairs=shuffled_pairs)
+
+        return Result.valid(value=tournament)
+
     def prepare_chess_ids(self, tournament: Tournament) -> list[str]:
         if self.is_first_round(tournament.rounds):
             chess_ids = tournament.registered_player_chess_ids
@@ -64,12 +98,19 @@ class RoundService:
 
         return None
 
-    def extract_incomplete_matches(self, round: Round) -> list[RoundMatch]:
-        incomplete_scores: list[RoundMatch] = []
-        if not round.is_round_score_complete():
-            incomplete_scores = [
-                round_match
-                for round_match in round.round_matches
-                if not round_match.is_score_complete()
-            ]
-        return incomplete_scores
+    def extract_tournament_rounds(self, raw_tournament: dict[str, Any]):
+        return raw_tournament["rounds"]
+
+    def prepare_next_round(self, tournament: Tournament) -> Result:
+        next_round = self.get_next_round(tournament.rounds)
+        round_players_result: Result = Result.valid()
+        if next_round is None:
+            return Result.invalid(reason="no more rounds to run.")
+
+        if not next_round.are_round_matches_defined():
+            round_players_result = self.set_round_players(tournament, next_round)
+
+        if not round_players_result:
+            return round_players_result
+
+        return Result.valid(value=next_round)

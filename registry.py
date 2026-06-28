@@ -38,7 +38,7 @@ REGISTRY: ActionRouting = {
     TournamentMenuCode.SHOW_TOURNAMENTS: Controllers.tournament_controller.show_tournaments,
     TournamentMenuCode.HANDLE_TOURNAMENT: Controllers.tournament_selector.handle_tournament,
     TournamentMenuCode.CHANGE_TOURNAMENT: Controllers.tournament_selector.change_tournament,
-    TournamentMenuCode.SHOW_TOURNAMENT_ROUNDS: Controllers.tournament_rounds.show_tournament_rounds,
+    # TournamentMenuCode.SHOW_TOURNAMENT_ROUNDS: Controllers.tournament_rounds.show_tournament_rounds,
     TournamentMenuCode.SHOW_REGISTERED_PLAYERS: Controllers.tournament_player.show_register_players,
     TournamentMenuCode.REGISTER_PLAYER: Controllers.tournament_player.register_player,
     TournamentMenuCode.RUN_TOURNAMENT: Controllers.tournament_runner.run_tournament,

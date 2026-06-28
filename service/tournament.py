@@ -11,7 +11,7 @@ from core.core_data_repository import (
 from core.result import Result
 
 
-from models.tournament import Tournament
+from models.tournament import Tournament, TournamentInputData
 from models.player import Player
 
 Tournaments: TypeAlias = list[Tournament]
@@ -46,7 +46,7 @@ class TournamentService:
             return raw_tournament_result
 
         return Result.valid(
-            value=Tournament.from_json(raw_tournament_result.get_result())
+            value=Tournament.from_json(raw_tournament_result.get_value())
         )
 
     def get_tournament_by_name(self, tournament_name: str) -> Result:
@@ -73,16 +73,6 @@ class TournamentService:
 
         return Result.valid()
 
-    def check_tournament_is_begun(self, tournament_pk: str) -> Result:
-        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
-        tournament: Tournament = Tournament.from_json(tournament_result.get_result())
-        if tournament.has_begun:
-            return Result.invalid(
-                reason="Tournament is already begun, cannot add new players"
-            )
-
-        return Result.valid()
-
     def register_player_to_tournament(
         self,
         tournament_pk: str,
@@ -96,7 +86,7 @@ class TournamentService:
         if not tournament_result:
             return tournament_result
 
-        raw_tournament = tournament_result.get_result()
+        raw_tournament = tournament_result.get_value()
         result = self.player_registration.register_player_to_tournament(
             raw_tournament=raw_tournament,
             chess_id=chess_id,
@@ -104,12 +94,11 @@ class TournamentService:
         if not result:
             return result
 
-        self.repository.update_model(result.get_result())
+        self.repository.update_model(result.get_value())
         return result
 
     def extract_registered_players(
         self,
-        registered_players: list[Player],
         registered_chess_ids: list[str],
     ):
         raw_players = self.repository.read_json_file(path=PLAYER_DIR)
@@ -127,14 +116,13 @@ class TournamentService:
             return tournament_result
 
         registered_players: list[Player] = []
-        tournament = tournament_result.get_result()
+        tournament = tournament_result.get_value()
 
         registered_chess_ids: list[str] = tournament[REGISTERED_PLAYER_CHESS_IDS]
         if not registered_chess_ids:
             return Result.valid(value=registered_players)
 
         registered_players = self.extract_registered_players(
-            registered_players=registered_players,
             registered_chess_ids=registered_chess_ids,
         )
 
@@ -144,3 +132,14 @@ class TournamentService:
         tournament_json = tournament.to_json()
         uploaded_tournaments = self.repository.update_model_json(tournament_json)
         self.repository.write_json_data(uploaded_tournaments)
+
+    def create_tournament(self, user_input: TournamentInputData) -> Result:
+        self.repository.save_new_model(user_input)
+        return Result.valid(success_message="Successfully saved new tournament!")
+
+    def get_tournaments(self) -> Result:
+        tournaments = self.repository.get_models()
+        if not tournaments:
+            return Result.invalid("No tournaments found")
+
+        return Result.valid(tournaments)

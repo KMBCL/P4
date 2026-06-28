@@ -4,17 +4,26 @@ from controllers.handlers.build import (
     tournament_rendered_handler,
     player_prompt_handler,
     player_render_handler,
+    round_prompt_handler,
+    round_render_handler,
 )
 
 from controllers.tournament import (
     TournamentController,
     TournamentSelector,
     TournamentRunner,
-    TournamentRounds,
     TournamentPlayer,
 )
-
+from controllers.round import RoundController
 from controllers.player import PlayerController
+
+round_controller = RoundController(
+    round_prompt_handler,
+    round_render_handler,
+    round_service,
+    tournament_service,
+)
+
 
 tournament_selector = TournamentSelector(
     tournament_prompt_handler,
@@ -26,13 +35,9 @@ tournament_runner = TournamentRunner(
     tournament_prompt_handler,
     tournament_rendered_handler,
     tournament_service,
-    round_service,
+    round_controller,
 )
-tournament_rounds = TournamentRounds(
-    tournament_prompt_handler,
-    tournament_rendered_handler,
-    tournament_service,
-)
+
 tournament_player = TournamentPlayer(
     tournament_prompt_handler,
     tournament_rendered_handler,
@@ -49,4 +54,5 @@ tournament_controller = TournamentController(
 player_controller = PlayerController(
     player_prompt_handler,
     player_render_handler,
+    player_service,
 )

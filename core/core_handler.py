@@ -1,7 +1,6 @@
 from typing import Callable, Generic, Any, TypeVar
 
 from core.core_view import CoreView
-from core.core_model import Model
 from core.result import Result
 
 TView = TypeVar("TView", bound=CoreView[Any])
