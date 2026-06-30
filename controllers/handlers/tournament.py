@@ -40,9 +40,6 @@ class TournamentPromptHandler(CorePromptHandler[TournamentView]):
     def prompt_end_date(self) -> str:
         return self.prompt(self.view.prompt_end_date, DateValidator.validate_date)
 
-    def prompt_tournament_pk(self) -> str:
-        return self.view.prompt_tournament_pk()
-
 
 class TournamentRenderHandler(CoreRenderer):
 

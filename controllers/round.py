@@ -35,19 +35,6 @@ class RoundController:
         self.tournament_service.save_tournament(tournament)
         return tournament_result
 
-    def get_tournament_rounds(self, tournament_pk: str) -> Result:
-        tournament_result = self.tournament_service.get_raw_tournament_by_pk(
-            tournament_pk
-        )
-        if not tournament_result:
-            return tournament_result
-
-        raw_rounds = self.round_service.extract_tournament_rounds(
-            tournament_result.get_value()
-        )
-        rounds = [Round.from_json(raw_data) for raw_data in raw_rounds]
-        return Result.valid(value=rounds)
-
     def get_incomplete_matches(self, round: Round) -> list[RoundMatch]:
         incomplete_scores: list[RoundMatch] = []
         if not round.is_round_score_complete():

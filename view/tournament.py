@@ -23,9 +23,6 @@ class TournamentView(CoreView[Tournament]):
     def prompt_round_count(self) -> str:
         return self.console.input("Round count - default=4 : ")
 
-    def prompt_tournament_pk(self) -> str:
-        return self.console.input("Select tournament by 'pk' : ")
-
     def prompt_register_player(self) -> str:
         return self.console.input("Register player by 'last name'")
 

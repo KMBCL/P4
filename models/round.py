@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Self, TypeAlias
+from typing import Any, Self
 
-from core.core_model import Model, ModelInputData
+from core.core_model import Model
 from core.constants import WinningCondition
+from models.score import PlayerScore
 
 SCORE = 1
 VICTORY_SCORE = 1.0

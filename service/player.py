@@ -7,6 +7,7 @@ from core.core_data_repository import (
     CoreDataRepository,
 )
 from models.player import Player, PlayerInputData
+from models.tournament import Tournament
 
 Players: TypeAlias = list[Player]
 
@@ -16,6 +17,21 @@ class PlayerService:
     def __init__(self) -> None:
         self.repository = CoreDataRepository[Player](Player)
         self.repository.data_path = PLAYER_DIR
+
+    def get_unregistered_players(
+        self, user_input: str, players: list[Player], tournament: Tournament
+    ) -> Result:
+        unregistered_players: list[Player] = [
+            player
+            for player in players
+            if player.chess_id not in tournament.registered_player_chess_ids
+        ]
+        if not unregistered_players:
+            return Result.invalid(
+                f"All players matching '{user_input}' are already register"
+            )
+
+        return Result.valid(value=unregistered_players)
 
     def get_player_by_name(self, player_name: str) -> Result:
         players = self.repository.get_models()

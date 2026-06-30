@@ -12,6 +12,7 @@ from controllers.round import RoundController
 from models.round import Round, RoundMatch
 from models.tournament import Tournament
 from models.player import Player
+
 from service.tournament import TournamentService
 from service.player import PlayerService
 
@@ -144,13 +145,14 @@ class TournamentRunner:
         while running_result:
             next_round: Round = running_result.get_value()
             self.run_setting_scores(next_round, tournament)
-            next_round_result = self.round_controller.prepare_next_round(tournament)
-            if not next_round_result:
+            running_result = self.round_controller.prepare_next_round(tournament)
+            if not running_result:
                 self.renderer_handler.view.render_invalid_input(
-                    next_round_result.get_reason()
+                    running_result.get_reason()
                 )
                 continue
-            next_round = next_round_result.get_value()
+
+            next_round = running_result.get_value()
             running_result = self.should_continue(next_round)
 
 
@@ -178,21 +180,6 @@ class TournamentPlayer:
         player = players[int(user_input) - 1]
         return player
 
-    def get_unregistered_players(
-        self, user_input: str, players: list[Player], tournament: Tournament
-    ) -> Result:
-        unregistered_players: list[Player] = [
-            player
-            for player in players
-            if player.chess_id not in tournament.registered_player_chess_ids
-        ]
-        if not unregistered_players:
-            return Result.invalid(
-                f"All players matching '{user_input}' are already register"
-            )
-
-        return Result.valid(value=unregistered_players)
-
     def select_player_by_name(self, tournament: Tournament):
         user_input = self.prompt_handler.get_player_registration_input()
         players_result = self.player_service.get_player_by_name(user_input)
@@ -200,7 +187,7 @@ class TournamentPlayer:
             return players_result
 
         players: list[Player] = players_result.get_value()
-        unregistered_players_result = self.get_unregistered_players(
+        unregistered_players_result = self.player_service.get_unregistered_players(
             user_input, players, tournament
         )
         if not unregistered_players_result:
@@ -216,8 +203,11 @@ class TournamentPlayer:
 
     def is_tournament_registration_open(self, tournament_pk: str) -> Result:
         tournament_result = self.tournament_service.get_tournament_by_pk(tournament_pk)
+        if not tournament_result:
+            return tournament_result
+
         tournament: Tournament = tournament_result.get_value()
-        if tournament.has_begun:
+        if self.tournament_service.has_begun(tournament):
             return Result.invalid(reason="Registration is now closed")
 
         return Result.valid(value=tournament)
@@ -261,6 +251,11 @@ class TournamentPlayer:
         registered_players_result = self.tournament_service.get_registered_players(
             tournament_pk=session_context.required_tournament_pk
         )
+        if not registered_players_result:
+            self.renderer_handler.view.render_invalid_input(
+                registered_players_result.get_reason()
+            )
+            return None
 
         player_view = PlayerView(console=self.renderer_handler.view.console)
         player_view.list_view.render_models(registered_players_result.get_value())
@@ -282,6 +277,7 @@ class TournamentController:
         create_result = self.tournament_service.create_tournament(user_input)
         if not create_result:
             self.renderer_handler.view.render_invalid_input(create_result.get_reason())
+            return None
 
         self.renderer_handler.view.render_success(create_result.get_success_message())
 
@@ -291,6 +287,7 @@ class TournamentController:
             self.renderer_handler.view.render_invalid_input(
                 tournaments_result.get_reason()
             )
+            return None
 
         tournaments: list[Tournament] = tournaments_result.get_value()
         self.renderer_handler.render_tournaments(tournaments)

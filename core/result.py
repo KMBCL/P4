@@ -30,6 +30,7 @@ class Result:
         return cls(is_valid=False, reason=reason)
 
     def __bool__(self) -> bool:
+        # revoir pour if doit vérifer un objet vide
         return self._is_valid
 
     def get_reason(self) -> str:

@@ -10,8 +10,9 @@ from core.core_data_repository import (
 )
 from core.result import Result
 
-
+from models.helpers.flat import flat_rounds
 from models.tournament import Tournament, TournamentInputData
+
 from models.player import Player
 
 Tournaments: TypeAlias = list[Tournament]
@@ -28,6 +29,10 @@ class TournamentService:
         self.repository = CoreDataRepository[Tournament](Tournament)
         self.repository.data_path = TOURNAMENT_DIR
         self.player_registration = PlayerRegistration()
+
+    def has_begun(self, tournament: Tournament) -> bool:
+        round_matches = flat_rounds(tournament.rounds)
+        return bool(round_matches)
 
     def get_raw_tournament_by_pk(self, tournament_pk: str) -> Result:
         raw_tournaments: list[dict[str, Any]] = self.repository.read_json_file()
