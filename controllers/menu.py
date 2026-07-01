@@ -10,8 +10,10 @@ from menu.session_context import SessionContext
 from models.menu import MenuItem, MenuStructure
 from menu.constants import MenuCode
 
+from service.menu import MenuService
+
 if TYPE_CHECKING:
-    from registry import Action, ActionRouting
+    from controllers.registry import Action, ActionRouting
 
 
 class MenuController:
@@ -24,12 +26,13 @@ class MenuController:
         prompt_handler: MenuPromptHandler,
         renderer_handler: MenuRendererHandler,
         registry: ActionRouting,
-        menu_structure: MenuStructure,
+        menu_service: MenuService,
     ) -> None:
         self.renderer_handler = renderer_handler
         self.prompt_handler = prompt_handler
         self.regisgry = registry
-        self.menu_structure = menu_structure
+        self.menu_service = menu_service
+        self.menu_structure = menu_service.get_menu_structure()
         self.menu_item_history = []
         self.actual_menu_item = self.menu_structure.root_item
         self.context = SessionContext()

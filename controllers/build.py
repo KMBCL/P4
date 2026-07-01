@@ -1,4 +1,8 @@
-from service.build import tournament_service, player_service, round_service
+from service.build import (
+    tournament_service,
+    player_service,
+    round_service,
+)
 from controllers.handlers.build import (
     tournament_prompt_handler,
     tournament_rendered_handler,

@@ -6,6 +6,7 @@ from service.player import PlayerService
 from service.round import RoundService
 from service.round_match import RoundMatchService
 from service.player_registration import PlayerRegistration
+from service.menu import MenuService
 
 player_service = PlayerService(repository)
 round_service = RoundService()
@@ -16,3 +17,4 @@ tournament_service = TournamentService(
     player_registration_service,
     round_match_service,
 )
+menu_service = MenuService(repository)

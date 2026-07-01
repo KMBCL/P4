@@ -1,4 +1,11 @@
-from view.build import console, list_view, tournament_view, player_view, round_view
+from view.build import (
+    console,
+    core_view,
+    list_view,
+    tournament_view,
+    player_view,
+    round_view,
+)
 
 from controllers.handlers.tournament import (
     TournamentPromptHandler,
@@ -15,6 +22,11 @@ from controllers.handlers.round import (
     RoundRenderHandler,
 )
 
+from controllers.handlers.menu import (
+    MenuPromptHandler,
+    MenuRendererHandler,
+)
+
 tournament_prompt_handler = TournamentPromptHandler(tournament_view)
 tournament_rendered_handler = TournamentRenderHandler(tournament_view)
 
@@ -23,3 +35,6 @@ player_render_handler = PlayerRenderHandler(player_view)
 
 round_prompt_handler = RoundPromptHandler(round_view)
 round_render_handler = RoundRenderHandler(round_view)
+
+menu_prompt_handler = MenuPromptHandler(core_view)
+menu_render_handler = MenuRendererHandler(core_view)
