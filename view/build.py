@@ -3,7 +3,7 @@ from typing import Any
 from rich.console import Console
 
 
-from view.core_view import ListView, CoreView
+from core.core_view import ListView, CoreView
 
 
 from view.tournament import TournamentView

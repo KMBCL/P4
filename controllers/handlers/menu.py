@@ -3,7 +3,7 @@ from typing import Any
 from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
 
-from view.core_view import CoreView
+from core.core_view import CoreView
 from controllers.validators.menu import MenuValidator
 from models.menu import MenuItem
 

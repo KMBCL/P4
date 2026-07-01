@@ -1,4 +1,4 @@
-from view.core_view import CoreView
+from core.core_view import CoreView
 from models.round import Round
 
 from core.constants import WinningCondition

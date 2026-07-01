@@ -1,6 +1,6 @@
 from typing import Any
 
-from view.core_view import CoreView
+from core.core_view import CoreView
 
 
 class CoreRenderer:
