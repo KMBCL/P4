@@ -2,60 +2,102 @@ from __future__ import annotations
 
 from typing import Any, TypeAlias
 
-
-from core.core_data_repository import (
-    TOURNAMENT_DIR,
-    PLAYER_DIR,
-    CoreDataRepository,
-)
 from core.result import Result
 
-from models.helpers.flat import flat_rounds
+from repository.helpers.pk import make_pk
+from repository.repository import Repository
+from repository.paths import TOURNAMENT_DIR, PLAYER_DIR
+from repository.tournament import TournamentJSON
+from repository.round import RoundJSON, RoundMatchJSON
+
+from models.helpers.flat import flat_round_matches
 from models.tournament import Tournament, TournamentInputData
+from models.round import Round
 
 from models.player import Player
 
-Tournaments: TypeAlias = list[Tournament]
-
-REGISTERED_PLAYER_CHESS_IDS = "registered_player_chess_ids"
 
 from service.player_registration import PlayerRegistration
+from service.round_match import RoundMatchService
+
+Tournaments: TypeAlias = list[Tournament]
 
 
 class TournamentService:
 
-    def __init__(self) -> None:
-
-        self.repository = CoreDataRepository[Tournament](Tournament)
-        self.repository.data_path = TOURNAMENT_DIR
-        self.player_registration = PlayerRegistration()
+    def __init__(
+        self,
+        repository: Repository,
+        player_registration: PlayerRegistration,
+        round_match_service: RoundMatchService,
+    ) -> None:
+        self.repository = repository
+        self.player_registration = player_registration
+        self.round_match_service = round_match_service
 
     def has_begun(self, tournament: Tournament) -> bool:
-        round_matches = flat_rounds(tournament.rounds)
+        round_matches = flat_round_matches(tournament.rounds)
         return bool(round_matches)
 
     def get_raw_tournament_by_pk(self, tournament_pk: str) -> Result:
-        raw_tournaments: list[dict[str, Any]] = self.repository.read_json_file()
-        tournament_result = self.repository.extract_data_by_field(
+        raw_tournaments: list[dict[str, Any]] = self.repository.get_raw_models(
+            TOURNAMENT_DIR
+        )
+        data_by_field_name = self.repository.extract_data_by_field(
             raw_data=raw_tournaments,
             field_value=tournament_pk,
         )
-        if not tournament_result:
-            return tournament_result
+        if data_by_field_name is None:
+            return Result.invalid("No data found")
 
-        return tournament_result
+        return Result.valid(data_by_field_name)
+
+    def _load_registered_players_from_payload(self, tournament: Tournament) -> None:
+        tournament.registered_players = self.player_registration.to_players(
+            tournament.registered_player_payload
+        )
+
+    def _load_round_matches_from_payload(
+        self, registered_players: list[Player], rounds: list[Round]
+    ) -> None:
+        self.round_match_service.set_round_matches_from_payload(
+            registered_players,
+            rounds,
+        )
+
+    def _get_tournaments(self) -> Tournaments:
+        tournaments: Tournaments = [
+            TournamentJSON.from_json(raw_tournament)
+            for raw_tournament in self.repository.get_raw_models(TOURNAMENT_DIR)
+        ]
+
+        for tournament in tournaments:
+            self._load_registered_players_from_payload(tournament)
+            self._load_round_matches_from_payload(
+                tournament.registered_players,
+                tournament.rounds,
+            )
+
+        return tournaments
 
     def get_tournament_by_pk(self, tournament_pk: str) -> Result:
         raw_tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
         if not raw_tournament_result:
             return raw_tournament_result
 
-        return Result.valid(
-            value=Tournament.from_json(raw_tournament_result.get_value())
+        tournament: Tournament = TournamentJSON.from_json(
+            raw_tournament_result.get_value()
+        )
+        self._load_registered_players_from_payload(tournament)
+        self._load_round_matches_from_payload(
+            tournament.registered_players,
+            tournament.rounds,
         )
 
+        return Result.valid(tournament)
+
     def get_tournament_by_name(self, tournament_name: str) -> Result:
-        tournaments = self.repository.get_models()
+        tournaments = self._get_tournaments()
         similar_tournaments = [
             tournament
             for tournament in tournaments
@@ -70,7 +112,7 @@ class TournamentService:
 
     def check_chess_id_exists(self, chess_id: str) -> Result:
         if not self.player_registration.validate_chess_id_exists(
-            chess_id, self.repository.read_json_file(path=PLAYER_DIR)
+            chess_id, self.repository.get_raw_models(PLAYER_DIR)
         ):
             return Result.invalid(
                 reason=f"Player with this chess ID : {chess_id} doesn't exists in database"
@@ -80,70 +122,50 @@ class TournamentService:
 
     def register_player_to_tournament(
         self,
-        tournament_pk: str,
-        chess_id: str,
+        tournament: Tournament,
+        player: Player,
     ) -> Result:
-        chess_id_result = self.check_chess_id_exists(chess_id)
-        if not chess_id_result:
-            return chess_id_result
-
-        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
-        if not tournament_result:
-            return tournament_result
-
-        raw_tournament = tournament_result.get_value()
         result = self.player_registration.register_player_to_tournament(
-            raw_tournament=raw_tournament,
-            chess_id=chess_id,
+            tournament, player
         )
         if not result:
             return result
 
-        self.repository.update_model(result.get_value())
+        raw_tournament = TournamentJSON.to_json(result.get_value())
+        self.repository.update_raw_model(TOURNAMENT_DIR, raw_tournament)
         return result
 
-    def extract_registered_players(
-        self,
-        registered_chess_ids: list[str],
-    ):
-        raw_players = self.repository.read_json_file(path=PLAYER_DIR)
-        registered_raw_players = self.player_registration.extract_registered_players(
-            raw_players=raw_players,
-            registered_chess_ids=registered_chess_ids,
-        )
-        registered_players = self.player_registration.to_players(registered_raw_players)
-
-        return registered_players
-
     def get_registered_players(self, tournament_pk: str) -> Result:
-        tournament_result = self.get_raw_tournament_by_pk(tournament_pk)
+        tournament_result = self.get_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
 
-        registered_players: list[Player] = []
-        tournament = tournament_result.get_value()
+        tournament: Tournament = tournament_result.get_value()
+        if not tournament.registered_players:
+            return Result.invalid("No registered players found")
 
-        registered_chess_ids: list[str] = tournament[REGISTERED_PLAYER_CHESS_IDS]
-        if not registered_chess_ids:
-            return Result.valid(value=registered_players)
-
-        registered_players = self.extract_registered_players(
-            registered_chess_ids=registered_chess_ids,
-        )
-
-        return Result.valid(value=registered_players)
+        return Result.valid(value=tournament.registered_players)
 
     def save_tournament(self, tournament: Tournament) -> None:
-        tournament_json = tournament.to_json()
-        uploaded_tournaments = self.repository.update_model_json(tournament_json)
-        self.repository.write_json_data(uploaded_tournaments)
+        tournament_json = TournamentJSON.to_json(tournament)
+        self.repository.update_raw_model(
+            TOURNAMENT_DIR,
+            tournament_json,
+        )
 
     def create_tournament(self, user_input: TournamentInputData) -> Result:
-        self.repository.save_new_model(user_input)
+        tournament = Tournament.from_user_input(
+            make_pk(self.repository, TOURNAMENT_DIR),
+            user_input,
+        )
+        self.repository.save_new_raw_model(
+            TOURNAMENT_DIR,
+            TournamentJSON.to_json(tournament),
+        )
         return Result.valid(success_message="Successfully saved new tournament!")
 
     def get_tournaments(self) -> Result:
-        tournaments = self.repository.get_models()
+        tournaments = self._get_tournaments()
         if not tournaments:
             return Result.invalid("No tournaments found")
 

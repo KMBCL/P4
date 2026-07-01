@@ -6,6 +6,7 @@ from typing import Any, Self
 from core.core_model import Model
 from core.constants import WinningCondition
 from models.score import PlayerScore
+from models.player import Player
 
 SCORE = 1
 VICTORY_SCORE = 1.0
@@ -20,50 +21,13 @@ SCORE_DEFINITION = {
 
 
 @dataclass
-class Score:
-    chess_id: str
-    score: str = "0.0"
-
-    @property
-    def score_value(self) -> float:
-        return float(self.score)
-
-    @score_value.setter
-    def score_value(self, value: float) -> None:
-        self.score = str(value)
-
-
-@dataclass
 class RoundMatch(Model[Any]):
-    score_a: Score
-    score_b: Score
-
-    @classmethod
-    def from_json_list(cls, json_data: list[str]) -> Self:
-        scores: list[Score] = [
-            Score(chess_id=raw_score[0], score=raw_score[1]) for raw_score in json_data
-        ]
-        round_match = cls(
-            score_a=scores[0],
-            score_b=scores[1],
-        )
-        return round_match
-
-    def round_match_to_json(self) -> list[list[str]]:
-        json: list[list[str]] = [
-            [
-                self.score_a.chess_id,
-                self.score_a.score,
-            ],
-            [
-                self.score_b.chess_id,
-                self.score_b.score,
-            ],
-        ]
-        return json
+    player_score_a: PlayerScore
+    player_score_b: PlayerScore
 
     def calculate_match_score(self) -> float:
-        return self.score_a.score_value + self.score_b.score_value
+        # return self.score_a.score_value + self.score_b.score_value
+        pass
 
     def is_score_complete(self):
         return self.calculate_match_score() == SCORE
@@ -78,16 +42,20 @@ class RoundMatch(Model[Any]):
         return DRAW_SCORE
 
     def set_score(self, winning_condition: WinningCondition):
-        self.score_a.score_value = SCORE_DEFINITION.get(winning_condition, DEFEAT_SCORE)
-        self.score_b.score_value = self.give_score_b_value(winning_condition)
+        # self.score_a.score_value = SCORE_DEFINITION.get(winning_condition, DEFEAT_SCORE)
+        # self.score_b.score_value = self.give_score_b_value(winning_condition)
+        pass
 
-    def to_list(self) -> list[Score]:
-        return [self.score_a, self.score_b]
+    def to_list(self) -> list[PlayerScore]:
+        return [self.player_score_a, self.player_score_b]
 
 
-def default_matches():
-    default_matches: list[RoundMatch] = []
-    return default_matches
+def default_matches() -> list[RoundMatch]:
+    return []
+
+
+def default_raw_matches() -> list[list[str]]:
+    return []
 
 
 @dataclass
@@ -95,45 +63,21 @@ class Round(Model[Any]):
     name: str
     start_timestamp: str
     end_timestamp: str
+    round_matches_payload: list[list[str]] = field(default_factory=default_raw_matches)
     round_matches: list[RoundMatch] = field(default_factory=default_matches)
 
-    @classmethod
-    def from_json(cls, json_data: dict[str, Any]) -> Self:
-        raw_matches: list[list[str]] = json_data["round_matches"]
-        round_matches: list[RoundMatch] = [
-            RoundMatch.from_json_list(raw_match) for raw_match in raw_matches
-        ]
-        round = cls(
-            name=json_data["name"],
-            start_timestamp=json_data["start_timestamp"],
-            end_timestamp=json_data["end_timestamp"],
-            round_matches=round_matches,
-        )
-        return round
-
-    def to_json(self) -> dict[str, Any]:
-        json: dict[str, Any] = {
-            "name": self.name,
-            "start_timestamp": self.start_timestamp,
-            "end_timestamp": self.end_timestamp,
-            "round_matches": [
-                round_match.round_match_to_json() for round_match in self.round_matches
-            ],
-        }
-        return json
-
-    def set_round_players(self, player_pairs: list[tuple[str, str]]) -> None:
+    def set_round_players(self, player_pairs: list[tuple[Player, Player]]) -> None:
         round_matches: list[RoundMatch] = [
             RoundMatch(
-                score_a=Score(chess_id=player_a), score_b=Score(chess_id=player_b)
+                player_score_a=PlayerScore(player=player_a),
+                player_score_b=PlayerScore(player=player_b),
             )
             for player_a, player_b in player_pairs
         ]
         self.round_matches = round_matches
 
-    def set_round_matches(self, round_matches: list[RoundMatch]) -> Self:
+    def set_round_matches_from_payload(self, round_matches: list[RoundMatch]) -> None:
         self.round_matches = round_matches
-        return self
 
     def are_round_matches_defined(self) -> bool:
         return bool(self.round_matches)

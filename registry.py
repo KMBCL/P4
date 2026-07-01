@@ -26,7 +26,6 @@ class TournamentMenuCode(StrEnum):
     SHOW_TOURNAMENT_ROUNDS = "show_tournament_rounds"
     SHOW_REGISTERED_PLAYERS = "show_register_players"
     REGISTER_PLAYER = "register_player"
-    SET_ROUND_MATCHES = "set_round_matches"
     SET_MATCHES_SCORE = "set_matches_scores"
     RUN_TOURNAMENT = "run_tournament"
 

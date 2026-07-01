@@ -5,62 +5,49 @@ from itertools import combinations
 import random
 import json
 
-from core.core_data_repository import (
-    TOURNAMENT_DIR,
-    PLAYER_DIR,
-    CoreDataRepository,
-)
+
 from core.result import Result
 
 from models.tournament import Tournament
 from models.round import Round, RoundMatch
 from models.player import Player
 
-Tournaments: TypeAlias = list[Tournament]
+from service.player import PlayerService
 
-REGISTERED_PLAYER_CHESS_IDS = "registered_player_chess_ids"
+Tournaments: TypeAlias = list[Tournament]
 
 
 class PlayerRegistration:
 
-    def ensure_registered_player_chess_ids_field(
-        self,
-        tournament: dict[str, Any],
-    ) -> dict[str, Any]:
-        registered_player_chess_ids: list[str] = []
-
-        if REGISTERED_PLAYER_CHESS_IDS not in tournament:
-            tournament[REGISTERED_PLAYER_CHESS_IDS] = registered_player_chess_ids
-
-        return tournament
+    def __init__(self, player_service: PlayerService) -> None:
+        self.player_service = player_service
 
     def check_if_player_already_registered(
         self,
-        chess_id: str,
-        tournament: dict[str, Any],
+        tournament: Tournament,
+        player: Player,
     ) -> Result:
-        if chess_id in tournament[REGISTERED_PLAYER_CHESS_IDS]:
+        if player in tournament.registered_players:
             return Result.invalid(
-                reason=f"Player with chess_id : {chess_id} is already registered"
+                reason=f"Player with chess_id : {player.last_name} is already registered"
             )
 
         return Result.valid()
 
     def register_player_to_tournament(
         self,
-        raw_tournament: dict[str, Any],
-        chess_id: str,
+        tournament: Tournament,
+        player: Player,
     ) -> Result:
-        tournament = self.ensure_registered_player_chess_ids_field(raw_tournament)
         already_registered_result = self.check_if_player_already_registered(
-            chess_id=chess_id,
-            tournament=tournament,
+            tournament,
+            player,
         )
         if not already_registered_result:
             return already_registered_result
 
-        tournament[REGISTERED_PLAYER_CHESS_IDS].append(chess_id)
-        return Result.valid(value=raw_tournament)
+        tournament.registered_players.append(player)
+        return Result.valid(value=tournament)
 
     def extract_registered_players(
         self,
@@ -74,10 +61,17 @@ class PlayerRegistration:
         ]
         return raw_registered_players
 
-    def to_players(self, registered_raw_players: list[dict[str, Any]]) -> list[Player]:
-        players = [
-            Player.from_json(raw_player) for raw_player in registered_raw_players
-        ]
+    def to_players(self, registered_raw_players: list[str]) -> list[Player]:
+        players: list[Player] = []
+        pk_errors: list[str] = []
+        for raw_registered_player in registered_raw_players:
+            result = self.player_service.get_player_by_chess_id(raw_registered_player)
+            if not result:
+                pk_errors.append(raw_registered_player)
+                continue
+
+            player: Player = result.get_value()
+            players.append(player)
         return players
 
     def validate_chess_id_exists(

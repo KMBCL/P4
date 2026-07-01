@@ -31,7 +31,7 @@ class Result:
 
     def __bool__(self) -> bool:
         # revoir pour if doit vérifer un objet vide
-        return self._is_valid
+        return bool(self._is_valid)
 
     def get_reason(self) -> str:
         if self._reason is None:
@@ -50,3 +50,6 @@ class Result:
             raise ValueError("success_message is not defined")
 
         return self._success_message
+
+    def __repr__(self) -> str:
+        return f"value : {self._value} - valid : {self._is_valid} - reason : {self._reason}"

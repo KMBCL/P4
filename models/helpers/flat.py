@@ -1,16 +1,26 @@
-from models.round import Round, RoundMatch, Score
+from models.tournament import Tournament
+from models.round import Round, RoundMatch
+from models.score import PlayerScore
+from models.player import Player
 
 
-def flat_rounds(rounds: list[Round]) -> list[RoundMatch]:
+def flat_round_matches(rounds: list[Round]) -> list[RoundMatch]:
     return [round_match for round in rounds for round_match in round.round_matches]
 
 
-def flat_scores(round_matches: list[RoundMatch]) -> list[Score]:
-    return [score for round_match in round_matches for score in round_match.to_list()]
-
-
-def flat_pairs(round_matches: list[RoundMatch]) -> list[set[str]]:
+def flat_player_scores(round_matches: list[RoundMatch]) -> list[PlayerScore]:
     return [
-        set((round_match.score_a.chess_id, round_match.score_b.chess_id))
+        player_score
+        for round_match in round_matches
+        for player_score in round_match.to_list()
+    ]
+
+
+def flat_pairs(round_matches: list[RoundMatch]) -> list[tuple[Player, Player]]:
+    return [
+        (
+            round_match.player_score_a.player,
+            round_match.player_score_b.player,
+        )
         for round_match in round_matches
     ]

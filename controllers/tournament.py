@@ -188,7 +188,7 @@ class TournamentPlayer:
 
         players: list[Player] = players_result.get_value()
         unregistered_players_result = self.player_service.get_unregistered_players(
-            user_input, players, tournament
+            players, tournament
         )
         if not unregistered_players_result:
             return unregistered_players_result
@@ -207,6 +207,9 @@ class TournamentPlayer:
             return tournament_result
 
         tournament: Tournament = tournament_result.get_value()
+
+        print("has begun", self.tournament_service.has_begun(tournament))
+
         if self.tournament_service.has_begun(tournament):
             return Result.invalid(reason="Registration is now closed")
 
@@ -237,8 +240,7 @@ class TournamentPlayer:
 
             player: Player = regsitration_result.get_value()
             regsitration_result = self.tournament_service.register_player_to_tournament(
-                tournament_pk=session_context.required_tournament_pk,
-                chess_id=player.chess_id,
+                tournament, player
             )
 
             if not regsitration_result:

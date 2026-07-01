@@ -1,12 +1,5 @@
-[Projet 4] Implémenter les retours : 
-[x] -couche service à revoir, 
-[x] -détails de naming, 
-[x] -revoir le flou sur la notion de stragegy (alors que c'est un cache) et de 
-[] -recherche vs selecteur, 
-[X] -améliorer le Result, 
--épurer les modèles (pas de logique business):
-    - revoir la logique des scores et du match ayant eu lieu ou non
-    - porter objets complets plutot que des attributs
-    
+[Projet 4] Review de la fois précédente : recherche vs selecteur, améliorer le Result (bool), épurer les modèles (pas de logique business)
+[Projet 4] Review des rondes suisses : utiliser un set de tuples, ne pas modifier la liste mais jouer plutôt avec deux pointeurs, ne pas utiliser un dictionnaire pour quelque chose de trier et utiliser les players directement plutôt que juste leur ID
 [Projet 4] Quelques éléments de UX à revoir (notamment sur les résultats des matchs)
-[x] [Projet 4] Finir l'implémentation des rondes suisses
+([Projet 4] Affichage du classement)
+([Projet 4] Génération de rapports)
