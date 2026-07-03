@@ -1,12 +1,8 @@
 from repository.repository import Repository
-from repository.paths import PLAYER_DIR
-
 
 from models.round import RoundMatch, Round
 from models.player import Player
 from models.score import PlayerScore
-
-from service.helpers.to_players import to_players
 
 
 class RoundMatchService:

@@ -1,4 +1,7 @@
+from dataclasses import dataclass
 from enum import StrEnum
+
+from models.player import Player
 
 
 class WinningCondition(StrEnum):

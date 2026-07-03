@@ -13,6 +13,7 @@ def default_sub_menus() -> list[MenuItem]:
 class MenuItem:
     code: str
     title: str
+    value: Any | None = None
     sub_menus: list[MenuItem] = field(default_factory=default_sub_menus)
 
     @classmethod

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Self
+from typing import Any
 
 from core.core_model import Model
-from core.constants import WinningCondition
+
 from models.score import PlayerScore
 from models.player import Player
 
@@ -13,38 +13,29 @@ VICTORY_SCORE = 1.0
 DEFEAT_SCORE = 0.0
 DRAW_SCORE = 0.5
 
-SCORE_DEFINITION = {
-    WinningCondition.VICTORY: VICTORY_SCORE,
-    WinningCondition.DEFEAT: DEFEAT_SCORE,
-    WinningCondition.DRAW: DRAW_SCORE,
-}
-
 
 @dataclass
 class RoundMatch(Model[Any]):
     player_score_a: PlayerScore
     player_score_b: PlayerScore
 
-    def calculate_match_score(self) -> float:
-        # return self.score_a.score_value + self.score_b.score_value
-        pass
+    def set_draw(self):
+        self.player_score_a.score_value = DRAW_SCORE
+        self.player_score_b.score_value = DRAW_SCORE
 
-    def is_score_complete(self):
-        return self.calculate_match_score() == SCORE
+    def _set_score(self, player_score: PlayerScore, winner: Player) -> None:
+        if player_score.player.chess_id == winner.chess_id:
+            player_score.score_value = VICTORY_SCORE
+        else:
+            player_score.score_value = DEFEAT_SCORE
 
-    def give_score_b_value(self, winning_condition: WinningCondition) -> float:
-        if winning_condition == WinningCondition.VICTORY:
-            return DEFEAT_SCORE
+    def set_score(self, winner: Player | None) -> None:
+        if winner is None:
+            self.set_draw()
+            return None
 
-        if winning_condition == WinningCondition.DEFEAT:
-            return VICTORY_SCORE
-
-        return DRAW_SCORE
-
-    def set_score(self, winning_condition: WinningCondition):
-        # self.score_a.score_value = SCORE_DEFINITION.get(winning_condition, DEFEAT_SCORE)
-        # self.score_b.score_value = self.give_score_b_value(winning_condition)
-        pass
+        self._set_score(self.player_score_a, winner)
+        self._set_score(self.player_score_b, winner)
 
     def to_list(self) -> list[PlayerScore]:
         return [self.player_score_a, self.player_score_b]
@@ -78,14 +69,3 @@ class Round(Model[Any]):
 
     def set_round_matches_from_payload(self, round_matches: list[RoundMatch]) -> None:
         self.round_matches = round_matches
-
-    def are_round_matches_defined(self) -> bool:
-        return bool(self.round_matches)
-
-    def is_round_score_complete(self) -> bool:
-        total_score = 0
-        for round_match in self.round_matches:
-            match_score = round_match.calculate_match_score()
-            total_score = total_score + match_score
-
-        return total_score == len(self.round_matches) * SCORE

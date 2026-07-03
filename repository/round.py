@@ -15,8 +15,8 @@ class RoundMatchJSON:
                 round_match.player_score_a.score,
             ],
             [
-                round_match.player_score_a.player.chess_id,
-                round_match.player_score_a.score,
+                round_match.player_score_b.player.chess_id,
+                round_match.player_score_b.score,
             ],
         ]
         return json

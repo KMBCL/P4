@@ -1,7 +1,7 @@
 from repository.build import repository
 
 
-from service.tournament import TournamentService
+from service.tournament import TournamentService, TournamentStandingsService
 from service.player import PlayerService
 from service.round import RoundService
 from service.round_match import RoundMatchService
@@ -17,4 +17,5 @@ tournament_service = TournamentService(
     player_registration_service,
     round_match_service,
 )
+tournament_standing_service = TournamentStandingsService()
 menu_service = MenuService(repository)

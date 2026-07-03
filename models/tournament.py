@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from core.core_model import Model, ModelInputData
 
-
-from models.round import Round, RoundMatch
+from models.round import Round
 from models.player import Player
 
 
@@ -21,18 +20,15 @@ class TournamentInputData(ModelInputData):
 
 
 def default_registered_player_payload() -> list[str]:
-    registered_player_payload: list[str] = []
-    return registered_player_payload
+    return []
 
 
 def default_rounds() -> list[Round]:
-    rounds: list[Round] = []
-    return rounds
+    return []
 
 
 def default_players() -> list[Player]:
-    players: list[Player] = []
-    return players
+    return []
 
 
 @dataclass

@@ -12,3 +12,12 @@ def sort_player_score_by_score(player_scores: list[PlayerScore]) -> list[PlayerS
         key=lambda player_score: player_score.score_value,
         reverse=True,
     )
+
+
+def sort_player_score_by_chess_id(
+    player_scores: list[PlayerScore],
+) -> list[PlayerScore]:
+    return sorted(
+        player_scores,
+        key=lambda player_score: player_score.player.chess_id,
+    )

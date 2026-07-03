@@ -1,15 +1,10 @@
 from __future__ import annotations
 
 from typing import Any, TypeAlias
-from itertools import combinations
-import random
-import json
-
 
 from core.result import Result
 
 from models.tournament import Tournament
-from models.round import Round, RoundMatch
 from models.player import Player
 
 from service.player import PlayerService

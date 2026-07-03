@@ -44,7 +44,7 @@ group Input treatment
         DataBase --> PlayerService : return json_data
         PlayerService -> PlayerService : json_data to player_models
         PlayerService --> PlayerController : return player_models
-        PlayerController -> RenderHandler  : render_handler.render_models(player_models)  
+        PlayerController -> RenderHandler  : renderer_handler.render_models(player_models)  
         RenderHandler -> View : view.render_models(player_models)
     end
 

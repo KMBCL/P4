@@ -1,5 +1,6 @@
 from service.build import (
     tournament_service,
+    tournament_standing_service,
     player_service,
     round_service,
 )
@@ -26,6 +27,7 @@ round_controller = RoundController(
     round_render_handler,
     round_service,
     tournament_service,
+    tournament_standing_service,
 )
 
 

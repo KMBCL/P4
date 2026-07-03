@@ -8,12 +8,11 @@ from repository.helpers.pk import make_pk
 from repository.repository import Repository
 from repository.paths import TOURNAMENT_DIR, PLAYER_DIR
 from repository.tournament import TournamentJSON
-from repository.round import RoundJSON, RoundMatchJSON
 
-from models.helpers.flat import flat_round_matches
+from models.helpers.flat import flat_round_matches, flat_player_scores
 from models.tournament import Tournament, TournamentInputData
 from models.round import Round
-
+from models.score import TournamentPlayerScore
 from models.player import Player
 
 
@@ -21,6 +20,70 @@ from service.player_registration import PlayerRegistration
 from service.round_match import RoundMatchService
 
 Tournaments: TypeAlias = list[Tournament]
+
+
+class TournamentStandingsService:
+
+    def _build_tournament_player_scores(
+        self, tournament: Tournament
+    ) -> dict[str, TournamentPlayerScore]:
+        tournament_player_scores: dict[str, TournamentPlayerScore] = {
+            player.chess_id: TournamentPlayerScore(player)
+            for player in tournament.registered_players
+        }
+        return tournament_player_scores
+
+    def _aggregate_tournament_player_scores(
+        self, tournament: Tournament
+    ) -> dict[str, TournamentPlayerScore]:
+        flatted_round_matches = flat_round_matches(tournament.rounds)
+        flatted_player_score = flat_player_scores(flatted_round_matches)
+        tournament_player_scores = self._build_tournament_player_scores(tournament)
+
+        for player_score in flatted_player_score:
+            tournament_player_scores[player_score.player.chess_id].increment_score(
+                player_score.score_value
+            )
+
+        return tournament_player_scores
+
+    def _build_player_scores_list(
+        self, aggregated_player_scores: dict[str, TournamentPlayerScore]
+    ) -> list[TournamentPlayerScore]:
+        return [player_score for _, player_score in aggregated_player_scores.items()]
+
+    def _sort_player_scores_list(
+        self, player_scores: list[TournamentPlayerScore]
+    ) -> list[TournamentPlayerScore]:
+        return sorted(
+            player_scores,
+            key=lambda player_score: player_score.tournement_score_value,
+            reverse=True,
+        )
+
+    def _to_players_list(
+        self, player_scores: list[TournamentPlayerScore]
+    ) -> list[Player]:
+        return [player_score.player for player_score in player_scores]
+
+    def get_tournament_standings(
+        self, tournament: Tournament
+    ) -> list[TournamentPlayerScore]:
+        aggregated_player_scores: dict[str, TournamentPlayerScore] = (
+            self._aggregate_tournament_player_scores(tournament)
+        )
+        player_scores: list[TournamentPlayerScore] = self._build_player_scores_list(
+            aggregated_player_scores
+        )
+        sorted_player_scores: list[TournamentPlayerScore] = (
+            self._sort_player_scores_list(player_scores)
+        )
+        return sorted_player_scores
+
+    def get_players_by_standing(self, tournament: Tournament) -> list[Player]:
+        sorted_player_scores = self.get_tournament_standings(tournament)
+        players: list[Player] = self._to_players_list(sorted_player_scores)
+        return players
 
 
 class TournamentService:
@@ -65,6 +128,13 @@ class TournamentService:
             rounds,
         )
 
+    def _load_related_tournament_models(self, tournament: Tournament) -> None:
+        self._load_registered_players_from_payload(tournament)
+        self._load_round_matches_from_payload(
+            tournament.registered_players,
+            tournament.rounds,
+        )
+
     def _get_tournaments(self) -> Tournaments:
         tournaments: Tournaments = [
             TournamentJSON.from_json(raw_tournament)
@@ -72,11 +142,7 @@ class TournamentService:
         ]
 
         for tournament in tournaments:
-            self._load_registered_players_from_payload(tournament)
-            self._load_round_matches_from_payload(
-                tournament.registered_players,
-                tournament.rounds,
-            )
+            self._load_related_tournament_models(tournament)
 
         return tournaments
 
@@ -88,11 +154,7 @@ class TournamentService:
         tournament: Tournament = TournamentJSON.from_json(
             raw_tournament_result.get_value()
         )
-        self._load_registered_players_from_payload(tournament)
-        self._load_round_matches_from_payload(
-            tournament.registered_players,
-            tournament.rounds,
-        )
+        self._load_related_tournament_models(tournament)
 
         return Result.valid(tournament)
 

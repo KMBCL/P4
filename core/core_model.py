@@ -14,7 +14,6 @@ TModelInputData = TypeVar("TModelInputData", bound=ModelInputData)
 
 @dataclass
 class Model(Generic[TModelInputData]):
-    pass
 
     @classmethod
     def from_user_input(cls, new_pk: str, user_input: TModelInputData) -> Self: ...
