@@ -63,6 +63,21 @@
                                 "sub_menus": []
                             },
                             {
+                                "code": "show_standings",
+                                "title": "Show standings",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "show_done_rounds",
+                                "title": "Show done rounds",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "show_next_round",
+                                "title": "Show next round",
+                                "sub_menus": []
+                            },
+                            {
                                 "code": "back",
                                 "title": "Back",
                                 "sub_menus": []

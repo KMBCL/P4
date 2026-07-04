@@ -5,6 +5,7 @@ from view.tournament import TournamentView
 from controllers.validators.date import DateValidator
 
 from models.tournament import Tournament, TournamentInputData
+from models.score import TournamentPlayerScore
 
 
 class TournamentPromptHandler(CorePromptHandler[TournamentView]):
@@ -56,3 +57,11 @@ class TournamentRenderHandler(CoreRenderer):
 
     def render_selected_tournament_name(self, tournament: Tournament) -> None:
         self.view.console.print(f"Selected tournament : {tournament.name}")
+
+    def render_standings(self, standings: list[TournamentPlayerScore]) -> None:
+        self.view.console.print("*** Tournament standings ***")
+
+        for standing in standings:
+            self.view.console.print(
+                f"{standing.tournement_score_value} - {standing.player.last_name} {standing.player.first_name}"
+            )

@@ -37,6 +37,11 @@ class RoundService:
 
         return self.round_not_started(first_round[0])
 
+    def check_pair(
+        self, player_a: Player, player_b: Player, pairs: list[tuple[Player, Player]]
+    ) -> bool:
+        return bool((player_a, player_b) in pairs or (player_b, player_a) in pairs)
+
     def make_pairs(
         self, tournament: Tournament, players: list[Player]
     ) -> list[tuple[Player, Player]]:
@@ -60,9 +65,7 @@ class RoundService:
 
             try_count = 0
             while (
-                (player_a, player_b) in pairs
-                or (player_b, player_a) in pairs
-                or try_count > MAX_TRY_COUNT
+                self.check_pair(player_a, player_b, pairs) or try_count > MAX_TRY_COUNT
             ):
                 next += 1
                 player_b = players[id + next]

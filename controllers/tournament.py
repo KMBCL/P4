@@ -13,7 +13,7 @@ from models.round import Round, RoundMatch
 from models.tournament import Tournament
 from models.player import Player
 
-from service.tournament import TournamentService
+from service.tournament import TournamentService, TournamentStandingsService
 from service.player import PlayerService
 
 
@@ -208,8 +208,6 @@ class TournamentPlayer:
 
         tournament: Tournament = tournament_result.get_value()
 
-        print("has begun", self.tournament_service.has_begun(tournament))
-
         if self.tournament_service.has_begun(tournament):
             return Result.invalid(reason="Registration is now closed")
 
@@ -269,10 +267,12 @@ class TournamentController:
         prompt_handler: TournamentPromptHandler,
         renderer_handler: TournamentRenderHandler,
         tournament_service: TournamentService,
+        tournament_standings_service: TournamentStandingsService,
     ) -> None:
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
+        self.tournament_standings_service = tournament_standings_service
 
     def create_new_tournament(self) -> None:
         user_input = self.prompt_handler.get_tournament_input()
@@ -293,3 +293,24 @@ class TournamentController:
 
         tournaments: list[Tournament] = tournaments_result.get_value()
         self.renderer_handler.render_tournaments(tournaments)
+
+    def show_standings(self, session_context: SessionContext):
+        tournament_result = self.tournament_service.get_tournament_by_pk(
+            session_context.required_tournament_pk
+        )
+        if not tournament_result:
+            self.renderer_handler.view.render_invalid_input(
+                tournament_result.get_reason()
+            )
+            return None
+
+        tournament: Tournament = tournament_result.get_value()
+        if not self.tournament_service.has_begun(tournament):
+            self.renderer_handler.view.render_invalid_input(
+                "Tournament not begun yet. No standings to show."
+            )
+
+        standings = self.tournament_standings_service.get_tournament_standings(
+            tournament
+        )
+        self.renderer_handler.render_standings(standings)
