@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from typing import Any, TypeAlias
 import random
 
@@ -27,6 +29,69 @@ def extract_played_pairs_from_tournament(
     return pairs
 
 
+def default_players() -> list[Player]:
+    return []
+
+
+def default_new_pairs() -> list[tuple[Player, Player]]:
+    return []
+
+
+@dataclass
+class PairHelper:
+    players: list[Player]
+    played_pairs: list[tuple[Player, Player]]
+    _remaining_players: list[Player] = field(default_factory=default_players)
+    _new_pairs: list[tuple[Player, Player]] = field(default_factory=default_new_pairs)
+
+    def _set_remaining_players(self):
+        self._remaining_players = self.players.copy()
+
+    def _remove_picked_up_player(self, player: Player):
+        self._remaining_players.remove(player)
+
+    def _pair_already_played(
+        self,
+        player_a: Player,
+        player_b: Player,
+    ) -> bool:
+        return bool(
+            (player_a, player_b) in self.played_pairs
+            or (player_b, player_a) in self.played_pairs
+        )
+
+    def _add_new_pair(self, player_a: Player, player_b: Player) -> None:
+        self._new_pairs.append((player_a, player_b))
+
+    def _pick_opponent(self, player_a: Player) -> Player:
+        for remaining_player in self._remaining_players:
+            if self._pair_already_played(player_a, remaining_player):
+                continue
+
+            return remaining_player
+
+        return self._remaining_players[0]
+
+    def build_new_pairs(self) -> list[tuple[Player, Player]]:
+        self._set_remaining_players()
+        while self._remaining_players:
+            if len(self._remaining_players) == 2:
+                self._add_new_pair(
+                    self._remaining_players[0], self._remaining_players[1]
+                )
+                return self._new_pairs
+
+            player_a = self._remaining_players[0]
+            self._remove_picked_up_player(player_a)
+
+            player_b = self._pick_opponent(player_a)
+            self._remove_picked_up_player(player_b)
+
+            self._add_new_pair(player_a, player_b)
+
+        return self._new_pairs
+
+
 class RoundService:
     FIRST_ROUND_NAME: str = "round_0"
 
@@ -37,46 +102,12 @@ class RoundService:
 
         return self.round_not_started(first_round[0])
 
-    def check_pair(
-        self, player_a: Player, player_b: Player, pairs: list[tuple[Player, Player]]
-    ) -> bool:
-        return bool((player_a, player_b) in pairs or (player_b, player_a) in pairs)
-
     def make_pairs(
         self, tournament: Tournament, players: list[Player]
     ) -> list[tuple[Player, Player]]:
         pairs = extract_played_pairs_from_tournament(tournament)
-
-        MAX_TRY_COUNT = len(players) - 1
-
-        picked_up_players: list[Player] = []
-        new_pairs: list[tuple[Player, Player]] = []
-
-        for id in range(0, len(players)):
-            next = 1
-            player_a = players[id]
-            if player_a in picked_up_players:
-                continue
-
-            player_b = players[id + next]
-            while player_b in picked_up_players:
-                next += 1
-                player_b = players[id + next]
-
-            try_count = 0
-            while (
-                self.check_pair(player_a, player_b, pairs) or try_count > MAX_TRY_COUNT
-            ):
-                next += 1
-                player_b = players[id + next]
-                while player_b in picked_up_players:
-                    next += 1
-                    player_b = players[id + next]
-
-                try_count += 1
-            new_pairs.append((player_a, player_b))
-            picked_up_players.append(players[id])
-            picked_up_players.append(players[id + next])
+        pair_helper = PairHelper(players, pairs)
+        new_pairs = pair_helper.build_new_pairs()
         return new_pairs
 
     def prepare_players(
