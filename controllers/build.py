@@ -49,6 +49,7 @@ tournament_player = TournamentPlayer(
     tournament_rendered_handler,
     tournament_service,
     player_service,
+    player_render_handler,
 )
 
 tournament_controller = TournamentController(

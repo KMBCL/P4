@@ -7,6 +7,8 @@ from controllers.handlers.tournament import (
     TournamentPromptHandler,
     TournamentRenderHandler,
 )
+from controllers.handlers.player import PlayerRenderHandler
+
 from controllers.validators.menu import MenuValidator
 from controllers.round import RoundController
 from models.round import Round, RoundMatch
@@ -15,6 +17,7 @@ from models.player import Player
 
 from service.tournament import TournamentService, TournamentStandingsService
 from service.player import PlayerService
+from service.helpers.sort import sort_players_by_last_name
 
 
 from view.player import PlayerView
@@ -164,11 +167,13 @@ class TournamentPlayer:
         renderer_handler: TournamentRenderHandler,
         tournament_service: TournamentService,
         player_service: PlayerService,
+        player_render_handler: PlayerRenderHandler,
     ) -> None:
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
         self.player_service = player_service
+        self.player_render_handler = player_render_handler
 
     def select_player_from_list(self, players: list[Player]) -> Player:
         menu_items = ModelToMenuItem.player_to_menu_item(players)
@@ -257,8 +262,9 @@ class TournamentPlayer:
             )
             return None
 
-        player_view = PlayerView(console=self.renderer_handler.view.console)
-        player_view.list_view.render_models(registered_players_result.get_value())
+        self.player_render_handler.render_players(
+            sort_players_by_last_name(registered_players_result.get_value())
+        )
 
 
 class TournamentController:
