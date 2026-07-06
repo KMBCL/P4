@@ -320,3 +320,16 @@ class TournamentController:
             tournament
         )
         self.renderer_handler.render_standings(standings)
+
+    def show_tournament_details(self, session_context: SessionContext) -> None:
+        tournament_result = self.tournament_service.get_tournament_by_pk(
+            session_context.required_tournament_pk
+        )
+        if not tournament_result:
+            self.renderer_handler.view.render_invalid_input(
+                tournament_result.get_reason()
+            )
+            return None
+
+        tournament: Tournament = tournament_result.get_value()
+        self.renderer_handler.render_tournament_details(tournament)

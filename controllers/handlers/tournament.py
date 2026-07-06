@@ -65,3 +65,12 @@ class TournamentRenderHandler(CoreRenderer):
             self.view.console.print(
                 f"{standing.tournement_score_value} - {standing.player.last_name} {standing.player.first_name}"
             )
+
+    def render_tournament_details(self, tournament: Tournament) -> None:
+        self.view.console.print("*** Tournament details ***")
+
+        self.view.console.print(f"Tournament Name : {tournament.name}")
+        self.view.console.print(f"Tournament start date : {tournament.start_date}")
+        self.view.console.print(f"Tournament end date : {tournament.end_date}")
+        self.view.console.print(f"Tournament player count : {tournament.player_count}")
+        self.view.console.print(f"Tournament round count : {tournament.round_count}")

@@ -9,9 +9,9 @@
 ([Projet 4] Génération de rapports)
 
 Rapports d'apres le brief:
-[] - liste des joueurs par orde alphabetique:
+[X] - liste des joueurs par orde alphabetique:
    [X] - Tous
-   [] - liste des joueurs du tournoi. Partiel
+   [X] - liste des joueurs du tournoi. Partiel
 
 [X] - liste de tous les tournois:
 [] - Detail d'un tournoi

@@ -43,6 +43,11 @@
                         "title": "Handle Tournament",
                         "sub_menus": [
                             {
+                                "code": "show_tournament_details",
+                                "title": "Show tournament details",
+                                "sub_menus": []
+                            },
+                            {
                                 "code": "register_player",
                                 "title": "Register players",
                                 "sub_menus": []
@@ -70,11 +75,6 @@
                             {
                                 "code": "show_done_rounds",
                                 "title": "Show done rounds",
-                                "sub_menus": []
-                            },
-                            {
-                                "code": "show_next_round",
-                                "title": "Show next round",
                                 "sub_menus": []
                             },
                             {
