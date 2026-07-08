@@ -9,11 +9,14 @@ class MenuValidator:
         try:
             menu_number = int(menu_input)
             return Result.valid(value=menu_number)
-        except:
-            return Result.invalid(f"Invalid choice. Expected a number.")
+        except ValueError:
+            return Result.invalid("Invalid choice. Expected a number.")
 
     @staticmethod
-    def is_choice_in_range(menu_input: str, available_items: list[MenuItem]) -> Result:
+    def is_choice_in_range(
+        menu_input: str,
+        available_items: list[MenuItem],
+    ) -> Result:
         MIN_RANGE = 1
         max_range = len(available_items)
 

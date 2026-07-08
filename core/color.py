@@ -1,3 +1,13 @@
+class MenuColorHelper:
+    @staticmethod
+    def action(value: str) -> str:
+        return f"[blue]{value}[/blue]"
+
+    @staticmethod
+    def navigation(value: str) -> str:
+        return f"[magenta]{value}[/magenta]"
+
+
 class ColorHelper:
 
     @staticmethod

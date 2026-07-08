@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from core.core_model import Model, ModelInputData
 
 from models.round import Round
-from models.player import Player
+
+if TYPE_CHECKING:
+    from models.player import Player
 
 
 @dataclass

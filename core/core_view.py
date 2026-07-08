@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import fields, Field
+
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from core.color import ColorHelper
+from core.color import ColorHelper, MenuColorHelper
 from core.core_model import Model
 from models.menu import MenuItem
 
@@ -38,12 +38,16 @@ class CoreView(Generic[TModel]):
         return self.console.input(ColorHelper.title("Enter key menu : "))
 
     def render_menu_items(self, menu_items: list[MenuItem]):
+        self.skip_line()
         MENU_START = 1
         menu_key = MENU_START
         for menu_item in menu_items:
+            displayed_menu = f"{menu_key} - {menu_item.title}"
             if menu_item.sub_menus:
-                displayed = f"[magenta]{menu_key} - {menu_item.title}[/magenta]"
+                displayed = MenuColorHelper.navigation(displayed_menu)
             else:
-                displayed = f"[blue]{menu_key} - {menu_item.title}[/blue]"
+                displayed = MenuColorHelper.action(displayed_menu)
             self.console.print(displayed)
             menu_key += 1
+
+        self.skip_line()
