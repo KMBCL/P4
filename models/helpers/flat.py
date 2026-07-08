@@ -1,4 +1,3 @@
-from models.tournament import Tournament
 from models.round import Round, RoundMatch
 from models.score import PlayerScore
 from models.player import Player

@@ -20,9 +20,6 @@ from service.player import PlayerService
 from service.helpers.sort import sort_players_by_last_name
 
 
-from view.player import PlayerView
-
-
 from menu.session_context import SessionContext
 
 

@@ -27,7 +27,7 @@ class PlayerService:
             player for player in players if player not in tournament.registered_players
         ]
         if not unregistered_players:
-            return Result.invalid(f"All players matching are already register")
+            return Result.invalid("All players matching are already register")
 
         return Result.valid(value=unregistered_players)
 

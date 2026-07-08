@@ -109,8 +109,8 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.skip_line()
 
     def _render_victory_condition(self, round_match: RoundMatch) -> None:
-        player_a_display = f"{round_match.player_score_a.player.last_name} {round_match.player_score_a.player.first_name}"
-        player_b_display = f"{round_match.player_score_b.player.last_name} {round_match.player_score_b.player.first_name}"
+        player_a = f"{round_match.player_score_a.player.last_name} {round_match.player_score_a.player.first_name}"
+        player_b = f"{round_match.player_score_b.player.last_name} {round_match.player_score_b.player.first_name}"
         score_a = round_match.player_score_a.score_value
         score_b = round_match.player_score_b.score_value
 
@@ -119,18 +119,18 @@ class TournamentRenderHandler(CoreRenderer):
         if score_a == score_b:
             victory_condition = "Draw"
             result_display = (
-                RoundMatchcolor.draw_label(player_a_display),
-                RoundMatchcolor.draw_label(player_b_display),
+                RoundMatchcolor.draw_label(player_a),
+                RoundMatchcolor.draw_label(player_b),
             )
         else:
             victory_condition = "Victory "
             _a = (
-                RoundMatchcolor.victory(player_a_display),
-                RoundMatchcolor.defeat(player_b_display),
+                RoundMatchcolor.victory(player_a),
+                RoundMatchcolor.defeat(player_b),
             )
             _b = (
-                RoundMatchcolor.victory(player_b_display),
-                RoundMatchcolor.defeat(player_a_display),
+                RoundMatchcolor.victory(player_b),
+                RoundMatchcolor.defeat(player_a),
             )
 
             result_display: tuple[str, str] = _a if score_a > score_b else _b
