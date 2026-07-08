@@ -1,20 +1,29 @@
-from typing import Any
-from enum import Enum
-
-from controllers.handlers.action import ActionPromptHandler
+from typing import Callable, Generic, Any, TypeVar
 
 
-class CorePromptHandler:
+from core.core_view import CoreView
+from core.result import Result
 
-    def __init__(
+TView = TypeVar("TView", bound=CoreView[Any])
+
+
+class CorePromptHandler(Generic[TView]):
+
+    def __init__(self, view: TView) -> None:
+        self.view = view
+
+    def prompt(
         self,
-        action_prompt_handler: ActionPromptHandler[Any],
-        action_shortcuts: type[Enum],
-    ) -> None:
-        self.action_prompt_handler = action_prompt_handler
-        self.action_shortcuts = action_shortcuts
+        prompt_function: Callable[[], str],
+        validation_function: Callable[[str], Result],
+    ):
 
-    def prompt_action(self) -> tuple[str, dict[str, str]]:
-        return self.action_prompt_handler.prompt_action(
-            action_shortcuts=self.action_shortcuts
-        )
+        while True:
+            user_input = prompt_function()
+
+            user_input_result = validation_function(user_input)
+            if not user_input_result:
+                self.view.render_invalid_input(user_input_result.get_reason())
+                continue
+
+            return user_input

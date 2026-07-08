@@ -3,4 +3,5 @@ from models.round import Round
 
 
 class RoundView(CoreView[Round]):
+
     pass

@@ -1,0 +1,101 @@
+[
+    {
+        "code": "root",
+        "title": "Root",
+        "sub_menus": [
+            {
+                "code": "handle_players",
+                "title": "Handle Players",
+                "sub_menus": [
+                    {
+                        "code": "create_new_player",
+                        "title": "Create new player",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "show_players",
+                        "title": "Show players",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "back",
+                        "title": "Back",
+                        "sub_menus": []
+                    }
+                ]
+            },
+            {
+                "code": "handle_tournaments",
+                "title": "Handle Tournaments",
+                "sub_menus": [
+                    {
+                        "code": "create_new_tournament",
+                        "title": "Create new tournament",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "show_tournaments",
+                        "title": "Show all tournaments",
+                        "sub_menus": []
+                    },
+                    {
+                        "code": "handle_tournament",
+                        "title": "Handle Tournament",
+                        "sub_menus": [
+                            {
+                                "code": "show_tournament_details",
+                                "title": "Show tournament details",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "register_player",
+                                "title": "Register players",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "show_register_players",
+                                "title": "Show registered players",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "run_tournament",
+                                "title": "Run tournament",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "change_tournament",
+                                "title": "Change tournament",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "show_standings",
+                                "title": "Show standings",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "show_tournament_rounds",
+                                "title": "Show tournament rounds",
+                                "sub_menus": []
+                            },
+                            {
+                                "code": "back",
+                                "title": "Back",
+                                "sub_menus": []
+                            }
+                        ]
+                    },
+                    {
+                        "code": "back",
+                        "title": "Back",
+                        "sub_menus": []
+                    }
+                ]
+            },
+            {
+                "code": "exit",
+                "title": "Exit",
+                "sub_menus": []
+            }
+        ]
+    }
+]

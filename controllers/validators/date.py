@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from controllers.result import Result
+from core.result import Result
 
 
 class DateValidator:
 
-    def validate_date(self, date_input: str) -> Result:
+    @staticmethod
+    def validate_date(date_input: str) -> Result:
         date_format: str = "%Y-%m-%d"
         try:
             datetime.strptime(date_input, date_format)

@@ -14,12 +14,6 @@ TModelInputData = TypeVar("TModelInputData", bound=ModelInputData)
 
 @dataclass
 class Model(Generic[TModelInputData]):
-    pass
-
-    @classmethod
-    def from_json(cls, json_data: dict[str, Any]) -> Self: ...
-
-    def to_json(self) -> dict[str, Any]: ...
 
     @classmethod
     def from_user_input(cls, new_pk: str, user_input: TModelInputData) -> Self: ...

@@ -1,18 +1,29 @@
-from typing import Any, TypeAlias
-from pathlib import Path
+from __future__ import annotations
 
+from typing import Any
 
-from core.core_data_repository import (
-    PLAYER_DIR,
-    CoreDataRepository,
-)
 from models.player import Player
 
-Players: TypeAlias = list[Player]
 
+class PlayerJSON:
 
-class PlayerRepository(CoreDataRepository[Player]):
+    @staticmethod
+    def from_json(json_data: dict[str, Any]) -> Player:
+        return Player(
+            pk=json_data["pk"],
+            chess_id=json_data["chess_id"],
+            last_name=json_data["last_name"],
+            first_name=json_data["first_name"],
+            birthdate=json_data["birthdate"],
+        )
 
-    def __init__(self) -> None:
-        super().__init__(model_class=Player)
-        self.data_path = PLAYER_DIR
+    @staticmethod
+    def to_json(player: Player) -> dict[str, Any]:
+        json: dict[str, Any] = {
+            "pk": player.pk,
+            "chess_id": player.chess_id,
+            "last_name": player.last_name,
+            "first_name": player.first_name,
+            "birthdate": player.birthdate,
+        }
+        return json

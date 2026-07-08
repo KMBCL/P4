@@ -1,57 +1,7 @@
-# A faire
-
-## Phase 1
-
-Utiliser MCV: model, view ViewControllers
-
-Mettre en oeuvre les SRP
-
-Définir:
-
-- quelles entités utiliser dans le logiciel
-- attributs
-- méthodes
-
-Avant de commencer:
-
-- bien lire la mission
-- revoir les spécifications techniques
-- compréhension de la POO et MCV
-
-Attendu:
-
-- [] Repo github
-- [] Définition des modèles
-- [] Code des modèles
-
-Données:
-
-- JSON
-
-Objets:
-
-- tournois
-- tours
-- matchs
-- joueurs
-
-Autres:
-
-- Automates
-- tests unitaires
-
-## Phase 2
-
-- vues : affichent les données
-- controleurs : services qui appliquent la logique métier
-
-Vue affiche dans la console.
-
-SRP
-
-Les données doivent être sauvegardées
-
-## Phase 3
-
-- nettoyage
-
+[Projet 4] Détails : recherche vs select + objet Result
+[Projet 4] Rounds : demander la date de début et de fin
+[Projet 4] Génération de rapports à terminer (et à "enjoliver")
+[Projet 4] Globalement l'interface peut être améliorée
+[Projet 4] flake-8 : installer, configurer et potentiellement corriger les erreurs remontées
+[Projet 4] Empaqueter les livrables
+[Projet 4] Soutenance blanche la semaine prochaine

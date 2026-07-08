@@ -19,7 +19,7 @@ control PromptHandler
 end box
 
 box "Data" #FEF3C7
-    control PlayerRepository
+    control PlayerService
     database DataBase
 end box
 
@@ -39,19 +39,19 @@ end
 
 group Input treatment
     group Getting data
-        PlayerController -> PlayerRepository : action()
-        PlayerRepository -> DataBase : get_data()
-        DataBase --> PlayerRepository : return json_data
-        PlayerRepository -> PlayerRepository : json_data to player_models
-        PlayerRepository --> PlayerController : return player_models
-        PlayerController -> RenderHandler  : render_handler.render_models(player_models)  
+        PlayerController -> PlayerService : action()
+        PlayerService -> DataBase : get_data()
+        DataBase --> PlayerService : return json_data
+        PlayerService -> PlayerService : json_data to player_models
+        PlayerService --> PlayerController : return player_models
+        PlayerController -> RenderHandler  : renderer_handler.render_models(player_models)  
         RenderHandler -> View : view.render_models(player_models)
     end
 
     group writing data
-        PlayerController -> PlayerRepository : save_new_player(data_input)
-        PlayerRepository -> PlayerRepository : data_input to player_model
-        PlayerRepository -> DataBase : player_model to json
+        PlayerController -> PlayerService : save_new_player(data_input)
+        PlayerService -> PlayerService : data_input to player_model
+        PlayerService -> DataBase : player_model to json
     end
 end
 

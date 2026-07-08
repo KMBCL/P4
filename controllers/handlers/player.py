@@ -1,30 +1,24 @@
+from core.core_handler import CorePromptHandler
+from core.color import ColorHelper, Formatter
+
 from view.player import PlayerView
 
 from controllers.validators.chess_id import ChessIDValidator
+from controllers.validators.date import DateValidator
 
-from controllers.shortcuts.player import PlayerShortcut
-
-from core.core_handler import CorePromptHandler
 from core.core_renderer import CoreRenderer
-from controllers.handlers.date import DatePromptHandler
-from controllers.handlers.action import ActionPromptHandler
+
 
 from models.player import Player, PlayerInputData
 
 
-class PlayerPromptHandler(CorePromptHandler):
+class PlayerPromptHandler(CorePromptHandler[PlayerView]):
 
     def __init__(self, view: PlayerView) -> None:
         self.view = view
-        self.chess_id_validator = ChessIDValidator()
-        self.date_prompt_handler = DatePromptHandler[Player](self.view)
-
-        super().__init__(
-            action_prompt_handler=ActionPromptHandler[Player](self.view),
-            action_shortcuts=PlayerShortcut,
-        )
 
     def get_player_input(self) -> PlayerInputData:
+        self.view.skip_line()
         return PlayerInputData(
             chess_id=self.prompt_chess_id(),
             last_name=self.prompt_last_name(),
@@ -33,15 +27,9 @@ class PlayerPromptHandler(CorePromptHandler):
         )
 
     def prompt_chess_id(self) -> str:
-        while True:
-            user_input = self.view.prompt_chess_id()
-
-            user_input_result = self.chess_id_validator.validate_chess_id(user_input)
-            if not user_input_result:
-                self.view.render_invalid_input(user_input_result.required_reason)
-                continue
-
-            return user_input
+        return self.prompt(
+            self.view.prompt_chess_id, ChessIDValidator.validate_chess_id
+        )
 
     def prompt_last_name(self) -> str:
         return self.view.prompt_last_name()
@@ -50,7 +38,7 @@ class PlayerPromptHandler(CorePromptHandler):
         return self.view.prompt_first_name()
 
     def prompt_birthdate(self) -> str:
-        return self.date_prompt_handler.prompt_date(self.view.prompt_birthdate)
+        return self.prompt(self.view.prompt_birthdate, DateValidator.validate_date)
 
 
 class PlayerRenderHandler(CoreRenderer):
@@ -59,4 +47,15 @@ class PlayerRenderHandler(CoreRenderer):
         self.view = view
 
     def render_players(self, players: list[Player]):
-        self.view.render_models(players)
+        self.view.skip_line()
+        self.view.console.print(ColorHelper.title("Players"))
+
+        for player in players:
+            player_diplayed_name = f"{player.last_name} {player.first_name}"
+            player_display = (
+                ColorHelper.value(player_diplayed_name)
+                + Formatter.label_value("Birthdate", player.birthdate)
+                + Formatter.label_value("Chess id", player.chess_id)
+            )
+            self.view.console.print(player_display)
+        self.view.skip_line()
