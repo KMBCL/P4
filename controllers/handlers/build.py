@@ -1,7 +1,5 @@
 from view.build import (
-    console,
     core_view,
-    list_view,
     tournament_view,
     player_view,
     round_view,

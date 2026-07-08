@@ -40,9 +40,9 @@ class TournamentSelector:
 
     def select_tournament_from_list(self, tournaments: list[Tournament]) -> Tournament:
         menu_items = ModelToMenuItem.tournament_to_menu_item(tournaments)
-        self.renderer_handler.view.list_view.render_menu_items(menu_items)
+        self.renderer_handler.view.render_menu_items(menu_items)
         user_input = self.prompt_handler.prompt(
-            self.prompt_handler.view.list_view.prompt_menu_choice,
+            self.prompt_handler.view.prompt_menu_choice,
             lambda user_input: MenuValidator.is_choice_in_range(user_input, menu_items),
         )
         tournament = tournaments[int(user_input) - 1]
@@ -177,9 +177,9 @@ class TournamentPlayer:
 
     def select_player_from_list(self, players: list[Player]) -> Player:
         menu_items = ModelToMenuItem.player_to_menu_item(players)
-        self.renderer_handler.view.list_view.render_menu_items(menu_items)
+        self.renderer_handler.view.render_menu_items(menu_items)
         user_input = self.prompt_handler.prompt(
-            self.prompt_handler.view.list_view.prompt_menu_choice,
+            self.prompt_handler.view.prompt_menu_choice,
             lambda user_input: MenuValidator.is_choice_in_range(user_input, menu_items),
         )
         player = players[int(user_input) - 1]
@@ -333,3 +333,16 @@ class TournamentController:
 
         tournament: Tournament = tournament_result.get_value()
         self.renderer_handler.render_tournament_details(tournament)
+
+    def show_tournament_rounds(self, session_context: SessionContext) -> None:
+        tournament_result = self.tournament_service.get_tournament_by_pk(
+            session_context.required_tournament_pk
+        )
+        if not tournament_result:
+            self.renderer_handler.view.render_invalid_input(
+                tournament_result.get_reason()
+            )
+            return None
+
+        tournament: Tournament = tournament_result.get_value()
+        self.renderer_handler.render_tournament_rounds(tournament)

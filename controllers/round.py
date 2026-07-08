@@ -42,9 +42,9 @@ class RoundController:
         menu_items = ModelToMenuItem.round_match_to_winning_condition_menu_item(
             round_match
         )
-        self.renderer_handler.view.list_view.render_menu_items(menu_items)
+        self.renderer_handler.view.render_menu_items(menu_items)
         user_input = self.prompt_handler.prompt(
-            self.prompt_handler.view.list_view.prompt_menu_choice,
+            self.prompt_handler.view.prompt_menu_choice,
             lambda user_input: MenuValidator.is_choice_in_range(user_input, menu_items),
         )
         selected_menu_item = menu_items[int(user_input) - 1]
@@ -61,9 +61,9 @@ class RoundController:
 
     def should_continue_setting_scores(self, next_round_name: str) -> Result:
         menu_items = ShouldContinueToMenuItem.should_continue_to_menu_item()
-        self.renderer_handler.view.list_view.render_menu_items(menu_items)
+        self.renderer_handler.view.render_menu_items(menu_items)
         user_input = self.prompt_handler.prompt(
-            self.prompt_handler.view.list_view.prompt_menu_choice,
+            self.prompt_handler.view.prompt_menu_choice,
             lambda user_input: MenuValidator.is_choice_in_range(user_input, menu_items),
         )
         selected_menu_item = menu_items[int(user_input) - 1]

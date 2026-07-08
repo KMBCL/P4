@@ -1,5 +1,6 @@
 from typing import Callable, Generic, Any, TypeVar
 
+
 from core.core_view import CoreView
 from core.result import Result
 

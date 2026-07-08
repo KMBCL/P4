@@ -28,7 +28,6 @@ class TournamentMenuCode(StrEnum):
     SET_MATCHES_SCORE = "set_matches_scores"
     RUN_TOURNAMENT = "run_tournament"
     SHOW_STANDINGS = "show_standings"
-    SHOW_DONE_ROUNDS = "show_done_rounds"
     SHOW_NEXT_ROUND = "show_next_round"
     SHOW_TOURNAMENT_DETAILS = "show_tournament_details"
 
@@ -45,4 +44,5 @@ REGISTRY: ActionRouting = {
     TournamentMenuCode.REGISTER_PLAYER: Controllers.tournament_player.register_player,
     TournamentMenuCode.RUN_TOURNAMENT: Controllers.tournament_runner.run_tournament,
     TournamentMenuCode.SHOW_STANDINGS: Controllers.tournament_controller.show_standings,
+    TournamentMenuCode.SHOW_TOURNAMENT_ROUNDS: Controllers.tournament_controller.show_tournament_rounds,
 }

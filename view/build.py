@@ -3,7 +3,7 @@ from typing import Any
 from rich.console import Console
 
 
-from core.core_view import ListView, CoreView
+from core.core_view import CoreView
 
 
 from view.tournament import TournamentView
@@ -12,7 +12,7 @@ from view.round import RoundView
 
 console = Console()
 core_view = CoreView[Any](console)
-list_view = ListView(console)
+
 
 tournament_view = TournamentView(console)
 player_view = PlayerView(console)

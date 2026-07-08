@@ -1,5 +1,3 @@
-from menu.constants import MenuCode
-
 from models.menu import MenuItem
 from models.tournament import Tournament
 from models.round import RoundMatch

@@ -73,8 +73,8 @@
                                 "sub_menus": []
                             },
                             {
-                                "code": "show_done_rounds",
-                                "title": "Show done rounds",
+                                "code": "show_tournament_rounds",
+                                "title": "Show tournament rounds",
                                 "sub_menus": []
                             },
                             {

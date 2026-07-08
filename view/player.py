@@ -5,13 +5,13 @@ from models.player import Player
 class PlayerView(CoreView[Player]):
 
     def prompt_chess_id(self) -> str:
-        return self.console.input("Chess id - Ex: 'AB13579' : ")
+        return self.prompt("Chess id - Ex: AB13579")
 
     def prompt_last_name(self) -> str:
-        return self.console.input("Last name : ")
+        return self.prompt("Last name")
 
     def prompt_first_name(self) -> str:
-        return self.console.input("First name : ")
+        return self.prompt("First name")
 
     def prompt_birthdate(self) -> str:
-        return self.console.input("Birthdate - 'YYYY-MM-DD' : ")
+        return self.prompt("Birthdate - YYYY-MM-DD")

@@ -12,7 +12,7 @@ class MenuPromptHandler(CorePromptHandler[CoreView[Any]]):
 
     def prompt_menu_key(self, available_items: list[MenuItem]) -> str:
         return self.prompt(
-            self.view.list_view.prompt_menu_choice,
+            self.view.prompt_menu_choice,
             lambda user_input: MenuValidator.is_choice_in_range(
                 user_input, available_items
             ),
@@ -22,4 +22,4 @@ class MenuPromptHandler(CorePromptHandler[CoreView[Any]]):
 class MenuRendererHandler(CoreRenderer):
 
     def render_menu_items(self, menu_items: list[MenuItem]) -> None:
-        self.view.list_view.render_menu_items(menu_items)
+        self.view.render_menu_items(menu_items)

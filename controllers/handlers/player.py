@@ -1,4 +1,5 @@
 from core.core_handler import CorePromptHandler
+from core.color import ColorHelper, Formatter
 
 from view.player import PlayerView
 
@@ -17,6 +18,7 @@ class PlayerPromptHandler(CorePromptHandler[PlayerView]):
         self.view = view
 
     def get_player_input(self) -> PlayerInputData:
+        self.view.skip_line()
         return PlayerInputData(
             chess_id=self.prompt_chess_id(),
             last_name=self.prompt_last_name(),
@@ -45,9 +47,15 @@ class PlayerRenderHandler(CoreRenderer):
         self.view = view
 
     def render_players(self, players: list[Player]):
-        self.view.console.print("*** Player list ***")
+        self.view.skip_line()
+        self.view.console.print(ColorHelper.title("Players"))
 
         for player in players:
-            self.view.console.print(
-                f"Chess id : '{player.chess_id}' - '{player.last_name} {player.first_name}' - Birthdate : '{player.birthdate}'"
+            player_diplayed_name = f"{player.last_name} {player.first_name}"
+            player_display = (
+                ColorHelper.value(player_diplayed_name)
+                + Formatter.label_value("Birthdate", player.birthdate)
+                + Formatter.label_value("Chess id", player.chess_id)
             )
+            self.view.console.print(player_display)
+        self.view.skip_line()
