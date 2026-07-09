@@ -38,7 +38,7 @@ class PlayerRegistration:
             tournament,
             player,
         )
-        if not already_registered_result:
+        if not already_registered_result.is_valid():
             return already_registered_result
 
         tournament.registered_players.append(player)

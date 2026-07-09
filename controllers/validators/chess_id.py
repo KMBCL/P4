@@ -12,4 +12,4 @@ class ChessIDValidator:
         if chess_id is None:
             return Result.invalid("Invalid format - Expected 'AA00000'")
 
-        return Result.valid()
+        return Result.valid(value=chess_id)

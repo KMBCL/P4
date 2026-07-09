@@ -31,4 +31,4 @@ class MenuValidator:
                 f"Choice expected between {MIN_RANGE} and {len(available_items)}"
             )
 
-        return Result.valid()
+        return Result.valid(value=menu_number)

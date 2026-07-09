@@ -79,3 +79,20 @@ class RoundController:
 
         self.tournament_service.save_tournament(tournament)
         return next_round_result
+
+    def set_end_timestamp(self, round: Round, tournament: Tournament) -> None:
+        if self.get_incomplete_matches(round):
+            return None
+
+        if round.end_timestamp:
+            return None
+
+        round.end_timestamp = self.prompt_handler.prompt_end_timestamp()
+        self.tournament_service.save_tournament(tournament)
+
+    def set_start_timestamp(self, round: Round, tournament: Tournament) -> None:
+        if round.start_timestamp:
+            return None
+
+        round.start_timestamp = self.prompt_handler.prompt_start_datetime()
+        self.tournament_service.save_tournament(tournament)

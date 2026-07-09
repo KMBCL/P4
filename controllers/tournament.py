@@ -122,10 +122,16 @@ class TournamentRunner:
         should_continue_result = self.round_controller.should_continue_setting_scores(
             round.name
         )
-        if not should_continue_result:
+        if not should_continue_result.is_valid():
             return should_continue_result
 
         return Result.valid(value=round)
+
+    def run_setting_start_round(self, round: Round, tournament: Tournament) -> None:
+        self.round_controller.set_start_timestamp(round, tournament)
+
+    def run_setting_end_round(self, round: Round, tournament: Tournament) -> None:
+        self.round_controller.set_end_timestamp(round, tournament)
 
     def run_tournament(self, session_context: SessionContext):
         tournament_result = self.tournament_service.get_tournament_by_pk(
@@ -144,7 +150,9 @@ class TournamentRunner:
 
         while running_result:
             next_round: Round = running_result.get_value()
+            self.run_setting_start_round(next_round, tournament)
             self.run_setting_scores(next_round, tournament)
+            self.run_setting_end_round(next_round, tournament)
             running_result = self.round_controller.prepare_next_round(tournament)
             if not running_result:
                 self.renderer_handler.view.render_invalid_input(

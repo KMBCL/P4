@@ -30,8 +30,17 @@ class Result:
         return cls(is_valid=False, reason=reason)
 
     def __bool__(self) -> bool:
-        # revoir pour if doit vérifer un objet vide
-        return bool(self._is_valid)
+        if self._is_valid and self._value is None:
+            raise ValueError(
+                "Ambiguous state. Expected a value,  if _is_valid is True."
+            )
+
+        if not self._is_valid and self._value is not None:
+            raise ValueError(
+                "Ambiguous state. Not expected a value,  if _is_valid is False."
+            )
+
+        return self._value is not None
 
     def get_reason(self) -> str:
         if self._reason is None:
@@ -50,6 +59,9 @@ class Result:
             raise ValueError("success_message is not defined")
 
         return self._success_message
+
+    def is_valid(self) -> bool:
+        return self._is_valid
 
     def __repr__(self) -> str:
         return f"value : {self._value} - valid : {self._is_valid} - reason : {self._reason}"

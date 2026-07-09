@@ -172,16 +172,6 @@ class TournamentService:
 
         return Result.valid(value=similar_tournaments)
 
-    def check_chess_id_exists(self, chess_id: str) -> Result:
-        if not self.player_registration.validate_chess_id_exists(
-            chess_id, self.repository.get_raw_models(PLAYER_DIR)
-        ):
-            return Result.invalid(
-                reason=f"Player with this chess ID : {chess_id} doesn't exists in database"
-            )
-
-        return Result.valid()
-
     def register_player_to_tournament(
         self,
         tournament: Tournament,

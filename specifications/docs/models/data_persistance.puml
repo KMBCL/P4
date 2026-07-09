@@ -25,7 +25,7 @@ class Turn(Dataclass) {
     pk : int
     name : str
     start_datetime : datetime
-    end_datetime : datetime
+    end_timestamp : datetime
     matches : list[Match]
 }
 

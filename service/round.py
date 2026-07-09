@@ -126,7 +126,7 @@ class RoundService:
         player_pairs_check_result = self.check_registered_players_pairs(
             players_by_standing
         )
-        if not player_pairs_check_result:
+        if not player_pairs_check_result.is_valid():
             return player_pairs_check_result
 
         round.set_round_players(
@@ -172,14 +172,16 @@ class RoundService:
         self, tournament: Tournament, players_by_standing: list[Player]
     ) -> Result:
         next_round = self.get_next_round(tournament.rounds)
-        round_players_result: Result = Result.valid()
+
         if next_round is None:
             return Result.invalid(reason="no more rounds to run.")
 
-        if not self.are_round_matches_defined(next_round):
-            round_players_result = self._set_round_players(
-                tournament, players_by_standing, next_round
-            )
+        if self.are_round_matches_defined(next_round):
+            return Result.valid(value=next_round)
+
+        round_players_result = self._set_round_players(
+            tournament, players_by_standing, next_round
+        )
 
         if not round_players_result:
             return round_players_result

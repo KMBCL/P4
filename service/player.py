@@ -80,12 +80,14 @@ class PlayerService:
 
     def create_new_player(self, player_input: PlayerInputData) -> Result:
         can_save_resut = self.can_save(player_input.chess_id)
-        if not can_save_resut:
+        if not can_save_resut.is_valid():
             return can_save_resut
 
         player = Player.from_user_input(self._make_pk(), player_input)
         self.repository.save_new_raw_model(PLAYER_DIR, PlayerJSON.to_json(player))
-        return Result.valid(success_message="Successfully saved new player!")
+        return Result.valid(
+            value=player, success_message="Successfully saved new player!"
+        )
 
     def get_players(self) -> Result:
         players = self._get_players()

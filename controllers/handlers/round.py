@@ -7,7 +7,11 @@ from view.round import RoundView
 
 class RoundPromptHandler(CorePromptHandler[RoundView]):
 
-    pass
+    def prompt_start_datetime(self) -> str:
+        return self.view.prompt_start_datetime()
+
+    def prompt_end_timestamp(self) -> str:
+        return self.view.prompt_end_timestamp()
 
 
 class RoundRenderHandler(CoreRenderer):

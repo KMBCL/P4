@@ -1,47 +1,52 @@
-# Architecture audit — status as of 2026-07-01
+# Audit — `Result.__bool__` : `is_valid` vs `value is not None`
 
-Full audit of `architecture_cleaning` branch (models/repository/service/core/controllers/view/menu), updated after your latest round of fixes. Status column reflects current code, not the original audit snapshot.
+Every construction site of `Result.valid(...)` / `Result.invalid(...)` in the codebase, cross-referenced with every place a `Result` is used in a boolean context (`if result`, `if not result`, `while result`). Goal: identify which call sites still work if `__bool__` switches from `bool(self._is_valid)` to `self._value is not None`.
 
-## Fixed since the report
+**Note on semantics**: the mentor's target is `value is not None`, not `bool(value)`. That distinction matters — some legitimately valid values are falsy (`0`, `""`, `[]`, `{}`). Keep the check as an identity check against `None`, not a truthiness check on the value itself.
 
-| Location | Was | Status |
-|---|---|---|
-| `repository/round.py` | `round_match_to_json` wrote `player_score_a` twice, never `player_score_b` | **Fixed** — now serializes `player_score_b` correctly |
-| `controllers/player.py` `create_new_player` | Missing `return` after error render → fell through to success render | **Fixed** — `return None` added |
-| `controllers/player.py` `show_players` | Missing `return` after error render → unguarded `.get_value()` crash | **Fixed** — `return None` added |
-| `controllers/player.py` | Dead, cut-off commented `show_player` method | **Fixed** — removed |
-| `service/round.py` `prepare_players` | `players = tournament.registered_players` aliased the model's list; `shuffle` mutated it in place | **Fixed** — now `.copy()` before shuffle |
-| `service/round.py` `is_first_round` | Unguarded `first_round[0]` → `IndexError` | **Partially fixed** — now an explicit `raise ValueError(...)` if missing. No longer an accidental `IndexError`, but still crashes instead of returning a `Result` like the rest of the app. Worth a conscious decision: is this a genuine invariant violation (fail fast is fine) or a reachable state (should be a `Result`)? |
-| `core/core_data_repository.py` | Duplicate `CoreDataRepository` alongside `repository/repository.py`, with diverging filter logic; also the class whose deleted `Model.from_json/to_json` contract it depended on | **Fixed** — file deleted entirely. Resolves the "two parallel repository implementations" and the dangling `from_json`/`to_json` contract findings in one move. Confirmed nothing else imports it. |
-| `controllers/round.py` `get_incomplete_matches` | Called `round.is_round_score_complete()` / `round_match.is_score_complete()`, methods that lived on the model | **Fixed** — now delegates to `round_service.get_incomplete_round_matches(round)`. Also fixes a latent bug: `round_match.score_a.chess_id` (wrong attribute, would've crashed) → `round_match.player_score_a.player.chess_id` |
-| `service/tournament.py` | Unused imports `RoundJSON`, `RoundMatchJSON` | **Fixed** |
-| `service/player_registration.py` | Unused imports `combinations`, `random`, `json`, `Round`, `RoundMatch` | **Fixed** |
-| `service/round_match.py` | Unused imports `PLAYER_DIR`, `to_players` | **Fixed** |
-| `service/tournament.py` | Duplicated payload-loading calls in `_get_tournaments` and `get_tournament_by_pk` | **New improvement** (not previously flagged) — deduplicated into `_load_related_tournament_models` |
+## Safe — already pass a value
 
-## Still open — priority order
+These construct `Result.valid(...)` with a real value, so switching `__bool__` changes nothing for them.
 
-### 1. Scoring is still not written anywhere (highest priority)
-`models/round.py` `RoundMatch.set_score` is still just `pass`. The old `calculate_match_score` / `give_score_b_value` logic that actually computed score values was **deleted**, not restored, in this pass — so this isn't fixed, the surrounding code just changed shape around it.
+| Location | Call |
+|---|---|
+| `service/player.py:32` | `Result.valid(value=unregistered_players)` |
+| `service/player.py:56` | `Result.valid(value=similar_players)` |
+| `service/player.py:65` | `Result.valid(player)` |
+| `service/player.py:96` | `Result.valid(sorted_players)` |
+| `controllers/validators/menu.py:11` | `Result.valid(value=menu_number)` (note: value can be `0` — still `is not None`, still truthy, correctly) |
+| `service/tournament.py:116` | `Result.valid(data_by_field_name)` |
+| `service/tournament.py:159` | `Result.valid(tournament)` |
+| `service/tournament.py:173` | `Result.valid(value=similar_tournaments)` |
+| `service/tournament.py:209` | `Result.valid(value=tournament.registered_players)` |
+| `service/tournament.py:234` | `Result.valid(tournaments)` |
+| `service/round.py:136` | `Result.valid(value=round)` |
+| `service/round.py:187` | `Result.valid(value=next_round)` |
+| `service/player_registration.py:45` | `Result.valid(value=tournament)` |
+| `controllers/tournament.py:58` | `Result.valid(value=self.select_tournament_from_list(tournaments))` |
+| `controllers/tournament.py:60` | `Result.valid(value=tournaments[0])` |
+| `controllers/tournament.py:128` | `Result.valid(value=round)` |
+| `controllers/tournament.py:200` | `Result.valid(value=self.select_player_from_list(unregistered_players))` |
+| `controllers/tournament.py:204` | `Result.valid(value=unregistered_players[0])` |
+| `controllers/tournament.py:216` | `Result.valid(value=tournament)` |
 
-Concrete consequence: `PlayerScore.is_score_not_set` (new, in `models/score.py`) checks `score == INITIAL_SCORE`. Since `set_score` never writes, every match stays "not set" forever, so `RoundService.get_incomplete_round_matches` will always report every match as incomplete, so `get_next_round`/`prepare_next_round` will never advance a round past its first match-setting. This is the same root cause flagged before — it's now one layer deeper (the write path, not the read/comparison path) but it's the same missing piece: nothing ever calls `PlayerScore.score_value = ...`.
+## Breaks — `Result.valid()` with no value, truthiness relied on downstream
 
-### 2. `PlayerRegistration.to_players` — errors still silently swallowed
-`pk_errors` (now really chess_id errors) is built up but never returned or surfaced. Callers can't know a chess_id failed to resolve. Still inconsistent with the `Result` pattern used everywhere else.
+These are the ones your mentor's change would flip from truthy to falsy. Each row shows where the missing-value success gets tested.
 
-### 3. Dead code remaining
-- `service/player_registration.py` — `extract_registered_players` still defined, still no caller.
-- `service/round.py` `make_pairs` — `picked_up_players` still built, never read or returned.
-- `service/round_match.py` `prepare_players_dict` — `players = players` no-op self-assignment still there.
+| Location (constructs) | Call | Tested at | Consequence if unchanged |
+|---|---|---|---|
+| `service/player.py:75` `can_save` | `Result.valid()` | `service/player.py:83` `if not can_save_resut:` in `create_new_player` | A save-allowed check reads as failed → every `create_new_player` call rejected |
+| `service/player.py:88` `create_new_player` | `Result.valid(success_message=...)` | `controllers/player.py:20` `if not create_result:` | Player creation always reports as failed to the controller, even though the player was saved |
+| `controllers/validators/menu.py:34` `is_choice_in_range` | `Result.valid()` | `core/core_handler.py:25` `if not user_input_result:` (inside `while True`) | Every in-range menu choice is rejected as invalid → **infinite reprompt loop**, menu becomes unusable |
+| `controllers/validators/date.py:13` `validate_date` | `Result.valid()` | `core/core_handler.py:25` (used as `validation_function` for birthdate / start / end date prompts) | Every valid date is rejected → **infinite reprompt loop** on any date entry |
+| `controllers/validators/chess_id.py:15` `validate_chess_id` | `Result.valid()` | `core/core_handler.py:25` (used as `validation_function` for chess_id prompt) | Every well-formed chess_id is rejected → **infinite reprompt loop** on player creation |
+| `service/round.py:150` `check_registered_players_pairs` | `Result.valid()` | `service/round.py:129` `if not player_pairs_check_result:` in `_set_round_players` | A valid, even-numbered player list reads as invalid → round players never get set |
+| `service/round.py:175` placeholder in `prepare_next_round` | `round_players_result: Result = Result.valid()` | `service/round.py:184` `if not round_players_result:` | Only breaks in one branch: when the next round's matches are **already defined** (`are_round_matches_defined` true), the placeholder is never overwritten and gets read as invalid, so `prepare_next_round` returns an invalid `Result` even though there's a legitimate next round to run. Propagates up through `controllers/round.py:77` and `controllers/tournament.py`'s `run_tournament` loop. |
+| `service/player_registration.py:30` `check_if_player_already_registered` | `Result.valid()` | `service/player_registration.py:41` `if not already_registered_result:` in `register_player_to_tournament` | "Not already registered" (the OK-to-proceed case) reads as invalid → registration always rejected |
+| `controllers/round.py:70` `should_continue_setting_scores` | `Result.valid() if selected_menu_item.value else Result.invalid(...)` | `controllers/tournament.py:125` `if not should_continue_result:` in `TournamentRunner.should_continue` | Choosing "continue" reads as invalid → tournament loop stops prematurely even when the user asked to continue |
+| `service/tournament.py:183` `check_chess_id_exists` | `Result.valid()` | *(no live caller found anywhere in the codebase — dead code)* | Not currently reachable, but would have the same failure mode as the others if ever wired up |
 
-### 4. `service/round_match.py` `build_round_match`
-Still raises a bare `ValueError` instead of returning `Result.invalid`, inconsistent with the railway pattern elsewhere.
+## Summary
 
-### 5. Naming
-`PlayerRegistration.to_players(registered_raw_players)` / loop var `raw_registered_player` — still named as if holding raw dicts or pks; they hold chess_id strings.
-
-## Not re-verified this pass
-Everything flagged in the original 6-way audit outside the changed files (`controllers/tournament.py` duplication and typos, `menu/session_context.py` raw `ValueError`, `repository/build.py` singleton wiring, `core/result.py` `None`-vs-invalid ambiguity, `models/tournament.py` dual payload/hydrated representation, `service/player.py` leftover error-message copy, etc.) — none of those files changed in this diff, so their status is unchanged from the original report.
-
----
-*Start here tomorrow: item 1 (scoring). Everything else about round-completion detection is now correctly wired — it's just waiting on `set_score` to actually set something.*
+10 live call sites (+1 dead) construct a "valid" `Result` without a value, and every one of them has its truthiness tested somewhere downstream. All 10 would silently start reporting success as failure the moment `__bool__` switches to `self._value is not None` — three of them (`is_choice_in_range`, `validate_date`, `validate_chess_id`) sit inside `while True` prompt loops, so those specifically would hang the CLI rather than just misreport.
