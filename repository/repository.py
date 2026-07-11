@@ -34,7 +34,16 @@ class ExtractMixin:
 
 class Repository(ExtractMixin):
 
+    def _ensure_data_file(self, data_path: Path) -> None:
+        if data_path.exists():
+            return None
+
+        with open(data_path, "w", encoding="utf-8") as file:
+            json.dump([], file)
+
     def _read_json_file(self, data_path: Path) -> list[dict[str, Any]]:
+        self._ensure_data_file(data_path)
+
         with data_path.open("r", encoding="utf-8") as file:
             return json.load(file)
 

@@ -75,7 +75,7 @@ class TournamentSelector:
 
         return self.select_tournament_by_name()
 
-    def handle_tournament(self, session_context: SessionContext):
+    def handle_tournament(self, session_context: SessionContext) -> None:
         tournament_result = Result.invalid(reason="initial loop")
 
         while not tournament_result:
