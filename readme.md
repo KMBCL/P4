@@ -6,7 +6,7 @@
 - Configurer un environnement virtuel avec venv.
 - Initialiser l'environnement virtuel, puis se placer dans le dossier du projet.
 - Avec pip installer les dépendances requises par le projet en utilisant le fichier requirements.txt
-- Depuis le terminal, avec l'environnement virtuel activée, lancer l'application avec la commande "py main.py"
+- Depuis le terminal, avec l'environnement virtuel activé, lancer l'application avec la commande "py main.py"
 
 ## Utilisation du logiciel:
 
@@ -42,7 +42,7 @@
     - "Show tournament details" permet de revoir les informations du tournois
     - "Register players" permet d'inscrire un joueur au tournoi. Fonctionne comme la sélection du tournoi, avec un nom complet ou partiel. Si un seul joueur correspond à la saisie, alors il est ajouté automatiquement. Les joueurs ne peuvent pas être ajouté en double.
     - "Show registered players" permet de voir les jouers inscrits
-    - "Run tournament" permet de -jouer- le tournois. Voir section suivante.
+    - "Run tournament" permet de -jouer- le tournoi. Voir section suivante.
     - "Show standings" permet de voir le classement du tournoi
     - "Show tournament rounds" permet de voir les résultat, de chaque ronde, pour chaque match.
 
