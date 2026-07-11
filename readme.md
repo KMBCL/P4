@@ -53,3 +53,5 @@
     - Lorsque tous les matchs sont renseignés, il est possible de continuer ou d'arrêter de -jouer-.
     - lorsque toutes les rondes sont complètes, le tournoi est terminé.
     
+## Générer un rapport Flake8
+- Pour générer un nouveau rapport, avec l'environnement virtuel activé, executer la commande depuis le terminal:  py -m flake8 
