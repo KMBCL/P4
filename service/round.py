@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from typing import Any, TypeAlias
 import random
@@ -29,26 +29,10 @@ def extract_played_pairs_from_tournament(
     return pairs
 
 
-def default_players() -> list[Player]:
-    return []
-
-
-def default_new_pairs() -> list[tuple[Player, Player]]:
-    return []
-
-
 @dataclass
 class PairHelper:
     players: list[Player]
     played_pairs: list[tuple[Player, Player]]
-    _remaining_players: list[Player] = field(default_factory=default_players)
-    _new_pairs: list[tuple[Player, Player]] = field(default_factory=default_new_pairs)
-
-    def _set_remaining_players(self):
-        self._remaining_players = self.players.copy()
-
-    def _remove_picked_up_player(self, player: Player):
-        self._remaining_players.remove(player)
 
     def _pair_already_played(
         self,
@@ -60,9 +44,6 @@ class PairHelper:
             or (player_b, player_a) in self.played_pairs
         )
 
-    def _add_new_pair(self, player_a: Player, player_b: Player) -> None:
-        self._new_pairs.append((player_a, player_b))
-
     def _pick_opponent(self, player_a: Player) -> Player:
         for remaining_player in self._remaining_players:
             if self._pair_already_played(player_a, remaining_player):
@@ -73,23 +54,23 @@ class PairHelper:
         return self._remaining_players[0]
 
     def build_new_pairs(self) -> list[tuple[Player, Player]]:
-        self._set_remaining_players()
+        remaining_players: list[Player] = []
+        new_pairs: list[tuple[Player, Player]] = []
+        self._remaining_players = self.players.copy()
         while self._remaining_players:
             if len(self._remaining_players) == 2:
-                self._add_new_pair(
-                    self._remaining_players[0], self._remaining_players[1]
-                )
-                return self._new_pairs
+                new_pairs.append((remaining_players[0], remaining_players[1]))
+                return new_pairs
 
             player_a = self._remaining_players[0]
-            self._remove_picked_up_player(player_a)
+            self._remaining_players.remove(player_a)
 
             player_b = self._pick_opponent(player_a)
-            self._remove_picked_up_player(player_b)
+            self._remaining_players.remove(player_b)
 
-            self._add_new_pair(player_a, player_b)
+            new_pairs.append((player_a, player_b))
 
-        return self._new_pairs
+        return new_pairs
 
 
 class RoundService:

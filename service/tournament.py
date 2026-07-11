@@ -6,7 +6,7 @@ from core.result import Result
 
 from repository.helpers.pk import make_pk
 from repository.repository import Repository
-from repository.paths import TOURNAMENT_DIR, PLAYER_DIR
+from repository.paths import TOURNAMENT_DIR
 from repository.tournament import TournamentJSON
 
 from models.helpers.flat import flat_round_matches, flat_player_scores
