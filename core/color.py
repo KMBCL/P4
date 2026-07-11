@@ -1,14 +1,30 @@
 class MenuColorHelper:
     @staticmethod
     def action(value: str) -> str:
-        return f"[blue]{value}[/blue]"
+        return f"[bright_blue]{value}[/bright_blue]"
 
     @staticmethod
     def navigation(value: str) -> str:
-        return f"[magenta]{value}[/magenta]"
+        return f"[bright_cyan]{value}[/bright_cyan]"
+
+    @staticmethod
+    def back(value: str) -> str:
+        return f"[bright_red]{value}[/bright_red]"
 
 
 class ColorHelper:
+
+    @staticmethod
+    def success(value: str) -> str:
+        return f"[green]{value}[/green]"
+
+    @staticmethod
+    def invalid(value: str) -> str:
+        return f"[red]{value}[/red]"
+
+    @staticmethod
+    def input(value: str) -> str:
+        return f"[orange1]{value}[/orange1]"
 
     @staticmethod
     def title(value: str) -> str:

@@ -11,6 +11,9 @@ if TYPE_CHECKING:
     from models.player import Player
 
 
+DEFAULT_ROUND_COUNT = 4
+
+
 @dataclass
 class TournamentInputData(ModelInputData):
     name: str
@@ -77,6 +80,6 @@ class Tournament(Model[TournamentInputData]):
             description=user_input.description,
             round_count=user_input.round_count,
             registered_player_payload=[],
-            rounds=cls.add_rounds(int(user_input.round_count)),
+            rounds=cls.add_rounds(int(user_input.round_count or DEFAULT_ROUND_COUNT)),
         )
         return tournament

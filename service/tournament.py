@@ -172,6 +172,9 @@ class TournamentService:
 
         return Result.valid(value=similar_tournaments)
 
+    def check_players_left(self, tournament: Tournament) -> Result:
+        return self.player_registration.check_players_left(tournament)
+
     def register_player_to_tournament(
         self,
         tournament: Tournament,
@@ -214,7 +217,9 @@ class TournamentService:
             TOURNAMENT_DIR,
             TournamentJSON.to_json(tournament),
         )
-        return Result.valid(success_message="Successfully saved new tournament!")
+        return Result.valid(
+            tournament, success_message="Successfully saved new tournament!"
+        )
 
     def get_tournaments(self) -> Result:
         tournaments = self._get_tournaments()

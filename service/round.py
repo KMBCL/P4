@@ -44,29 +44,27 @@ class PairHelper:
             or (player_b, player_a) in self.played_pairs
         )
 
-    def _pick_opponent(self, player_a: Player) -> Player:
-        for remaining_player in self._remaining_players:
+    def _pick_opponent(
+        self, player_a: Player, remaining_players: list[Player]
+    ) -> Player:
+        for remaining_player in remaining_players:
             if self._pair_already_played(player_a, remaining_player):
                 continue
 
             return remaining_player
 
-        return self._remaining_players[0]
+        return remaining_players[0]
 
     def build_new_pairs(self) -> list[tuple[Player, Player]]:
-        remaining_players: list[Player] = []
         new_pairs: list[tuple[Player, Player]] = []
-        self._remaining_players = self.players.copy()
-        while self._remaining_players:
-            if len(self._remaining_players) == 2:
-                new_pairs.append((remaining_players[0], remaining_players[1]))
-                return new_pairs
+        remaining_players = self.players.copy()
+        while remaining_players:
 
-            player_a = self._remaining_players[0]
-            self._remaining_players.remove(player_a)
+            player_a = remaining_players[0]
+            remaining_players.remove(player_a)
 
-            player_b = self._pick_opponent(player_a)
-            self._remaining_players.remove(player_b)
+            player_b = self._pick_opponent(player_a, remaining_players)
+            remaining_players.remove(player_b)
 
             new_pairs.append((player_a, player_b))
 

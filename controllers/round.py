@@ -8,6 +8,7 @@ from controllers.handlers.model_to_menu_item import ModelToMenuItem
 from controllers.handlers.should_continue_to_menu_item import ShouldContinueToMenuItem
 from controllers.handlers.round import RoundPromptHandler, RoundRenderHandler
 from controllers.validators.menu import MenuValidator
+from controllers.validators.date import DateValidator
 
 from service.tournament import TournamentService, TournamentStandingsService
 from service.round import RoundService
@@ -61,7 +62,9 @@ class RoundController:
 
     def should_continue_setting_scores(self, next_round_name: str) -> Result:
         menu_items = ShouldContinueToMenuItem.should_continue_to_menu_item()
-        self.renderer_handler.view.render_menu_items(menu_items)
+        self.renderer_handler.view.render_menu_items(
+            menu_items, "Continue to set scores ?"
+        )
         user_input = self.prompt_handler.prompt(
             self.prompt_handler.view.prompt_menu_choice,
             lambda user_input: MenuValidator.is_choice_in_range(user_input, menu_items),
@@ -87,12 +90,18 @@ class RoundController:
         if round.end_timestamp:
             return None
 
-        round.end_timestamp = self.prompt_handler.prompt_end_timestamp()
+        round.end_timestamp = self.prompt_handler.prompt(
+            self.prompt_handler.prompt_end_timestamp,
+            DateValidator.validate_date_time,
+        )
         self.tournament_service.save_tournament(tournament)
 
     def set_start_timestamp(self, round: Round, tournament: Tournament) -> None:
         if round.start_timestamp:
             return None
 
-        round.start_timestamp = self.prompt_handler.prompt_start_datetime()
+        round.start_timestamp = self.prompt_handler.prompt(
+            self.prompt_handler.prompt_start_datetime,
+            DateValidator.validate_date_time,
+        )
         self.tournament_service.save_tournament(tournament)

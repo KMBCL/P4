@@ -150,6 +150,7 @@ class TournamentRunner:
 
         while running_result:
             next_round: Round = running_result.get_value()
+            self.renderer_handler.render_playing_round(next_round)
             self.run_setting_start_round(next_round, tournament)
             self.run_setting_scores(next_round, tournament)
             self.run_setting_end_round(next_round, tournament)
@@ -239,6 +240,12 @@ class TournamentPlayer:
             return None
 
         tournament: Tournament = registration_open_result.get_value()
+
+        player_left_result = self.tournament_service.check_players_left(tournament)
+        if not player_left_result:
+            self.display_result(player_left_result)
+            return None
+
         regsitration_result = Result.invalid(reason="initial loop")
         while not regsitration_result:
             regsitration_result = self.select_player_by_name(tournament)
@@ -320,6 +327,7 @@ class TournamentController:
             self.renderer_handler.view.render_invalid_input(
                 "Tournament not begun yet. No standings to show."
             )
+            return None
 
         standings = self.tournament_standings_service.get_tournament_standings(
             tournament

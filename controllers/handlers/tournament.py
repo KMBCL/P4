@@ -160,3 +160,6 @@ class TournamentRenderHandler(CoreRenderer):
                 self._render_victory_condition(round_match)
 
         self.view.skip_line()
+
+    def render_playing_round(self, round: Round) -> None:
+        self.view.console.print(f"Playing round : {round.name}")
