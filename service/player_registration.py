@@ -30,12 +30,15 @@ class PlayerRegistration:
         return Result.valid()
 
     def check_players_left(self, tournament: Tournament) -> Result:
-        if len(self.player_service.get_players().get_value()) == len(
-            tournament.registered_players
-        ):
+        players_result = self.player_service.get_players()
+        if not players_result:
+            return Result.invalid("No existing players to register")
+
+        players: list[Player] = players_result.get_value()
+        if len(players) == len(tournament.registered_players):
             return Result.invalid("No players left to register")
 
-        return Result.valid()
+        return Result.valid(players)
 
     def register_player_to_tournament(
         self,
