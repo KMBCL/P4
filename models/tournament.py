@@ -1,3 +1,5 @@
+"""Provides the tournament domain model, the aggregate of the application."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -16,6 +18,8 @@ DEFAULT_ROUND_COUNT = 4
 
 @dataclass
 class TournamentInputData(ModelInputData):
+    """Carries the raw tournament fields as they were typed by the user."""
+
     name: str
     place: str
     start_date: str
@@ -25,19 +29,36 @@ class TournamentInputData(ModelInputData):
 
 
 def default_registered_player_payload() -> list[str]:
+    """Builds the default registered players of a tournament, as chess ids.
+
+    Returns:
+        list[str]: An empty list.
+    """
     return []
 
 
 def default_rounds() -> list[Round]:
+    """Builds the default rounds of a tournament.
+
+    Returns:
+        list[Round]: An empty list.
+    """
     return []
 
 
 def default_players() -> list[Player]:
+    """Builds the default players of a tournament.
+
+    Returns:
+        list[Player]: An empty list.
+    """
     return []
 
 
 @dataclass
 class Tournament(Model[TournamentInputData]):
+    """Runs a fixed number of rounds between the players registered to it."""
+
     pk: str
     name: str
     place: str
@@ -54,6 +75,14 @@ class Tournament(Model[TournamentInputData]):
 
     @classmethod
     def new_round(cls, index: int):
+        """Builds one empty round, named after its position in the tournament.
+
+        Args:
+            index (int): The position of the round, counted from zero.
+
+        Returns:
+            Round: The new round, with no timestamp and no match.
+        """
         round = Round(
             name="round_" + str(index),
             start_timestamp="",
@@ -64,6 +93,14 @@ class Tournament(Model[TournamentInputData]):
 
     @classmethod
     def add_rounds(cls, round_count: int):
+        """Builds every round of the tournament at once.
+
+        Args:
+            round_count (int): The number of rounds the tournament will run.
+
+        Returns:
+            list[Round]: The rounds, in the order they will be played.
+        """
         rounds: list[Round] = [cls.new_round(index) for index in range(round_count)]
         return rounds
 
@@ -71,6 +108,15 @@ class Tournament(Model[TournamentInputData]):
     def from_user_input(
         cls, new_pk: str, user_input: TournamentInputData
     ) -> Tournament:
+        """Builds a tournament from validated user input.
+
+        Args:
+            new_pk (str): The primary key assigned to the new tournament.
+            user_input (TournamentInputData): The raw fields typed by the user.
+
+        Returns:
+            Tournament: The new tournament, with no player registered.
+        """
         tournament = cls(
             pk=new_pk,
             name=user_input.name,
