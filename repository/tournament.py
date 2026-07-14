@@ -1,3 +1,5 @@
+"""Maps a tournament to and from its stored record."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -8,9 +10,18 @@ from repository.player_registry import PlayerRegistrationJSON
 
 
 class TournamentJSON:
+    """Translates a tournament between its object form and its stored record."""
 
     @staticmethod
     def from_json(json_data: dict[str, Any]) -> Tournament:
+        """Builds a tournament from its stored record.
+
+        Args:
+            json_data (dict[str, Any]): The stored record.
+
+        Returns:
+            Tournament: The tournament, holding no registered player object.
+        """
         return Tournament(
             pk=json_data["pk"],
             name=json_data["name"],
@@ -26,6 +37,16 @@ class TournamentJSON:
 
     @staticmethod
     def to_json(tournament: Tournament) -> dict[str, Any]:
+        """Builds the record of a tournament.
+
+        The registered players are stored by reference, as their chess ids.
+
+        Args:
+            tournament (Tournament): The tournament to store.
+
+        Returns:
+            dict[str, Any]: The record, holding every round of the tournament.
+        """
         json: dict[str, Any] = {
             "pk": tournament.pk,
             "name": tournament.name,
