@@ -173,7 +173,7 @@ class Repository(ExtractMixin):
     ) -> bool:
         """Tells whether a record matches every filter.
 
-        Fields and values are compared as strings,.
+        Fields and values are compared as strings.
 
         Args:
             raw_model (dict[str, Any]): The record to evaluate.
