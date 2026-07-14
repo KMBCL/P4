@@ -1,3 +1,5 @@
+"""Builds the services, sharing a single repository between them."""
+
 from repository.build import repository
 
 
