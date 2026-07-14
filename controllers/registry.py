@@ -1,3 +1,5 @@
+"""Binds every menu code to the action it runs."""
+
 from __future__ import annotations
 
 from enum import StrEnum
@@ -13,11 +15,15 @@ ActionRouting: TypeAlias = dict[str, Action]
 
 
 class PlayerMenuCode(StrEnum):
+    """Codes of the menu entries running an action on the players."""
+
     CREATE_NEW_PLAYER = "create_new_player"
     SHOW_PLAYERS = "show_players"
 
 
 class TournamentMenuCode(StrEnum):
+    """Codes of the menu entries running an action on the tournaments."""
+
     CREATE_NEW_TOURNAMENT = "create_new_tournament"
     SHOW_TOURNAMENTS = "show_tournaments"
     HANDLE_TOURNAMENT = "handle_tournament"

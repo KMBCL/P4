@@ -1,3 +1,5 @@
+"""Builds the menu controller, from the handlers, the registry and the service."""
+
 from service.build import (
     menu_service,
 )

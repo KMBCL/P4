@@ -1,3 +1,5 @@
+"""Builds the controllers, from the handlers and the services."""
+
 from service.build import (
     tournament_service,
     tournament_standing_service,

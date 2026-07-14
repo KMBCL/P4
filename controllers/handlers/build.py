@@ -1,3 +1,5 @@
+"""Builds the handlers, one prompt and one render handler per view."""
+
 from view.build import (
     core_view,
     tournament_view,

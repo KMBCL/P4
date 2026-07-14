@@ -1,3 +1,5 @@
+"""Prompts and renders the tournaments, their standings and their rounds."""
+
 from core.color import ColorHelper, RoundMatchcolor, Formatter, TournamentFormatter
 from core.core_renderer import CoreRenderer
 from core.core_handler import CorePromptHandler
@@ -11,8 +13,14 @@ from models.score import TournamentPlayerScore
 
 
 class TournamentPromptHandler(CorePromptHandler[TournamentView]):
+    """Asks the user for a tournament, validating the fields that have a format."""
 
     def get_tournament_input(self):
+        """Asks the user for every field of a tournament.
+
+        Returns:
+            TournamentInputData: The raw fields, ready to be given to the service.
+        """
         self.view.skip_line()
         return TournamentInputData(
             name=self.prompt_name(),
@@ -24,33 +32,80 @@ class TournamentPromptHandler(CorePromptHandler[TournamentView]):
         )
 
     def get_player_registration_input(self):
+        """Asks for the last name of the player to register.
+
+        Returns:
+            str: The raw last name, unvalidated.
+        """
         return self.view.prompt_register_player()
 
     def prompt_name(self) -> str:
+        """Asks for the name, which has no format to validate.
+
+        Returns:
+            str: The raw name, unvalidated.
+        """
         return self.view.prompt_name()
 
     def prompt_place(self) -> str:
+        """Asks for the place, which has no format to validate.
+
+        Returns:
+            str: The raw place, unvalidated.
+        """
         return self.view.prompt_place()
 
     def prompt_description(self) -> str:
+        """Asks for the description, which has no format to validate.
+
+        Returns:
+            str: The raw description, unvalidated.
+        """
         return self.view.prompt_description()
 
     def prompt_round_count(self) -> str:
+        """Asks for the round count, which has no format to validate.
+
+        Returns:
+            str: The raw round count, unvalidated. An empty input keeps the
+                default.
+        """
         return self.view.prompt_round_count()
 
     def prompt_start_date(self) -> str:
+        """Asks for the start date, until its format is the expected one.
+
+        Returns:
+            str: The raw date, once validated.
+        """
         return self.prompt(self.view.prompt_start_date, DateValidator.validate_date)
 
     def prompt_end_date(self) -> str:
+        """Asks for the end date, until its format is the expected one.
+
+        Returns:
+            str: The raw date, once validated.
+        """
         return self.prompt(self.view.prompt_end_date, DateValidator.validate_date)
 
 
 class TournamentRenderHandler(CoreRenderer):
+    """Prints the tournaments, their standings, their rounds and their matches."""
 
     def __init__(self, view: TournamentView) -> None:
+        """Holds the view the handler prints through.
+
+        Args:
+            view (TournamentView): The view to print through.
+        """
         self.view = view
 
     def render_tournaments(self, tournaments: list[Tournament]) -> None:
+        """Prints every tournament, with its dates and its place.
+
+        Args:
+            tournaments (list[Tournament]): The tournaments to print.
+        """
         self.view.skip_line()
         self.view.console.print(ColorHelper.title("Tournament list"))
 
@@ -65,6 +120,11 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.skip_line()
 
     def render_selected_tournament_name(self, tournament: Tournament) -> None:
+        """Prints the name of the tournament the user is working on.
+
+        Args:
+            tournament (Tournament): The selected tournament.
+        """
         self.view.skip_line()
         self.view.console.print(
             ColorHelper.title(f"Selected tournament : {tournament.name}")
@@ -72,6 +132,11 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.skip_line()
 
     def render_standings(self, standings: list[TournamentPlayerScore]) -> None:
+        """Prints the players and their total, best first.
+
+        Args:
+            standings (list[TournamentPlayerScore]): The totals to print.
+        """
         self.view.skip_line()
         self.view.console.print(ColorHelper.title("Tournament standings"))
         self.view.skip_line()
@@ -86,6 +151,11 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.skip_line()
 
     def render_tournament_details(self, tournament: Tournament) -> None:
+        """Prints the fields of a tournament.
+
+        Args:
+            tournament (Tournament): The tournament to print.
+        """
         self.view.skip_line()
         self.view.console.print(ColorHelper.title("Tournament details"))
 
@@ -109,6 +179,14 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.skip_line()
 
     def _render_victory_condition(self, round_match: RoundMatch) -> None:
+        """Prints a match, the winner first and the loser second.
+
+        The outcome is read back from the scores: equal scores are a draw, and
+        the higher score is the winner.
+
+        Args:
+            round_match (RoundMatch): The match to print.
+        """
         player_a = f"{round_match.player_score_a.player.last_name} {round_match.player_score_a.player.first_name}"
         player_b = f"{round_match.player_score_b.player.last_name} {round_match.player_score_b.player.first_name}"
         score_a = round_match.player_score_a.score_value
@@ -144,12 +222,22 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.console.print(match_rendering)
 
     def _render_round_details(self, round: Round) -> None:
+        """Prints the name and the timestamps of a round.
+
+        Args:
+            round (Round): The round to print.
+        """
         self.view.skip_line()
         self.view.console.print(Formatter.label_value("Round", round.name))
         self.view.console.print(Formatter.label_value("Started", round.start_timestamp))
         self.view.console.print(Formatter.label_value("Ended", round.end_timestamp))
 
     def render_tournament_rounds(self, tournament: Tournament) -> None:
+        """Prints every round of a tournament, and every match of every round.
+
+        Args:
+            tournament (Tournament): The tournament to print the rounds of.
+        """
         self.view.skip_line()
         self.view.console.print(ColorHelper.title("Tournament rounds"))
 
@@ -162,4 +250,9 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.skip_line()
 
     def render_playing_round(self, round: Round) -> None:
+        """Announces the round being played.
+
+        Args:
+            round (Round): The round being played.
+        """
         self.view.console.print(f"Playing round : {round.name}")

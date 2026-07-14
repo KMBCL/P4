@@ -1,3 +1,5 @@
+"""Runs the use cases of the tournaments."""
+
 from __future__ import annotations
 
 from core.result import Result
@@ -24,6 +26,7 @@ from menu.session_context import SessionContext
 
 
 class TournamentSelector:
+    """Selects the tournament."""
 
     def __init__(
         self,
@@ -31,11 +34,27 @@ class TournamentSelector:
         renderer_handler: TournamentRenderHandler,
         tournament_service: TournamentService,
     ) -> None:
+        """Holds the handlers and the service the use cases are run with.
+
+        Args:
+            prompt_handler (TournamentPromptHandler): The handler to prompt through.
+            renderer_handler (TournamentRenderHandler): The handler to print through.
+            tournament_service (TournamentService): The rules governing the
+                tournaments.
+        """
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
 
     def select_tournament_from_list(self, tournaments: list[Tournament]) -> Tournament:
+        """Asks the user to pick one tournament out of several.
+
+        Args:
+            tournaments (list[Tournament]): The tournaments to pick from.
+
+        Returns:
+            Tournament: The tournament the user picked.
+        """
         menu_items = ModelToMenuItem.tournament_to_menu_item(tournaments)
         self.renderer_handler.view.render_menu_items(menu_items)
         user_input = self.prompt_handler.prompt(
@@ -46,6 +65,16 @@ class TournamentSelector:
         return tournament
 
     def select_tournament_by_name(self) -> Result:
+        """Asks for a name, and for a choice when several names match.
+
+        Args:
+            None
+
+        Returns:
+            Result:
+                - A valid result carrying the selected tournament.
+                - An invalid one when no name matches.
+        """
         prompted_name = self.prompt_handler.prompt_name()
         tournaments_result = self.tournament_service.get_tournament_by_name(
             prompted_name
@@ -60,6 +89,15 @@ class TournamentSelector:
         return Result.valid(value=tournaments[0])
 
     def use_cache(self, session_context: SessionContext) -> Result | None:
+        """Reads the tournament the user already selected, if there is one.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+
+        Returns:
+            Result | None: The result of reading the selected tournament, or None
+                when no tournament is selected yet.
+        """
         if session_context.tournament_pk is None:
             return None
 
@@ -69,6 +107,16 @@ class TournamentSelector:
         return tournament_result
 
     def select_tournament(self, session_context: SessionContext) -> Result:
+        """Reads the selected tournament, and asks for one when there is none.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+
+        Returns:
+            Result:
+                - A valid result carrying the selected tournament.
+                - An invalid one when no name matches.
+        """
         cached_tournament_result = self.use_cache(session_context)
         if cached_tournament_result is not None:
             return cached_tournament_result
@@ -76,6 +124,14 @@ class TournamentSelector:
         return self.select_tournament_by_name()
 
     def handle_tournament(self, session_context: SessionContext) -> None:
+        """Selects a tournament, asking again until one is found.
+
+        The selected tournament is kept in the session, so that every later
+        action works on it without asking again.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         tournament_result = Result.invalid(reason="initial loop")
 
         while not tournament_result:
@@ -90,11 +146,17 @@ class TournamentSelector:
         self.renderer_handler.render_selected_tournament_name(tournament)
 
     def change_tournament(self, session_context: SessionContext) -> None:
+        """Drops the selected tournament, and selects another one.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         session_context.tournament_pk = None
         self.handle_tournament(session_context)
 
 
 class TournamentRunner:
+    """Plays a tournament, one round after the other."""
 
     def __init__(
         self,
@@ -103,12 +165,27 @@ class TournamentRunner:
         tournament_service: TournamentService,
         round_controller: RoundController,
     ) -> None:
+        """Holds the handlers, the service and the controller of the rounds.
+
+        Args:
+            prompt_handler (TournamentPromptHandler): The handler to prompt through.
+            renderer_handler (TournamentRenderHandler): The handler to print through.
+            tournament_service (TournamentService): The rules governing the
+                tournaments.
+            round_controller (RoundController): The use cases of the rounds.
+        """
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
         self.round_controller = round_controller
 
     def run_setting_scores(self, next_round: Round, tournament: Tournament) -> None:
+        """Collects the outcome of every match left to play in the round.
+
+        Args:
+            next_round (Round): The round being played.
+            tournament (Tournament): The tournament to store.
+        """
         incomplete_scores: list[RoundMatch] = (
             self.round_controller.get_incomplete_matches(next_round)
         )
@@ -119,6 +196,16 @@ class TournamentRunner:
         self.round_controller.set_incomplete_scores(incomplete_scores, tournament)
 
     def should_continue(self, round: Round) -> Result:
+        """Asks the user if to play the round to come.
+
+        Args:
+            round (Round): The round to come.
+
+        Returns:
+            Result:
+                - A valid result carrying the round, when the user goes on.
+                - An invalid one when the user stops.
+        """
         should_continue_result = self.round_controller.should_continue_setting_scores(
             round.name
         )
@@ -128,12 +215,32 @@ class TournamentRunner:
         return Result.valid(value=round)
 
     def run_setting_start_round(self, round: Round, tournament: Tournament) -> None:
+        """Opens the round, asking when it started.
+
+        Args:
+            round (Round): The round to open.
+            tournament (Tournament): The tournament to store.
+        """
         self.round_controller.set_start_timestamp(round, tournament)
 
     def run_setting_end_round(self, round: Round, tournament: Tournament) -> None:
+        """Closes the round, asking when it ended.
+
+        Args:
+            round (Round): The round to close.
+            tournament (Tournament): The tournament to store.
+        """
         self.round_controller.set_end_timestamp(round, tournament)
 
     def run_tournament(self, session_context: SessionContext):
+        """Plays the selected tournament, until it ends or the user stops.
+
+        Each round is opened, played and closed, and the user is asked if to
+        go on before the next one is played.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         tournament_result = self.tournament_service.get_tournament_by_pk(
             session_context.required_tournament_pk
         )
@@ -166,6 +273,7 @@ class TournamentRunner:
 
 
 class TournamentPlayer:
+    """Registers the players to a tournament, and shows the registered ones."""
 
     def __init__(
         self,
@@ -175,6 +283,17 @@ class TournamentPlayer:
         player_service: PlayerService,
         player_render_handler: PlayerRenderHandler,
     ) -> None:
+        """Holds the handlers and the services the use cases are run with.
+
+        Args:
+            prompt_handler (TournamentPromptHandler): The handler to prompt through.
+            renderer_handler (TournamentRenderHandler): The handler to print through.
+            tournament_service (TournamentService): The rules governing the
+                tournaments.
+            player_service (PlayerService): The rules governing the players.
+            player_render_handler (PlayerRenderHandler): The handler printing the
+                players.
+        """
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
@@ -182,6 +301,14 @@ class TournamentPlayer:
         self.player_render_handler = player_render_handler
 
     def select_player_from_list(self, players: list[Player]) -> Player:
+        """Asks the user to pick one player out of several.
+
+        Args:
+            players (list[Player]): The players to pick from.
+
+        Returns:
+            Player: The player the user picked.
+        """
         menu_items = ModelToMenuItem.player_to_menu_item(players)
         self.renderer_handler.view.render_menu_items(menu_items)
         user_input = self.prompt_handler.prompt(
@@ -192,6 +319,19 @@ class TournamentPlayer:
         return player
 
     def select_player_by_name(self, tournament: Tournament):
+        """Asks for a last name, and for a choice when several players match.
+
+        Only the players not registered yet are offered.
+
+        Args:
+            tournament (Tournament): The tournament to register to.
+
+        Returns:
+            Result:
+                - A valid result carrying the selected player.
+                - An invalid one when no last name matches, or when every
+                  matching player is already registered.
+        """
         user_input = self.prompt_handler.get_player_registration_input()
         players_result = self.player_service.get_player_by_name(user_input)
         if not players_result:
@@ -213,6 +353,19 @@ class TournamentPlayer:
         return Result.valid(value=unregistered_players[0])
 
     def is_tournament_registration_open(self, tournament_pk: str) -> Result:
+        """Tells if the tournament still accepts a registration.
+
+        Registration closes as soon as the tournament has been played.
+
+        Args:
+            tournament_pk (str): The primary key of the tournament.
+
+        Returns:
+            Result:
+                - A valid result carrying the tournament.
+                - An invalid one when no tournament holds that primary key, or
+                  when it has already begun.
+        """
         tournament_result = self.tournament_service.get_tournament_by_pk(tournament_pk)
         if not tournament_result:
             return tournament_result
@@ -225,6 +378,11 @@ class TournamentPlayer:
         return Result.valid(value=tournament)
 
     def display_result(self, result: Result) -> None:
+        """Tells the user how the registration went.
+
+        Args:
+            result (Result): The outcome to tell.
+        """
         if not result:
             self.renderer_handler.view.render_invalid_input(reason=result.get_reason())
             return None
@@ -232,6 +390,11 @@ class TournamentPlayer:
         self.renderer_handler.view.render_success("Done !")
 
     def register_player(self, session_context: SessionContext) -> None:
+        """Registers players to the selected tournament, one after the other.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         registration_open_result = self.is_tournament_registration_open(
             session_context.required_tournament_pk
         )
@@ -265,6 +428,11 @@ class TournamentPlayer:
             self.display_result(regsitration_result)
 
     def show_register_players(self, session_context: SessionContext) -> None:
+        """Prints the players registered to the selected tournament.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         registered_players_result = self.tournament_service.get_registered_players(
             tournament_pk=session_context.required_tournament_pk
         )
@@ -280,6 +448,8 @@ class TournamentPlayer:
 
 
 class TournamentController:
+    """Creates the tournaments, and shows what they hold."""
+
     def __init__(
         self,
         prompt_handler: TournamentPromptHandler,
@@ -287,12 +457,23 @@ class TournamentController:
         tournament_service: TournamentService,
         tournament_standings_service: TournamentStandingsService,
     ) -> None:
+        """Holds the handlers and the services the use cases are run with.
+
+        Args:
+            prompt_handler (TournamentPromptHandler): The handler to prompt through.
+            renderer_handler (TournamentRenderHandler): The handler to print through.
+            tournament_service (TournamentService): The rules governing the
+                tournaments.
+            tournament_standings_service (TournamentStandingsService): The
+                standings of a tournament.
+        """
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
         self.tournament_standings_service = tournament_standings_service
 
     def create_new_tournament(self) -> None:
+        """Asks for a tournament, stores it, and tells the user how it went."""
         user_input = self.prompt_handler.get_tournament_input()
         create_result = self.tournament_service.create_tournament(user_input)
         if not create_result:
@@ -302,6 +483,7 @@ class TournamentController:
         self.renderer_handler.view.render_success(create_result.get_success_message())
 
     def show_tournaments(self) -> None:
+        """Prints every stored tournament."""
         tournaments_result = self.tournament_service.get_tournaments()
         if not tournaments_result:
             self.renderer_handler.view.render_invalid_input(
@@ -313,6 +495,13 @@ class TournamentController:
         self.renderer_handler.render_tournaments(tournaments)
 
     def show_standings(self, session_context: SessionContext):
+        """Prints the standings of the selected tournament.
+
+        Nothing is printed of a tournament that has yet to be played.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         tournament_result = self.tournament_service.get_tournament_by_pk(
             session_context.required_tournament_pk
         )
@@ -335,6 +524,11 @@ class TournamentController:
         self.renderer_handler.render_standings(standings)
 
     def show_tournament_details(self, session_context: SessionContext) -> None:
+        """Prints the fields of the selected tournament.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         tournament_result = self.tournament_service.get_tournament_by_pk(
             session_context.required_tournament_pk
         )
@@ -348,6 +542,11 @@ class TournamentController:
         self.renderer_handler.render_tournament_details(tournament)
 
     def show_tournament_rounds(self, session_context: SessionContext) -> None:
+        """Prints every round of the selected tournament, and their matches.
+
+        Args:
+            session_context (SessionContext): The selections of the user.
+        """
         tournament_result = self.tournament_service.get_tournament_by_pk(
             session_context.required_tournament_pk
         )
