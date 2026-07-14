@@ -12,7 +12,7 @@ from controllers.handlers.model_to_menu_item import ModelToMenuItem
 from controllers.handlers.should_continue_to_menu_item import ShouldContinueToMenuItem
 from controllers.handlers.round import RoundPromptHandler, RoundRenderHandler
 from controllers.validators.menu import MenuValidator
-from controllers.validators.date import DateValidator
+
 
 from service.tournament import TournamentService, TournamentStandingsService
 from service.round import RoundService

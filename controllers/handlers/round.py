@@ -8,23 +8,9 @@ from view.round import RoundView
 
 
 class RoundPromptHandler(CorePromptHandler[RoundView]):
-    """Asks the user for the timestamps of a round."""
+    """Provides core prompting methods to class, awaiting for further feature."""
 
-    def prompt_start_datetime(self) -> str:
-        """Asks when the round started.
-
-        Returns:
-            str: The raw timestamp, unvalidated.
-        """
-        return self.view.prompt_start_datetime()
-
-    def prompt_end_timestamp(self) -> str:
-        """Asks when the round ended.
-
-        Returns:
-            str: The raw timestamp, unvalidated.
-        """
-        return self.view.prompt_end_timestamp()
+    pass
 
 
 class RoundRenderHandler(CoreRenderer):

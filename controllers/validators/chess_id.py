@@ -4,6 +4,7 @@ import re
 
 
 from core.result import Result
+from core.core_formats import CHESS_ID, CHESS_ID_HINT
 
 
 class ChessIDValidator:
@@ -24,8 +25,8 @@ class ChessIDValidator:
                 - A valid result carrying the ``re.Match``
                 - A Invalid one whose reason states the expected format.
         """
-        chess_id = re.fullmatch(r"([A-Za-z]{2})(\d{5})", user_input)
+        chess_id = re.fullmatch(CHESS_ID, user_input)
         if chess_id is None:
-            return Result.invalid("Invalid format - Expected 'AA00000'")
+            return Result.invalid(f"Invalid format - Expected '{CHESS_ID_HINT}'")
 
         return Result.valid(value=chess_id)
