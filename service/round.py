@@ -122,8 +122,6 @@ class PairHelper:
 class RoundService:
     """Runs the rounds of a tournament, one after the other."""
 
-    FIRST_ROUND_NAME: str = "round_0"
-
     def is_first_round(self, rounds: list[Round]):
         """Tells if the tournament has yet to play its first round.
 
@@ -132,15 +130,8 @@ class RoundService:
 
         Returns:
             bool: True when the first round holds no match yet.
-
-        Raises:
-            ValueError: When the tournament holds no first round.
         """
-        first_round = [round for round in rounds if round.name == self.FIRST_ROUND_NAME]
-        if not first_round:
-            raise ValueError(f"no {self.FIRST_ROUND_NAME} found")
-
-        return self.round_not_started(first_round[0])
+        return self.round_not_started(rounds[0])
 
     def make_pairs(
         self, tournament: Tournament, players: list[Player]

@@ -84,7 +84,7 @@ class Tournament(Model[TournamentInputData]):
             Round: The new round, with no timestamp and no match.
         """
         round = Round(
-            name="round_" + str(index),
+            name="Round " + str(index),
             start_timestamp="",
             end_timestamp="",
             round_matches=[],
@@ -101,7 +101,9 @@ class Tournament(Model[TournamentInputData]):
         Returns:
             list[Round]: The rounds, in the order they will be played.
         """
-        rounds: list[Round] = [cls.new_round(index) for index in range(round_count)]
+        rounds: list[Round] = [
+            cls.new_round(index) for index in range(1, round_count + 1)
+        ]
         return rounds
 
     @classmethod
