@@ -159,22 +159,20 @@ class TournamentRenderHandler(CoreRenderer):
         self.view.skip_line()
         self.view.console.print(ColorHelper.title("Tournament details"))
 
+        self.view.console.print(Formatter.label_value("Name", tournament.name))
+        self.view.console.print(Formatter.label_value("Place", tournament.place))
         self.view.console.print(
-            Formatter.label_value("Tournament Name", tournament.name)
+            Formatter.label_value("Description", tournament.description)
         )
         self.view.console.print(
-            Formatter.label_value("Tournament start date", tournament.start_date)
+            Formatter.label_value("Start date", tournament.start_date)
+        )
+        self.view.console.print(Formatter.label_value("End date", tournament.end_date))
+        self.view.console.print(
+            Formatter.label_value("Player count", str(tournament.player_count))
         )
         self.view.console.print(
-            Formatter.label_value("Tournament end date", tournament.end_date)
-        )
-        self.view.console.print(
-            Formatter.label_value(
-                "Tournament player count", str(tournament.player_count)
-            )
-        )
-        self.view.console.print(
-            Formatter.label_value("Tournament round count", tournament.round_count)
+            Formatter.label_value("Round count", tournament.round_count)
         )
         self.view.skip_line()
 
