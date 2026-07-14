@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from typing import TypeAlias
+from datetime import datetime
 
 from core.result import Result
+from core.core_formats import DATE_TIME
 
 from controllers.handlers.model_to_menu_item import ModelToMenuItem
 from controllers.handlers.should_continue_to_menu_item import ShouldContinueToMenuItem
@@ -144,9 +146,9 @@ class RoundController:
         return next_round_result
 
     def set_end_timestamp(self, round: Round, tournament: Tournament) -> None:
-        """Asks when the round ended, once every match holds a score.
+        """Sets when the round ended, once every match holds a score.
 
-        Nothing is asked while a match is left to play, nor when the round has
+        Nothing is set while a match is left to play, nor when the round has
         already been closed.
 
         Args:
@@ -159,14 +161,11 @@ class RoundController:
         if round.end_timestamp:
             return None
 
-        round.end_timestamp = self.prompt_handler.prompt(
-            self.prompt_handler.prompt_end_timestamp,
-            DateValidator.validate_date_time,
-        )
+        round.end_timestamp = datetime.now().strftime(DATE_TIME)
         self.tournament_service.save_tournament(tournament)
 
     def set_start_timestamp(self, round: Round, tournament: Tournament) -> None:
-        """Asks when the round started, unless it has already been opened.
+        """Sets when the round started, unless it has already been opened.
 
         Args:
             round (Round): The round to open.
@@ -175,8 +174,5 @@ class RoundController:
         if round.start_timestamp:
             return None
 
-        round.start_timestamp = self.prompt_handler.prompt(
-            self.prompt_handler.prompt_start_datetime,
-            DateValidator.validate_date_time,
-        )
+        round.start_timestamp = datetime.now().strftime(DATE_TIME)
         self.tournament_service.save_tournament(tournament)

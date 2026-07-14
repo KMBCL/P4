@@ -3,6 +3,7 @@
 from datetime import datetime
 
 from core.result import Result
+from core.core_formats import DATE
 
 
 class DateValidator:
@@ -20,9 +21,9 @@ class DateValidator:
                 - A valid result carrying the parsed ``datetime``.
                 - An invalid one whose reason repeats the offending input.
         """
-        date_format: str = "%Y-%m-%d"
+
         try:
-            validated_date = datetime.strptime(date_input, date_format)
+            validated_date = datetime.strptime(date_input, DATE)
             return Result.valid(value=validated_date)
         except ValueError:
             return Result.invalid(f"Invalid date : {date_input}. Expected 'YYYY-MM-DD'")
