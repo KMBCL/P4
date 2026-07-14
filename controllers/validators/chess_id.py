@@ -23,7 +23,7 @@ class ChessIDValidator:
         Returns:
             Result:
                 - A valid result carrying the ``re.Match``
-                - A Invalid one whose reason states the expected format.
+                - An invalid one whose reason states the expected format.
         """
         chess_id = re.fullmatch(CHESS_ID, user_input)
         if chess_id is None:

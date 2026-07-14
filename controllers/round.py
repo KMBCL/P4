@@ -10,7 +10,7 @@ from core.core_formats import DATE_TIME
 
 from controllers.handlers.model_to_menu_item import ModelToMenuItem
 from controllers.handlers.should_continue_to_menu_item import ShouldContinueToMenuItem
-from controllers.handlers.round import RoundPromptHandler, RoundRenderHandler
+from controllers.handlers.round import RoundPromptHandler, RoundRendererHandler
 from controllers.validators.menu import MenuValidator
 
 
@@ -30,7 +30,7 @@ class RoundController:
     def __init__(
         self,
         prompt_handler: RoundPromptHandler,
-        renderer_handler: RoundRenderHandler,
+        renderer_handler: RoundRendererHandler,
         round_service: RoundService,
         tournament_service: TournamentService,
         tournament_standings_service: TournamentStandingsService,
@@ -39,7 +39,7 @@ class RoundController:
 
         Args:
             prompt_handler (RoundPromptHandler): The handler to prompt through.
-            renderer_handler (RoundRenderHandler): The handler to print through.
+            renderer_handler (RoundRendererHandler): The handler to print through.
             round_service (RoundService): The rules governing the rounds.
             tournament_service (TournamentService): The rules governing the
                 tournaments, used to store the one being played.

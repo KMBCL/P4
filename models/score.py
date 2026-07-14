@@ -50,7 +50,7 @@ class TournamentPlayerScore:
     """Accumulates the scores won by one player over a whole tournament."""
 
     player: Player
-    _tournement_score_value: float = INITIAL_SCORE_VALUE
+    _tournament_score_value: float = INITIAL_SCORE_VALUE
 
     def increment_score(self, score_value: float) -> None:
         """Adds the score of one match to the running total.
@@ -58,13 +58,13 @@ class TournamentPlayerScore:
         Args:
             score_value (float): The score won in a single match.
         """
-        self._tournement_score_value += score_value
+        self._tournament_score_value += score_value
 
     @property
-    def tournement_score_value(self) -> float:
+    def tournament_score_value(self) -> float:
         """Reads the total accumulated scores.
 
         Returns:
             float: The sum of the scores won in every match played.
         """
-        return self._tournement_score_value
+        return self._tournament_score_value

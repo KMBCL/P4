@@ -7,9 +7,9 @@ from core.result import Result
 from controllers.handlers.model_to_menu_item import ModelToMenuItem
 from controllers.handlers.tournament import (
     TournamentPromptHandler,
-    TournamentRenderHandler,
+    TournamentRendererHandler,
 )
-from controllers.handlers.player import PlayerRenderHandler
+from controllers.handlers.player import PlayerRendererHandler
 
 from controllers.validators.menu import MenuValidator
 from controllers.round import RoundController
@@ -31,14 +31,14 @@ class TournamentSelector:
     def __init__(
         self,
         prompt_handler: TournamentPromptHandler,
-        renderer_handler: TournamentRenderHandler,
+        renderer_handler: TournamentRendererHandler,
         tournament_service: TournamentService,
     ) -> None:
         """Holds the handlers and the service the use cases are run with.
 
         Args:
             prompt_handler (TournamentPromptHandler): The handler to prompt through.
-            renderer_handler (TournamentRenderHandler): The handler to print through.
+            renderer_handler (TournamentRendererHandler): The handler to print through.
             tournament_service (TournamentService): The rules governing the
                 tournaments.
         """
@@ -161,7 +161,7 @@ class TournamentRunner:
     def __init__(
         self,
         prompt_handler: TournamentPromptHandler,
-        renderer_handler: TournamentRenderHandler,
+        renderer_handler: TournamentRendererHandler,
         tournament_service: TournamentService,
         round_controller: RoundController,
     ) -> None:
@@ -169,7 +169,7 @@ class TournamentRunner:
 
         Args:
             prompt_handler (TournamentPromptHandler): The handler to prompt through.
-            renderer_handler (TournamentRenderHandler): The handler to print through.
+            renderer_handler (TournamentRendererHandler): The handler to print through.
             tournament_service (TournamentService): The rules governing the
                 tournaments.
             round_controller (RoundController): The use cases of the rounds.
@@ -278,27 +278,27 @@ class TournamentPlayer:
     def __init__(
         self,
         prompt_handler: TournamentPromptHandler,
-        renderer_handler: TournamentRenderHandler,
+        renderer_handler: TournamentRendererHandler,
         tournament_service: TournamentService,
         player_service: PlayerService,
-        player_render_handler: PlayerRenderHandler,
+        player_renderer_handler: PlayerRendererHandler,
     ) -> None:
         """Holds the handlers and the services the use cases are run with.
 
         Args:
             prompt_handler (TournamentPromptHandler): The handler to prompt through.
-            renderer_handler (TournamentRenderHandler): The handler to print through.
+            renderer_handler (TournamentRendererHandler): The handler to print through.
             tournament_service (TournamentService): The rules governing the
                 tournaments.
             player_service (PlayerService): The rules governing the players.
-            player_render_handler (PlayerRenderHandler): The handler printing the
+            player_renderer_handler (PlayerRendererHandler): The handler printing the
                 players.
         """
         self.prompt_handler = prompt_handler
         self.renderer_handler = renderer_handler
         self.tournament_service = tournament_service
         self.player_service = player_service
-        self.player_render_handler = player_render_handler
+        self.player_renderer_handler = player_renderer_handler
 
     def select_player_from_list(self, players: list[Player]) -> Player:
         """Asks the user to pick one player out of several.
@@ -409,23 +409,23 @@ class TournamentPlayer:
             self.display_result(player_left_result)
             return None
 
-        regsitration_result = Result.invalid(reason="initial loop")
-        while not regsitration_result:
-            regsitration_result = self.select_player_by_name(tournament)
-            if not regsitration_result:
-                self.display_result(regsitration_result)
+        registration_result = Result.invalid(reason="initial loop")
+        while not registration_result:
+            registration_result = self.select_player_by_name(tournament)
+            if not registration_result:
+                self.display_result(registration_result)
                 continue
 
-            player: Player = regsitration_result.get_value()
-            regsitration_result = self.tournament_service.register_player_to_tournament(
+            player: Player = registration_result.get_value()
+            registration_result = self.tournament_service.register_player_to_tournament(
                 tournament, player
             )
 
-            if not regsitration_result:
-                self.display_result(regsitration_result)
+            if not registration_result:
+                self.display_result(registration_result)
                 continue
 
-            self.display_result(regsitration_result)
+            self.display_result(registration_result)
 
     def show_register_players(self, session_context: SessionContext) -> None:
         """Prints the players registered to the selected tournament.
@@ -442,7 +442,7 @@ class TournamentPlayer:
             )
             return None
 
-        self.player_render_handler.render_players(
+        self.player_renderer_handler.render_players(
             sort_players_by_last_name(registered_players_result.get_value())
         )
 
@@ -453,7 +453,7 @@ class TournamentController:
     def __init__(
         self,
         prompt_handler: TournamentPromptHandler,
-        renderer_handler: TournamentRenderHandler,
+        renderer_handler: TournamentRendererHandler,
         tournament_service: TournamentService,
         tournament_standings_service: TournamentStandingsService,
     ) -> None:
@@ -461,7 +461,7 @@ class TournamentController:
 
         Args:
             prompt_handler (TournamentPromptHandler): The handler to prompt through.
-            renderer_handler (TournamentRenderHandler): The handler to print through.
+            renderer_handler (TournamentRendererHandler): The handler to print through.
             tournament_service (TournamentService): The rules governing the
                 tournaments.
             tournament_standings_service (TournamentStandingsService): The

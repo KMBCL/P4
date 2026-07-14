@@ -54,7 +54,7 @@ class ColorHelper:
         return f"[cyan]{value}[/cyan]"
 
 
-class RoundMatchcolor:
+class RoundMatchColor:
     """Colours the outcome of a match."""
 
     @staticmethod

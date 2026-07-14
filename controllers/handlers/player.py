@@ -74,7 +74,7 @@ class PlayerPromptHandler(CorePromptHandler[PlayerView]):
         return self.prompt(self.view.prompt_birthdate, DateValidator.validate_date)
 
 
-class PlayerRenderHandler(CoreRenderer):
+class PlayerRendererHandler(CoreRenderer):
     """Prints the players, one line each."""
 
     def __init__(self, view: PlayerView) -> None:
@@ -95,9 +95,9 @@ class PlayerRenderHandler(CoreRenderer):
         self.view.console.print(ColorHelper.title("Players"))
 
         for player in players:
-            player_diplayed_name = f"{player.last_name} {player.first_name}"
+            player_displayed_name = f"{player.last_name} {player.first_name}"
             player_display = (
-                ColorHelper.value(player_diplayed_name)
+                ColorHelper.value(player_displayed_name)
                 + Formatter.label_value("Birthdate", player.birthdate)
                 + Formatter.label_value("Chess id", player.chess_id)
             )

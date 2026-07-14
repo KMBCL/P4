@@ -44,7 +44,7 @@ class MenuController:
         """
         self.renderer_handler = renderer_handler
         self.prompt_handler = prompt_handler
-        self.regisgry = registry
+        self.registry = registry
         self.menu_service = menu_service
         self.menu_structure = menu_service.get_menu_structure()
         self.menu_item_history = []
@@ -76,7 +76,7 @@ class MenuController:
         Returns:
             Action | None: The action, or None when the code is bound to none.
         """
-        return self.regisgry.get(menu_item.code, None)
+        return self.registry.get(menu_item.code, None)
 
     def _run_action(
         self,

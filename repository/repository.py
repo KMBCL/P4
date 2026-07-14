@@ -134,8 +134,8 @@ class Repository(ExtractMixin):
         raw_models = self._read_json_file(data_path)
         models_by_pk = self.to_data_dict(raw_data=raw_models, field_name="pk")
         models_by_pk[model_json["pk"]] = model_json
-        uploaded_models = self._to_data_json(models_by_pk)
-        return uploaded_models
+        updated_models = self._to_data_json(models_by_pk)
+        return updated_models
 
     def update_raw_model(self, data_path: Path, model_json: dict[str, Any]) -> None:
         """Stores a record over the one holding the same primary key.

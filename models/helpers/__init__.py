@@ -1,1 +1,1 @@
-"""Provides functions to help handling models, such as flatting nested data."""
+"""Provides functions to help handling models, such as flattening nested data."""

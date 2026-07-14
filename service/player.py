@@ -161,9 +161,9 @@ class PlayerService:
                 - A valid result carrying the stored player.
                 - An invalid one when its chess id is already taken.
         """
-        can_save_resut = self.can_save(player_input.chess_id)
-        if not can_save_resut.is_valid():
-            return can_save_resut
+        can_save_result = self.can_save(player_input.chess_id)
+        if not can_save_result.is_valid():
+            return can_save_result
 
         player = Player.from_user_input(self._make_pk(), player_input)
         self.repository.save_new_raw_model(PLAYER_DIR, PlayerJSON.to_json(player))

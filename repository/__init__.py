@@ -1,1 +1,1 @@
-"""Rreads and writes data from / to JSON files."""
+"""Reads and writes data from / to JSON files."""

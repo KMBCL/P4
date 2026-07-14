@@ -2,7 +2,7 @@
 
 from models.player import Player
 from service.player import PlayerService
-from controllers.handlers.player import PlayerPromptHandler, PlayerRenderHandler
+from controllers.handlers.player import PlayerPromptHandler, PlayerRendererHandler
 
 
 class PlayerController:
@@ -11,14 +11,14 @@ class PlayerController:
     def __init__(
         self,
         prompt_handler: PlayerPromptHandler,
-        renderer_handler: PlayerRenderHandler,
+        renderer_handler: PlayerRendererHandler,
         player_service: PlayerService,
     ) -> None:
         """Holds the handlers and the service the use cases are run with.
 
         Args:
             prompt_handler (PlayerPromptHandler): The handler to prompt through.
-            renderer_handler (PlayerRenderHandler): The handler to print through.
+            renderer_handler (PlayerRendererHandler): The handler to print through.
             player_service (PlayerService): The rules governing the players.
         """
         self.prompt_handler = prompt_handler

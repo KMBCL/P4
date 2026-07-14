@@ -1,6 +1,6 @@
 """Prompts and renders the tournaments, their standings and their rounds."""
 
-from core.color import ColorHelper, RoundMatchcolor, Formatter, TournamentFormatter
+from core.color import ColorHelper, RoundMatchColor, Formatter, TournamentFormatter
 from core.core_renderer import CoreRenderer
 from core.core_handler import CorePromptHandler
 
@@ -89,7 +89,7 @@ class TournamentPromptHandler(CorePromptHandler[TournamentView]):
         return self.prompt(self.view.prompt_end_date, DateValidator.validate_date)
 
 
-class TournamentRenderHandler(CoreRenderer):
+class TournamentRendererHandler(CoreRenderer):
     """Prints the tournaments, their standings, their rounds and their matches."""
 
     def __init__(self, view: TournamentView) -> None:
@@ -145,7 +145,7 @@ class TournamentRenderHandler(CoreRenderer):
             player_display = f"{standing.player.last_name} {standing.player.first_name}"
             self.view.console.print(
                 TournamentFormatter.standing(
-                    str(standing.tournement_score_value), player_display
+                    str(standing.tournament_score_value), player_display
                 )
             )
         self.view.skip_line()
@@ -195,18 +195,18 @@ class TournamentRenderHandler(CoreRenderer):
         if score_a == score_b:
             victory_condition = "Draw"
             result_display = (
-                RoundMatchcolor.draw_label(player_a),
-                RoundMatchcolor.draw_label(player_b),
+                RoundMatchColor.draw_label(player_a),
+                RoundMatchColor.draw_label(player_b),
             )
         else:
             victory_condition = "Victory "
             _a = (
-                RoundMatchcolor.victory(player_a),
-                RoundMatchcolor.defeat(player_b),
+                RoundMatchColor.victory(player_a),
+                RoundMatchColor.defeat(player_b),
             )
             _b = (
-                RoundMatchcolor.victory(player_b),
-                RoundMatchcolor.defeat(player_a),
+                RoundMatchColor.victory(player_b),
+                RoundMatchColor.defeat(player_a),
             )
 
             result_display: tuple[str, str] = _a if score_a > score_b else _b

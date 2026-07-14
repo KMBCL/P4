@@ -13,7 +13,7 @@ class RoundPromptHandler(CorePromptHandler[RoundView]):
     pass
 
 
-class RoundRenderHandler(CoreRenderer):
+class RoundRendererHandler(CoreRenderer):
     """Holds the view of a round, and prints nothing of its own."""
 
     def __init__(self, view: RoundView) -> None:

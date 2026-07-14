@@ -20,7 +20,7 @@ Tournaments: TypeAlias = list[Tournament]
 
 
 def extract_player_from_player_scores(player_scores: list[PlayerScore]) -> list[Player]:
-    """Gats the player of every score.
+    """Gets the player of every score.
 
     Args:
         player_scores (list[PlayerScore]): The scores to read.
@@ -339,21 +339,21 @@ class RoundService:
             list[RoundMatch]: The matches left to play.
         """
         round_matches = flat_round_matches([round])
-        incomplete_round_match: list[RoundMatch] = [
+        incomplete_round_matches: list[RoundMatch] = [
             round_match
             for round_match in round_matches
             if round_match.player_score_a.is_score_not_set
             and round_match.player_score_b.is_score_not_set
         ]
-        return incomplete_round_match
+        return incomplete_round_matches
 
-    def incomplete_round_matches_found(self, incomplete_round_match: list[RoundMatch]):
+    def incomplete_round_matches_found(self, incomplete_round_matches: list[RoundMatch]):
         """Tells if the round holds a match left to play.
 
         Args:
-            incomplete_round_match (list[RoundMatch]): The matches left to play.
+            incomplete_round_matches (list[RoundMatch]): The matches left to play.
 
         Returns:
             bool: True when at least one match is left to play.
         """
-        return bool(incomplete_round_match)
+        return bool(incomplete_round_matches)

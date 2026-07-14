@@ -55,11 +55,11 @@ class TournamentStandingsService:
         Returns:
             dict[str, TournamentPlayerScore]: The totals, keyed by chess id.
         """
-        flatted_round_matches = flat_round_matches(tournament.rounds)
-        flatted_player_score = flat_player_scores(flatted_round_matches)
+        flattened_round_matches = flat_round_matches(tournament.rounds)
+        flattened_player_scores = flat_player_scores(flattened_round_matches)
         tournament_player_scores = self._build_tournament_player_scores(tournament)
 
-        for player_score in flatted_player_score:
+        for player_score in flattened_player_scores:
             tournament_player_scores[player_score.player.chess_id].increment_score(
                 player_score.score_value
             )
@@ -93,7 +93,7 @@ class TournamentStandingsService:
         """
         return sorted(
             player_scores,
-            key=lambda player_score: player_score.tournement_score_value,
+            key=lambda player_score: player_score.tournament_score_value,
             reverse=True,
         )
 

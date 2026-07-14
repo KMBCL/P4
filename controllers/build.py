@@ -8,11 +8,11 @@ from service.build import (
 )
 from controllers.handlers.build import (
     tournament_prompt_handler,
-    tournament_rendered_handler,
+    tournament_renderer_handler,
     player_prompt_handler,
-    player_render_handler,
+    player_renderer_handler,
     round_prompt_handler,
-    round_render_handler,
+    round_renderer_handler,
 )
 
 from controllers.tournament import (
@@ -26,7 +26,7 @@ from controllers.player import PlayerController
 
 round_controller = RoundController(
     round_prompt_handler,
-    round_render_handler,
+    round_renderer_handler,
     round_service,
     tournament_service,
     tournament_standing_service,
@@ -35,34 +35,34 @@ round_controller = RoundController(
 
 tournament_selector = TournamentSelector(
     tournament_prompt_handler,
-    tournament_rendered_handler,
+    tournament_renderer_handler,
     tournament_service,
 )
 
 tournament_runner = TournamentRunner(
     tournament_prompt_handler,
-    tournament_rendered_handler,
+    tournament_renderer_handler,
     tournament_service,
     round_controller,
 )
 
 tournament_player = TournamentPlayer(
     tournament_prompt_handler,
-    tournament_rendered_handler,
+    tournament_renderer_handler,
     tournament_service,
     player_service,
-    player_render_handler,
+    player_renderer_handler,
 )
 
 tournament_controller = TournamentController(
     tournament_prompt_handler,
-    tournament_rendered_handler,
+    tournament_renderer_handler,
     tournament_service,
     tournament_standing_service,
 )
 
 player_controller = PlayerController(
     player_prompt_handler,
-    player_render_handler,
+    player_renderer_handler,
     player_service,
 )

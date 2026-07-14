@@ -5,7 +5,7 @@ from service.build import (
 )
 from controllers.handlers.build import (
     menu_prompt_handler,
-    menu_render_handler,
+    menu_renderer_handler,
 )
 
 from controllers.menu import MenuController
@@ -14,7 +14,7 @@ from controllers.registry import REGISTRY
 
 menu_controller = MenuController(
     menu_prompt_handler,
-    menu_render_handler,
+    menu_renderer_handler,
     REGISTRY,
     menu_service,
 )
